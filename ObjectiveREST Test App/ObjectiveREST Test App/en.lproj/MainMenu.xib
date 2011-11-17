@@ -1663,6 +1663,7 @@
 															</object>
 															<array class="NSMutableArray" key="NSTableColumns">
 																<object class="NSTableColumn" id="194269075">
+																	<string key="NSIdentifier">key</string>
 																	<double key="NSWidth">131</double>
 																	<double key="NSMinWidth">40</double>
 																	<double key="NSMaxWidth">1000</double>
@@ -1701,6 +1702,7 @@
 																	<reference key="NSTableView" ref="815422517"/>
 																</object>
 																<object class="NSTableColumn" id="771788235">
+																	<string key="NSIdentifier">value</string>
 																	<double key="NSWidth">125</double>
 																	<double key="NSMinWidth">10</double>
 																	<double key="NSMaxWidth">3.4028234663852886e+38</double>

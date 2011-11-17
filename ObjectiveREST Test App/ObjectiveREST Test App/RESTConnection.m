@@ -156,7 +156,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
 												   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
                         
-						NSLog(@"%@", [entry dictionnaryValue]);
+                        return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+                                                                                            withContentType:ContentType]] 
+                                autorelease];
 					}
 				}
 			}

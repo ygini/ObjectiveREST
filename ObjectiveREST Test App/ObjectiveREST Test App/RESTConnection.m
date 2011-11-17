@@ -14,6 +14,7 @@
 #import "NSObject+SBJson.h"
 #import "RESTManager.h"
 #import "NSManagedObject+Additions.h"
+#import "RESTManagedObject.h"
 
 // Log levels: off, error, warn, info, verbose
 // Other flags: trace
@@ -32,6 +33,14 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	
 	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
 	return [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err];
+}
+
+- (NSManagedObject*)instanceOfEntityWithName:(NSString*)name andRESTUUID:(NSString*)rest_uuid {
+	NSError *err = nil;
+	
+	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
+	[req setPredicate:[NSPredicate predicateWithFormat:@"SELF.rest_uuid like %@", rest_uuid]];
+	return [[[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err] objectAtIndex:0];
 }
 
 
@@ -99,82 +108,107 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
-	HTTPLogTrace();
-	NSError *error = nil;
-	NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
-	NSMutableArray *retainedContentType = [NSMutableArray new];
-	
-	for (NSString *contentType in SUPPORTED_CONTENT_TYPE) {
-		if ([acceptedContentType containsObject:contentType]) [retainedContentType addObject:contentType];
-	}
-	
-	if ([retainedContentType count] == 0) { 
-		[self handleOptionNotImplemented];		
-	} else {
+	@try {
+		HTTPLogTrace();
+		NSError *error = nil;
+		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
+		NSMutableArray *retainedContentType = [NSMutableArray new];
 		
-		NSString *ContentType = [[retainedContentType objectAtIndex:0] retain];
-		[retainedContentType release];
+		for (NSString *contentType in SUPPORTED_CONTENT_TYPE) {
+			if ([acceptedContentType containsObject:contentType]) [retainedContentType addObject:contentType];
+		}
 		
-		if ([method isEqualToString:@"GET"]) {
+		if ([retainedContentType count] == 0) { 
+			[self handleOptionNotImplemented];		
+		} else {
 			
-			NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
-			NSMutableArray *pathComponents = [NSMutableArray new];
+			NSString *ContentType = [[retainedContentType objectAtIndex:0] retain];
+			[retainedContentType release];
 			
-			for (NSString *pathCompo in [path pathComponents]) {
-				if (![pathCompo isEqualToString:@"/"]) {
-					[pathComponents addObject:pathCompo];
-				}
-			}
-			
-			if ([pathComponents count] == 0) {		// No entity name provided
-				NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
-				for (NSString *entity in entities) {
-					[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
+			if ([method isEqualToString:@"GET"]) {
+				
+				NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
+				NSMutableArray *pathComponents = [NSMutableArray new];
+				
+				for (NSString *pathCompo in [path pathComponents]) {
+					if (![pathCompo isEqualToString:@"/"]) {
+						[pathComponents addObject:pathCompo];
+					}
 				}
 				
-				return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
-																					withContentType:ContentType]] 
-						autorelease];
-			} else {
-				NSInteger numberOfComponents = [pathComponents count];
-				NSString *selectedEntity = [pathComponents objectAtIndex:0];
-				
-				if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // return the list of entry for this kind of entity
-					NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
-					NSMutableArray *entriesRESTRefs = [NSMutableArray new];
-					
-					[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:entries error:&error];
-					
-					for (NSManagedObject *entry in entries) {						
-						[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:@"ref"]];
+				if ([pathComponents count] == 0) {		// No entity name provided
+					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
+					for (NSString *entity in entities) {
+						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
 					}
 					
-					return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
+					return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
 																						withContentType:ContentType]] 
 							autorelease];
 				} else {
-					if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
-						NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
+					NSInteger numberOfComponents = [pathComponents count];
+					NSString *selectedEntity = [pathComponents objectAtIndex:0];
+					
+					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // return the list of entry for this kind of entity
+						NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
+						NSMutableArray *entriesRESTRefs = [NSMutableArray new];
 						
-						NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
-												   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
-                        
-                        return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
-                                                                                            withContentType:ContentType]] 
-                                autorelease];
+						
+						if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
+							// Id the data model has been patched, we use dedicated UUID to make URI
+							
+							for (NSManagedObject <RESTManagedObject> *entry in entries) {						
+								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [entry rest_uuid]] forKey:@"ref"]];
+							}
+							
+						} else {
+							// If the data model isn't patched to be compatible with ObjectiveREST, we fall back on CoreData ID…
+							[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:entries error:&error];
+							
+							for (NSManagedObject *entry in entries) {						
+								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:@"ref"]];
+							}
+						}
+						
+						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
+																							withContentType:ContentType]] 
+								autorelease];
+					} else {
+						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
+							NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
+							
+							NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
+													   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
+							
+							return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+																								withContentType:ContentType]] 
+									autorelease];
+						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
+							NSManagedObject *entry = [self instanceOfEntityWithName:selectedEntity andRESTUUID:[pathComponents objectAtIndex:1]];
+							
+							return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+																								withContentType:ContentType]] 
+									autorelease];
+						}
 					}
 				}
-			}
-		} else if ([method isEqualToString:@"POST"]) {
+			} else if ([method isEqualToString:@"POST"]) {
+				
+			} else if ([method isEqualToString:@"PUT"]) {
+				
+			} else if ([method isEqualToString:@"DELETE"]) {
+				
+			} else [self handleUnknownMethod:method];
 			
-		} else if ([method isEqualToString:@"PUT"]) {
-			
-		} else if ([method isEqualToString:@"DELETE"]) {
-			
-		} else [self handleUnknownMethod:method];
+			[ContentType release];
+		}
 		
-		[ContentType release];
+		
 	}
+	@catch (NSException *exception) {
+		[self handleResourceNotFound];
+	}
+	
 	return [super httpResponseForMethod:method URI:path];
 }
 

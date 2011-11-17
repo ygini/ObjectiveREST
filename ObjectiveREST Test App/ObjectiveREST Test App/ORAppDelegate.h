@@ -15,8 +15,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class HTTPServer;
+
 @interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSTableViewDelegate, NSTableViewDataSource> {
 	NSArray *_entitiesList;
+	
+	HTTPServer *_httpServer;
 }
 
 @property (assign) IBOutlet NSWindow *window;

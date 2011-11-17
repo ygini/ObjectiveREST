@@ -11,6 +11,8 @@
 
 #import "NSOutlineView_Additions.h"
 
+#import "HTTPServer.h"
+#import "RESTConnection.h"
 
 @implementation ORAppDelegate
 
@@ -45,10 +47,12 @@
 		guiControlState = NO;
 		
 		self.ServerStateLabel.stringValue = @"Server is running";
+		self.StartAndStopButton.title = @"Stop";
 	} else {
 		guiControlState = YES;
 		
 		self.ServerStateLabel.stringValue = @"Server isn't running";
+		self.StartAndStopButton.title = @"Start";
 	}
 	
 	[self.HTTPSCheckBox setEnabled:guiControlState];
@@ -62,7 +66,7 @@
 }
 
 - (BOOL)serverIsRunning {
-	return NO;
+	return _httpServer != nil;
 }
 
 #pragma mark - Actions
@@ -80,6 +84,20 @@
 }
 
 - (IBAction)startServerAction:(id)sender {
+	if (_httpServer) {
+		[_httpServer stop];
+		[_httpServer release];
+		_httpServer = nil;
+	} else {
+		_httpServer = [HTTPServer new];
+		[_httpServer setConnectionClass:[RESTConnection class]];
+		[_httpServer setType:@"_http._tcp."];
+		[_httpServer setPort:self.TCPPortTextField.intValue];
+		
+		NSError *error;
+		[_httpServer start:&error];
+	}
+	[self updateGUI];
 }
 
 - (IBAction)settingsHaveChanges:(id)sender {

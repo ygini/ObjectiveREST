@@ -13,6 +13,7 @@
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize managedObjectContext = __managedObjectContext;
+@synthesize modelIsObjectiveRESTReady;
 
 + (RESTManager*)sharedInstance {
 	static RESTManager* sharedInstanceRESTManager = nil;

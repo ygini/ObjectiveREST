@@ -99,7 +99,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
 	HTTPLogTrace();
-	
+	NSError *error = nil;
 	NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
 	NSMutableArray *retainedContentType = [NSMutableArray new];
 	
@@ -141,7 +141,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 				if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // return the list of entry for this kind of entity
 					NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
 					NSMutableArray *entriesRESTRefs = [NSMutableArray new];
-					for (NSManagedObject *entry in entries) {
+					
+					[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:entries error:&error];
+					
+					for (NSManagedObject *entry in entries) {						
 						[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:@"ref"]];
 					}
 					
@@ -154,7 +157,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
 												   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
-						NSLog(@"%@", entry);
+						NSLog(@"%@", [entry valueForKey:@"name"]);
 					}
 				}
 			}

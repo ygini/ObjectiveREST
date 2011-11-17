@@ -1,6 +1,6 @@
-[submodule "CocoaHTTPServer"]
-	path = CocoaHTTPServer
-	url = https://code.google.com/p/cocoahttpserver/
 [submodule "JSON-Framework"]
 	path = JSON-Framework
 	url = https://github.com/stig/json-framework.git
+[submodule "CocoaHTTPServer"]
+	path = CocoaHTTPServer
+	url = https://code.google.com/p/cocoahttpserver/

@@ -1,0 +1,3 @@
+[submodule "CocoaHTTPServer"]
+	path = CocoaHTTPServer
+	url = https://code.google.com/p/cocoahttpserver/

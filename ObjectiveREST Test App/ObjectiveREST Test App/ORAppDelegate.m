@@ -115,6 +115,8 @@
 }
 
 - (IBAction)removeEntity:(id)sender {
+	[self.managedObjectContext deleteObject:[self selectedEntity]];
+	[self updateGUI];
 }
 
 - (NSArray*)instanceOfEntityWithName:(NSString*)name {
@@ -174,7 +176,17 @@
 }
 
 -(id)tableView:(NSTableView *)tableView objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
-	return @"aaa";
+	
+	NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
+	
+	if ([[tableColumn identifier] isEqualToString:@"key"]) return key;
+	else if ([[tableColumn identifier] isEqualToString:@"value"]) return [[self selectedEntity] valueForKey:key];
+	else return nil;
+}
+
+-(void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
+	[[self selectedEntity] setValue:object forKey:key];
 }
 
 #pragma mark - Application LifeCycle

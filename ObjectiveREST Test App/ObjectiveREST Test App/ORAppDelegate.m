@@ -162,7 +162,7 @@
 
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
-    return [item isKindOfClass:[NSEntityDescription class]];	// Only one level of expandable items for this demo
+    return [item isKindOfClass:[NSEntityDescription class]] && [[self instanceOfEntityWithName:[((NSEntityDescription*)item) name]] count] > 0;	// Only one level of expandable items for this demo
 }
 
 

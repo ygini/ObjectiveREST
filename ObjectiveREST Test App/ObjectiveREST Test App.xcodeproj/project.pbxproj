@@ -27,6 +27,7 @@
 		E1CCB7CD1475A24E0087EFF2 /* SBJsonTokeniser.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7BF1475A24E0087EFF2 /* SBJsonTokeniser.m */; };
 		E1CCB7CE1475A24E0087EFF2 /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7C11475A24E0087EFF2 /* SBJsonUTF8Stream.m */; };
 		E1CCB7CF1475A24E0087EFF2 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7C31475A24E0087EFF2 /* SBJsonWriter.m */; };
+		E1CCB7D21475A67C0087EFF2 /* RESTManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7D11475A67C0087EFF2 /* RESTManager.m */; };
 		E1FC6918147585F200D2052F /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC68EB147585F200D2052F /* DDData.m */; };
 		E1FC6919147585F200D2052F /* DDNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC68ED147585F200D2052F /* DDNumber.m */; };
 		E1FC691A147585F200D2052F /* DDRange.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC68EF147585F200D2052F /* DDRange.m */; };
@@ -94,6 +95,8 @@
 		E1CCB7C11475A24E0087EFF2 /* SBJsonUTF8Stream.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonUTF8Stream.m; sourceTree = "<group>"; };
 		E1CCB7C21475A24E0087EFF2 /* SBJsonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJsonWriter.h; sourceTree = "<group>"; };
 		E1CCB7C31475A24E0087EFF2 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
+		E1CCB7D01475A67C0087EFF2 /* RESTManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTManager.h; sourceTree = "<group>"; };
+		E1CCB7D11475A67C0087EFF2 /* RESTManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTManager.m; sourceTree = "<group>"; };
 		E1FC68EA147585F200D2052F /* DDData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDData.h; sourceTree = "<group>"; };
 		E1FC68EB147585F200D2052F /* DDData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DDData.m; sourceTree = "<group>"; };
 		E1FC68EC147585F200D2052F /* DDNumber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDNumber.h; sourceTree = "<group>"; };
@@ -205,6 +208,8 @@
 				E194D23C1475798800D81F4D /* NSOutlineView_Additions.m */,
 				E1FC692D147586E700D2052F /* RESTConnection.h */,
 				E1FC692E147586E700D2052F /* RESTConnection.m */,
+				E1CCB7D01475A67C0087EFF2 /* RESTManager.h */,
+				E1CCB7D11475A67C0087EFF2 /* RESTManager.m */,
 			);
 			path = "ObjectiveREST Test App";
 			sourceTree = "<group>";
@@ -463,6 +468,7 @@
 				E1CCB7CD1475A24E0087EFF2 /* SBJsonTokeniser.m in Sources */,
 				E1CCB7CE1475A24E0087EFF2 /* SBJsonUTF8Stream.m in Sources */,
 				E1CCB7CF1475A24E0087EFF2 /* SBJsonWriter.m in Sources */,
+				E1CCB7D21475A67C0087EFF2 /* RESTManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

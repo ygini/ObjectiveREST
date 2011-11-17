@@ -12,6 +12,7 @@
 #import "HTTPMessage.h"
 #import "GCDAsyncSocket.h"
 #import "NSObject+SBJson.h"
+#import "RESTManager.h"
 
 // Log levels: off, error, warn, info, verbose
 // Other flags: trace
@@ -23,6 +24,15 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 #define SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 
 @implementation RESTConnection
+
+
+- (NSArray*)instanceOfEntityWithName:(NSString*)name {
+	NSError *err = nil;
+	
+	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
+	return [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err];
+}
+
 
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict withContentType:(NSString*)ContentType {
 	NSString *errorString = nil;
@@ -89,9 +99,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
 	HTTPLogTrace();
-	
-#warning Need to handle message to know if it's GET / POST / PUT / DELETE and path to understand what we speaking for.
-	
+		
 	NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
 	NSMutableArray *retainedContentType = [NSMutableArray new];
 	
@@ -108,9 +116,31 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		
 		if ([method isEqualToString:@"GET"]) {
 			
-			return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:@"foo", @"bar", @"alice", @"bob", nil]
-																				withContentType:ContentType]] 
-					autorelease];
+			NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
+			NSArray *pathComponents = [path pathComponents];
+			
+			if ([entities indexOfObject:[pathComponents objectAtIndex:0]] == NSNotFound) {		// No entity name provided or wrong name
+				NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
+				for (NSString *entity in entities) {
+					[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
+				}
+				
+				return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
+																					withContentType:ContentType]] 
+						autorelease];
+			} else {
+				NSInteger numberOfComponents = [pathComponents count];
+				NSString *selectedEntity = [pathComponents objectAtIndex:1];
+				
+				if (numberOfComponents == 3) { // return the list of entry for this kind of entity
+					NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
+					NSMutableArray *entriesRESTRefs = [NSMutableArray new];
+#warning Finish that
+					for (NSManagedObject *entry in entries) {
+						[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], [[[entry objectID] URIRepresentation]absoluteString]] forKey:@"ref"]];
+					}
+				}
+			}
 		} else if ([method isEqualToString:@"POST"]) {
 			
 		} else if ([method isEqualToString:@"PUT"]) {

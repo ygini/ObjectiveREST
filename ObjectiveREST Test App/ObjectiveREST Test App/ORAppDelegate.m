@@ -8,7 +8,7 @@
 
 #import "ORAppDelegate.h"
 
-
+#import "RESTManager.h"
 #import "NSOutlineView_Additions.h"
 
 #import "HTTPServer.h"
@@ -236,6 +236,10 @@
 															 @"bob", @"ServerPassword",
 															 @"1984", @"ServerTCPPort",
 															 nil]];
+	
+	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
+	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
+	
 	[self updateGUI];
 }
 

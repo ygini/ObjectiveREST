@@ -10,6 +10,7 @@
 
 @interface RESTManager : NSObject
 
+@property (retain, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (retain, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (retain, nonatomic) NSManagedObjectContext *managedObjectContext;
 

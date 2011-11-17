@@ -237,6 +237,7 @@
 															 @"1984", @"ServerTCPPort",
 															 nil]];
 	
+	[RESTManager sharedInstance].persistentStoreCoordinator = self.persistentStoreCoordinator;
 	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
 	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
 	

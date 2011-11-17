@@ -10,6 +10,7 @@
 
 @implementation RESTManager
 
+@synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize managedObjectContext = __managedObjectContext;
 

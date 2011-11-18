@@ -155,7 +155,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						
 						if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
-							// Id the data model has been patched, we use dedicated UUID to make URI
+							// If the data model has been patched, we use dedicated UUID to make URI
 							
 							for (NSManagedObject <RESTManagedObject> *entry in entries) {						
 								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [entry rest_uuid]] forKey:@"ref"]];
@@ -179,10 +179,31 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							
 							NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
 													   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
+                            
+                            if (![entry isFault]) {
+                                return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+                                                                                                    withContentType:ContentType]] 
+                                        autorelease];
+                            }
+                            
+                            NSFetchRequest *r = [[[NSFetchRequest alloc] init] autorelease];
+                            [r setEntity:[entry entity]];
+                            
+                            NSPredicate *p = [NSComparisonPredicate predicateWithLeftExpression:[NSExpression expressionForEvaluatedObject] 
+                                                                                rightExpression:[NSExpression expressionForConstantValue:entry]
+                                                                                       modifier:NSDirectPredicateModifier
+                                                                                           type:NSEqualToPredicateOperatorType 
+                                                                                        options:0];
+                            [r setPredicate:p];
+                            
+                            NSArray *results = [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:r error:&error];
+                            if ([results count] > 0) {   
+                                return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[[results objectAtIndex:0] dictionnaryValue], @"content", nil]
+                                                                                                    withContentType:ContentType]] 
+                                        autorelease];
+                            }
 							
-							return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
-																								withContentType:ContentType]] 
-									autorelease];
+							
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
 							NSManagedObject *entry = [self instanceOfEntityWithName:selectedEntity andRESTUUID:[pathComponents objectAtIndex:1]];
 							
@@ -193,7 +214,71 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					}
 				}
 			} else if ([method isEqualToString:@"POST"]) {
+                NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
+				NSMutableArray *pathComponents = [NSMutableArray new];
 				
+				for (NSString *pathCompo in [path pathComponents]) {
+					if (![pathCompo isEqualToString:@"/"]) {
+						[pathComponents addObject:pathCompo];
+					}
+				}
+                
+                if ([pathComponents count] == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
+                    NSString *entityString = [pathComponents objectAtIndex:0];
+                    
+                    NSString *requestBody = [[NSString alloc] initWithBytes:[[request body] bytes] 
+                                                                     length:[[request body] length] 
+                                                                   encoding:NSUTF8StringEncoding];
+                    
+                    NSManagedObject <RESTManagedObject> *newObject = [NSEntityDescription insertNewObjectForEntityForName:entityString
+                                                                               inManagedObjectContext:[[RESTManager sharedInstance] managedObjectContext]];
+                    
+                    // Time to parse the body :)
+                    NSMutableDictionary *parameters = [NSMutableDictionary new];
+                    for (NSString *p in [requestBody componentsSeparatedByString:@"&"]) {
+                        NSArray *keyValue = [p componentsSeparatedByString:@"="];
+                        [parameters setObject:[keyValue objectAtIndex:1] forKey:[keyValue objectAtIndex:0]];
+                    }
+                    
+                    // Fetch the entity attributes
+                    NSDictionary *attributes = [[newObject entity] attributesByName];
+                
+                    [parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                        if ([newObject respondsToSelector:NSSelectorFromString(key)]) {
+                            
+                            NSAttributeDescription *a = [attributes objectForKey:key];
+                            
+                            if ([a attributeType] == NSFloatAttributeType || 
+                                [a attributeType] == NSInteger16AttributeType || 
+                                [a attributeType] == NSInteger32AttributeType || 
+                                [a attributeType] == NSInteger64AttributeType || 
+                                [a attributeType] == NSDecimalAttributeType || 
+                                [a attributeType] == NSDoubleAttributeType || 
+                                [a attributeType] == NSBooleanAttributeType) 
+                            {
+                                NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
+                                [f setNumberStyle:NSNumberFormatterDecimalStyle];                                
+                                [newObject setValue:[f numberFromString:obj] forKey:key];   
+                                [f release];
+                            } else {
+                                [newObject setValue:obj forKey:key];   
+                            }
+                        }
+                    }];
+                    
+                    [[RESTManager sharedInstance].managedObjectContext save:&error];
+                    
+                    NSArray *entityRef;
+                    
+                    if ([RESTManager sharedInstance].modelIsObjectiveRESTReady)
+                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [newObject rest_uuid]] forKey:@"ref"]];
+                    else
+                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[newObject objectID] URIRepresentation] absoluteString]] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"] forKey:@"ref"]];
+                    
+                    return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entityRef, @"content", nil]
+                                                                                        withContentType:ContentType]] 
+                            autorelease];
+                }
 			} else if ([method isEqualToString:@"PUT"]) {
 				
 			} else if ([method isEqualToString:@"DELETE"]) {
@@ -201,9 +286,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 			} else [self handleUnknownMethod:method];
 			
 			[ContentType release];
-		}
-		
-		
+		}		
 	}
 	@catch (NSException *exception) {
 		[self handleResourceNotFound];
@@ -223,13 +306,8 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (void)processBodyData:(NSData *)postDataChunk
 {
 	HTTPLogTrace();
-	
-	// Remember: In order to support LARGE POST uploads, the data is read in chunks.
-	// This prevents a 50 MB upload from being stored in RAM.
-	// The size of the chunks are limited by the POST_CHUNKSIZE definition.
-	// Therefore, this method may be called multiple times for the same POST request.
-	
-
+    
+    [request appendData:postDataChunk];
 }
 
 @end

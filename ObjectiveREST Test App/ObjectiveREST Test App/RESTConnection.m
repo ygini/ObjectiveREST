@@ -51,7 +51,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	
 	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
 	[req setPredicate:[NSPredicate predicateWithFormat:@"SELF.rest_uuid like %@", rest_uuid]];
-	return [[[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err] objectAtIndex:0];
+	NSArray *answer = [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err];
+	if ([answer count] > 0)
+		return [answer objectAtIndex:0];
+	else return nil;
 }
 
 - (NSManagedObject*)entityWithPath:(NSString*)path {
@@ -219,7 +222,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	NSMutableArray *pathComponents = [NSMutableArray new];
 	NSString *ContentType = nil;
 	NSArray *entities = nil;
-	
+		
 	// Cleaning path for double /
 	path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
 	
@@ -374,6 +377,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 					} else {
 						NSManagedObject *entry = [self entityWithPath:path];
+						
+						if (!entry && [RESTManager sharedInstance].modelIsObjectiveRESTReady) {
+							entry = [NSEntityDescription insertNewObjectForEntityForName:selectedEntity
+																  inManagedObjectContext:[[RESTManager sharedInstance] managedObjectContext]];
+						}
 						
 						NSDictionary *dict = nil;
 						if ([ContentType isEqualToString:@"application/x-bplist"] || [ContentType isEqualToString:@"application/x-plist"]) 

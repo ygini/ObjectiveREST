@@ -25,6 +25,8 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 #define SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 
+#define	REST_REF_KEYWORD					@"rest_ref"
+
 @implementation RESTConnection
 
 
@@ -112,6 +114,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	NSString *ContentType = nil;
 	NSArray *entities = nil;
 	
+	// Cleaning path for double /
+	path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+	
 	
 	for (NSString *pathCompo in [path pathComponents]) {
 		if (![pathCompo isEqualToString:@"/"]) {
@@ -120,6 +125,8 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	}
 	
 	NSInteger numberOfComponents = [pathComponents count];
+	
+	NSString *baseURLString = [NSString stringWithFormat:@"%@://%@", [self isSecureServer] ? @"https" : @"http" , [request headerField:@"Host"]];
 	
 	@try {
 		HTTPLogTrace();
@@ -152,7 +159,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					
 					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
 					for (NSString *entity in entities) {
-						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
+						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", baseURLString, entity] forKey:REST_REF_KEYWORD]];
 					}
 					
 					return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
@@ -169,9 +176,8 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
 							// If the data model has been patched, we use dedicated UUID to make URI
-							
 							for (NSManagedObject <RESTManagedObject> *entry in entries) {						
-								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [entry rest_uuid]] forKey:@"ref"]];
+								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@/%@", baseURLString, path, [entry rest_uuid]] forKey:REST_REF_KEYWORD]];
 							}
 							
 						} else {
@@ -179,7 +185,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:entries error:&error];
 							
 							for (NSManagedObject *entry in entries) {						
-								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:@"ref"]];
+								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", baseURLString, [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:REST_REF_KEYWORD]];
 							}
 						}
 						
@@ -285,9 +291,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                     NSArray *entityRef;
                     
                     if ([RESTManager sharedInstance].modelIsObjectiveRESTReady)
-                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [newObject rest_uuid]] forKey:@"ref"]];
+                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [newObject rest_uuid]] forKey:REST_REF_KEYWORD]];
                     else
-                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[newObject objectID] URIRepresentation] absoluteString]] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"] forKey:@"ref"]];
+                        entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[newObject objectID] URIRepresentation] absoluteString]] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"] forKey:REST_REF_KEYWORD]];
                     
 					[parameters release];
 					
@@ -363,6 +369,38 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	HTTPLogTrace();
     
     [request appendData:postDataChunk];
+}
+
+#pragma mark - SSL
+
+/**
+ * Overrides HTTPConnection's method
+ **/
+- (BOOL)isSecureServer
+{
+	HTTPLogTrace();
+	
+	// Create an HTTPS server (all connections will be secured via SSL/TLS)
+	return [RESTManager sharedInstance].requestHTTPS;
+}
+
+/**
+ * Overrides HTTPConnection's method
+ * 
+ * This method is expected to returns an array appropriate for use in kCFStreamSSLCertificates SSL Settings.
+ * It should be an array of SecCertificateRefs except for the first element in the array, which is a SecIdentityRef.
+ **/
+- (NSArray *)sslIdentityAndCertificates
+{
+	HTTPLogTrace();
+	/*
+	NSArray *result = [DDKeychain SSLIdentityAndCertificates];
+	if([result count] == 0)
+	{
+		[DDKeychain createNewIdentity];
+		return [DDKeychain SSLIdentityAndCertificates];
+	}*/
+	return nil;
 }
 
 @end

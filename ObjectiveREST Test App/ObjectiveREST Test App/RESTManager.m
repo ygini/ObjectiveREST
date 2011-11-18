@@ -14,6 +14,7 @@
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize modelIsObjectiveRESTReady;
+@synthesize requestHTTPS;
 
 + (RESTManager*)sharedInstance {
 	static RESTManager* sharedInstanceRESTManager = nil;

@@ -89,6 +89,7 @@
 		[_httpServer release];
 		_httpServer = nil;
 	} else {
+		[RESTManager sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
 		_httpServer = [HTTPServer new];
 		[_httpServer setConnectionClass:[RESTConnection class]];
 		[_httpServer setType:@"_http._tcp."];

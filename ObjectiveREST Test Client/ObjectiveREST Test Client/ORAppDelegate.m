@@ -10,6 +10,7 @@
 #import "NSString_Addition.h"
 #import "SBJsonParser.h"
 #import "OROutlineKeyValueItem.h"
+#import "NSOutlineView_Additions.h"
 
 @implementation ORAppDelegate
 
@@ -26,6 +27,7 @@
 @synthesize PlistRadioButton = _PlistRadioButton;
 @synthesize JSONRadioButton = _JSONRadioButton;
 @synthesize ContentTypeMatrix = _ContentTypeMatrix;
+@synthesize StateTextField = _StateTextField;
 
 
 #define	REST_REF_KEYWORD					@"rest_ref"
@@ -33,7 +35,20 @@
 
 #pragma mark GUI
 
+- (void)updateSateLine {
+	id item = [self.EntitiesOutlineView selectedItem];
+	
+	if (![item isKindOfClass:[NSDictionary class]]) {
+		item = [self.EntitiesOutlineView parentForItem:item];
+	}
+	
+	self.StateTextField.stringValue = [NSString stringWithFormat:@"%@", [item valueForKey:REST_REF_KEYWORD]];
+}
+
 - (void)updateGUI{
+	[_displayedContent removeAllObjects];
+	[_itemKeyValueCache removeAllObjects];
+	
 	BOOL guiControlState = NO;
 	
 	self.HTTPSCheckBox.state = [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? NSOnState : NSOffState;
@@ -74,6 +89,7 @@
 	[self.ContentTypeMatrix setEnabled:guiControlState];
 	
 	[self.EntitiesOutlineView reloadData];
+	[self updateSateLine];
 }
 
 #pragma mark NSOutlineView
@@ -131,10 +147,7 @@
 				}
 			} else {
 				// We shouldn't be here…
-				NSLog(@"Eww, what are you doing here?");
-				returnValue =  [OROutlineKeyValueItem itemWithKey:[[((NSDictionary*)item) allKeys] objectAtIndex:index] 
-												 andValue:[((NSDictionary*)item) valueForKey:[[((NSDictionary*)item) allKeys] objectAtIndex:index]]];
-				[_itemKeyValueCache addObject:returnValue];
+				returnValue = nil;
 			}
 		} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 			returnValue =  nil;
@@ -162,12 +175,12 @@
 				return [[NSURL URLWithString:rest_ref] relativePath];
 			else return nil;
 		} else {
-			return @"Unmanaged 1";
+			return nil;
 		}
 	} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 		return [item valueForKey:[tableColumn identifier]];
 	} else {
-		return @"Unmanaged 2";
+		return nil;
 	}
 	
 	return nil;
@@ -181,11 +194,8 @@
 	else if (self.JSONRadioButton == sender) [[NSUserDefaults standardUserDefaults] setInteger:kContentTypeJSON forKey:@"ContentType"];
 }
 
-- (IBAction)connectAction:(id)sender {
-	[_displayedContent removeAllObjects];
+- (IBAction)connectAction:(id)sender {	
 	[_rootContent removeAllObjects];
-	[_itemKeyValueCache removeAllObjects];
-	
 	[_rootContent addObjectsFromArray:[[self getPath:@"/"] valueForKey:@"content"]];
 	
 	[self updateGUI];
@@ -208,6 +218,40 @@
 
 - (BOOL)isConnected {
 	return self.ConnectButton.state == NSOnState;
+}
+
+#pragma mark REST
+
+- (void)deletePath:(NSString*)path {
+	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
+																						 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
+																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
+																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
+																						 path]]];
+	
+	[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
+	
+	[req setValue:[NSString stringWithFormat:@"%@:%@",
+				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
+				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"]] 
+forHTTPHeaderField:@"Host"];
+	
+	[req setHTTPMethod:@"DELETE"];
+	
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestAuthentication"]) {
+		// Only Basic authentication here, Digest need async connection, so maybe latter for this demo…
+		[req setValue:[NSString stringWithFormat:@"Basic %@", 
+					   [[NSString stringWithFormat:@"%@:%@",
+						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
+						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
+						base64EncodedString]]
+   forHTTPHeaderField:@"Authorization"];
+	}
+	
+	NSURLResponse *rep = nil;
+	NSError *err = nil;
+	
+	[NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
 }
 
 - (NSMutableDictionary*)getPath:(NSString*)path {
@@ -269,6 +313,12 @@
 
 #pragma mark Actions
 
+
+- (IBAction)deleteEntryAction:(id)sender {
+	[self deletePath:[[NSURL URLWithString:self.StateTextField.stringValue] relativePath]];
+	[self updateGUI];
+}
+
 - (IBAction)guiHasChange:(id)sender {
 	if (![self isConnected]) {
 		[[NSUserDefaults standardUserDefaults] setBool:self.HTTPSCheckBox.state == NSOnState
@@ -285,6 +335,12 @@
 		[self updateSelectedContentTypeWithSender:self.ContentTypeMatrix.selectedCell];
 	}
 	[self updateGUI];
+}
+
+#pragma mark Notification
+
+-(void)outlineViewDidChangeSelection:(NSNotification*)notif {
+	[self updateSateLine];
 }
 
 #pragma mark Application LifeCycle
@@ -311,6 +367,10 @@
 															 @"127.0.0.1", @"ServerAddress",
 															 nil]];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(outlineViewDidChangeSelection:)
+												 name:NSOutlineViewSelectionDidChangeNotification 
+											   object:self.EntitiesOutlineView];
 	
 	[self updateGUI];
 }

@@ -34,12 +34,18 @@ typedef enum {
 @property (assign) IBOutlet NSButtonCell *PlistRadioButton;
 @property (assign) IBOutlet NSButtonCell *JSONRadioButton;
 @property (assign) IBOutlet NSMatrix *ContentTypeMatrix;
+@property (assign) IBOutlet NSTextField *StateTextField;
 
+- (void)updateSateLine;
 - (void)updateGUI;
+
 - (void)updateSelectedContentTypeWithSender:(NSButtonCell*)sender;
+
 - (IBAction)connectAction:(id)sender;
+- (IBAction)deleteEntryAction:(id)sender;
 
 - (NSMutableDictionary*)getPath:(NSString*)path;
+- (void)deletePath:(NSString*)path;
 
 - (NSString*)selectedContentType;
 - (BOOL)isConnected;

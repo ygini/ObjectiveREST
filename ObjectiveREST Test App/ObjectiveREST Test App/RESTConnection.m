@@ -144,11 +144,12 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 			[self handleOptionNotImplemented];		
 		} else {			
 			
-			/* **** GET ***** */
 			if ([method isEqualToString:@"GET"]) {
+				/* **** GET ***** */
 				
-				// No entity name provided, return the list of entry
 				if (numberOfComponents == 0) {
+					// No entity name provided, return the list of entry
+					
 					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
 					for (NSString *entity in entities) {
 						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
@@ -160,8 +161,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 				} else {
 					NSString *selectedEntity = [pathComponents objectAtIndex:0];
 					
-					// return the list of entry for the kind of requested entity
 					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+						// return the list of entry for the kind of requested entity
+						
 						NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
 						NSMutableArray *entriesRESTRefs = [NSMutableArray new];
 						
@@ -184,11 +186,13 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
-						
-						// return the selected entity
+
 					} else {
-						// return the selected entity from the CoreData URI
+						// return the selected entity
+						
 						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
+							// return the selected entity from the CoreData URI
+							
 							NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
 							
 							NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
@@ -216,9 +220,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                                                                                                     withContentType:ContentType]] 
                                         autorelease];
                             }
-							
-							// return the selected entity from the REST UUID
+		
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
+							// return the selected entity from the REST UUID
+							
 							NSManagedObject *entry = [self instanceOfEntityWithName:selectedEntity andRESTUUID:[pathComponents objectAtIndex:1]];
 							
 							return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
@@ -228,9 +233,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					}
 				}
 				
-				/* **** POST ***** */
 			} else if ([method isEqualToString:@"POST"]) {
-                
+                /* **** POST ***** */
+				
                 if (numberOfComponents == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
                     NSString *entityString = [pathComponents objectAtIndex:0];
                     
@@ -290,25 +295,32 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                             autorelease];
                 }
 				
-				/* **** PUT ***** */
 			} else if ([method isEqualToString:@"PUT"]) {
+				/* **** PUT ***** */
 				
 				
 				
-				/* **** DELETE ***** */
+				
 			} else if ([method isEqualToString:@"DELETE"]) {
-				if ([pathComponents count] == 0) {		// No entity name provided
+				/* **** DELETE ***** */
+				
+				if ([pathComponents count] == 0) {
+					// No entity name provided
 					
 				} else {
 					
 					NSString *selectedEntity = [pathComponents objectAtIndex:0];
 					
-					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // Delete all entities ?
+					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+					// Delete all entities ?
 						
 					} else {
+						
 						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
+							// Delete entity from CoreData URI
 							
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
+							// Delete entity from REST UUID
 							
 						}
 					}

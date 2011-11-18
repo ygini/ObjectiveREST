@@ -97,7 +97,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (BOOL)expectsRequestBodyFromMethod:(NSString *)method atPath:(NSString *)path
 {
 	HTTPLogTrace();
-		
+	
 	if([method isEqualToString:@"POST"])
 		return YES;
 	if ([method isEqualToString:@"PUT"])
@@ -108,35 +108,47 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
+	NSMutableArray *pathComponents = [NSMutableArray new];
+	NSString *ContentType = nil;
+	NSArray *entities = nil;
+	
+	
+	for (NSString *pathCompo in [path pathComponents]) {
+		if (![pathCompo isEqualToString:@"/"]) {
+			[pathComponents addObject:pathCompo];
+		}
+	}
+	
+	NSInteger numberOfComponents = [pathComponents count];
+	
 	@try {
 		HTTPLogTrace();
 		NSError *error = nil;
 		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
-		NSMutableArray *retainedContentType = [NSMutableArray new];
 		
+		entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
+		
+		
+		NSMutableArray *retainedContentType = [NSMutableArray new];
 		for (NSString *contentType in SUPPORTED_CONTENT_TYPE) {
 			if ([acceptedContentType containsObject:contentType]) [retainedContentType addObject:contentType];
 		}
 		
-		if ([retainedContentType count] == 0) { 
+		if ([retainedContentType count] == 0) ContentType = nil;
+		else ContentType = [[retainedContentType objectAtIndex:0] retain];
+		
+		[retainedContentType release], retainedContentType = nil;
+		
+		
+		if (!ContentType) { 
 			[self handleOptionNotImplemented];		
-		} else {
+		} else {			
 			
-			NSString *ContentType = [[retainedContentType objectAtIndex:0] retain];
-			[retainedContentType release];
-			
+			/* **** GET ***** */
 			if ([method isEqualToString:@"GET"]) {
 				
-				NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
-				NSMutableArray *pathComponents = [NSMutableArray new];
-				
-				for (NSString *pathCompo in [path pathComponents]) {
-					if (![pathCompo isEqualToString:@"/"]) {
-						[pathComponents addObject:pathCompo];
-					}
-				}
-				
-				if ([pathComponents count] == 0) {		// No entity name provided
+				// No entity name provided, return the list of entry
+				if (numberOfComponents == 0) {
 					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
 					for (NSString *entity in entities) {
 						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", [[request url] absoluteString], entity] forKey:@"ref"]];
@@ -146,13 +158,12 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 																						withContentType:ContentType]] 
 							autorelease];
 				} else {
-					NSInteger numberOfComponents = [pathComponents count];
 					NSString *selectedEntity = [pathComponents objectAtIndex:0];
 					
-					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // return the list of entry for this kind of entity
+					// return the list of entry for the kind of requested entity
+					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
 						NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
 						NSMutableArray *entriesRESTRefs = [NSMutableArray new];
-						
 						
 						if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
 							// If the data model has been patched, we use dedicated UUID to make URI
@@ -173,7 +184,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
+						
+						// return the selected entity
 					} else {
+						// return the selected entity from the CoreData URI
 						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
 							NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
 							
@@ -203,7 +217,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                                         autorelease];
                             }
 							
-							
+							// return the selected entity from the REST UUID
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
 							NSManagedObject *entry = [self instanceOfEntityWithName:selectedEntity andRESTUUID:[pathComponents objectAtIndex:1]];
 							
@@ -213,17 +227,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						}
 					}
 				}
-			} else if ([method isEqualToString:@"POST"]) {
-                NSArray *entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
-				NSMutableArray *pathComponents = [NSMutableArray new];
 				
-				for (NSString *pathCompo in [path pathComponents]) {
-					if (![pathCompo isEqualToString:@"/"]) {
-						[pathComponents addObject:pathCompo];
-					}
-				}
+				/* **** POST ***** */
+			} else if ([method isEqualToString:@"POST"]) {
                 
-                if ([pathComponents count] == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
+                if (numberOfComponents == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
                     NSString *entityString = [pathComponents objectAtIndex:0];
                     
                     NSString *requestBody = [[NSString alloc] initWithBytes:[[request body] bytes] 
@@ -231,7 +239,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                                                                    encoding:NSUTF8StringEncoding];
                     
                     NSManagedObject <RESTManagedObject> *newObject = [NSEntityDescription insertNewObjectForEntityForName:entityString
-                                                                               inManagedObjectContext:[[RESTManager sharedInstance] managedObjectContext]];
+																								   inManagedObjectContext:[[RESTManager sharedInstance] managedObjectContext]];
                     
                     // Time to parse the body :)
                     NSMutableDictionary *parameters = [NSMutableDictionary new];
@@ -242,7 +250,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                     
                     // Fetch the entity attributes
                     NSDictionary *attributes = [[newObject entity] attributesByName];
-                
+					
                     [parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
                         if ([newObject respondsToSelector:NSSelectorFromString(key)]) {
                             
@@ -275,21 +283,48 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                     else
                         entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[newObject objectID] URIRepresentation] absoluteString]] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"] forKey:@"ref"]];
                     
+					[parameters release];
+					
                     return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entityRef, @"content", nil]
                                                                                         withContentType:ContentType]] 
                             autorelease];
                 }
+				
+				/* **** PUT ***** */
 			} else if ([method isEqualToString:@"PUT"]) {
 				
+				
+				
+				/* **** DELETE ***** */
 			} else if ([method isEqualToString:@"DELETE"]) {
+				if ([pathComponents count] == 0) {		// No entity name provided
+					
+				} else {
+					
+					NSString *selectedEntity = [pathComponents objectAtIndex:0];
+					
+					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) { // Delete all entities ?
+						
+					} else {
+						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
+							
+						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
+							
+						}
+					}
+				}
 				
 			} else [self handleUnknownMethod:method];
 			
-			[ContentType release];
 		}		
 	}
 	@catch (NSException *exception) {
 		[self handleResourceNotFound];
+	} @finally {		
+		[pathComponents release], pathComponents = nil;
+		[ContentType release], ContentType = nil;
+		[entities release], entities = nil;
+		
 	}
 	
 	return [super httpResponseForMethod:method URI:path];

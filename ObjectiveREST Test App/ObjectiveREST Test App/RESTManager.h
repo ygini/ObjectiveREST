@@ -13,9 +13,12 @@
 @property (retain, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 @property (retain, nonatomic) NSManagedObjectModel *managedObjectModel;
 @property (retain, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (retain, nonatomic) NSMutableDictionary *authenticationDatabase;
 @property (assign, nonatomic) BOOL modelIsObjectiveRESTReady;
 @property (assign, nonatomic) BOOL requestHTTPS;
 @property (assign, nonatomic) BOOL allowDeleteOnCollection;
+@property (assign, nonatomic) BOOL requestAuthentication;
+@property (assign, nonatomic) BOOL useDigest;
 
 + (RESTManager*)sharedInstance;
 

@@ -419,6 +419,8 @@ forHTTPHeaderField:@"Host"];
 												 forKey:@"ServerPassword"];
 		[[NSUserDefaults standardUserDefaults] setValue:self.TCPPortTextField.stringValue
 												 forKey:@"ServerTCPPort"];
+		[[NSUserDefaults standardUserDefaults] setValue:self.ServerAddressTextField.stringValue
+												 forKey:@"ServerAddress"];
 		
 		[self updateSelectedContentTypeWithSender:self.ContentTypeMatrix.selectedCell];
 	}

@@ -90,8 +90,11 @@
 		[_httpServer release];
 		_httpServer = nil;
 	} else {
-		[RESTManager sharedInstance].modelIsObjectiveRESTReady = self.PatchedModelCheckBox.state == NSOnState;;
+		[[RESTManager sharedInstance].authenticationDatabase removeAllObjects];
+		[[RESTManager sharedInstance].authenticationDatabase setValue:self.PasswordTextField.stringValue forKey:self.UsernameTextField.stringValue];
+		[RESTManager sharedInstance].modelIsObjectiveRESTReady = self.PatchedModelCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
+		[RESTManager sharedInstance].requestAuthentication = self.AuthenticationCheckBox.state == NSOnState;
 		_httpServer = [HTTPServer new];
 		[_httpServer setConnectionClass:[RESTConnection class]];
 		[_httpServer setType:@"_http._tcp."];

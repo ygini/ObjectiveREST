@@ -13,7 +13,6 @@
 		E17FC32D147664D5002DDCF6 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = E17FC32B147664D5002DDCF6 /* Credits.rtf */; };
 		E17FC330147664D5002DDCF6 /* ORAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC32F147664D5002DDCF6 /* ORAppDelegate.m */; };
 		E17FC333147664D6002DDCF6 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E17FC331147664D6002DDCF6 /* MainMenu.xib */; };
-		E17FC33B14767DF5002DDCF6 /* NSString_Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC33A14767DF5002DDCF6 /* NSString_Addition.m */; };
 		E17FC35914768399002DDCF6 /* NSObject+SBJson.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC34114768399002DDCF6 /* NSObject+SBJson.m */; };
 		E17FC35A14768399002DDCF6 /* SBJsonParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC34414768399002DDCF6 /* SBJsonParser.m */; };
 		E17FC35B14768399002DDCF6 /* SBJsonStreamParser.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC34614768399002DDCF6 /* SBJsonStreamParser.m */; };
@@ -28,6 +27,8 @@
 		E17FC36414768399002DDCF6 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC35814768399002DDCF6 /* SBJsonWriter.m */; };
 		E17FC36714769254002DDCF6 /* OROutlineKeyValueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */; };
 		E1DF5A511476E4CA00DD5BC4 /* NSOutlineView_Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */; };
+		E1DF5A5A1477206100DD5BC4 /* NSDataAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DF5A591477206100DD5BC4 /* NSDataAdditions.m */; };
+		E1DF5A5B1477215A00DD5BC4 /* NSString_Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC33A14767DF5002DDCF6 /* NSString_Addition.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,7 +47,6 @@
 		E17FC332147664D6002DDCF6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		E17FC33914767DF5002DDCF6 /* NSString_Addition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSString_Addition.h; sourceTree = "<group>"; };
 		E17FC33A14767DF5002DDCF6 /* NSString_Addition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSString_Addition.m; sourceTree = "<group>"; };
-		E17FC33C14767E2A002DDCF6 /* libssl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssl.dylib; path = usr/lib/libssl.dylib; sourceTree = SDKROOT; };
 		E17FC34014768399002DDCF6 /* NSObject+SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+SBJson.h"; sourceTree = "<group>"; };
 		E17FC34114768399002DDCF6 /* NSObject+SBJson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+SBJson.m"; sourceTree = "<group>"; };
 		E17FC34214768399002DDCF6 /* SBJson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SBJson.h; sourceTree = "<group>"; };
@@ -76,6 +76,8 @@
 		E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineKeyValueItem.m; sourceTree = "<group>"; };
 		E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSOutlineView_Additions.h; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.h"; sourceTree = "<group>"; };
 		E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSOutlineView_Additions.m; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.m"; sourceTree = "<group>"; };
+		E1DF5A581477206100DD5BC4 /* NSDataAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDataAdditions.h; sourceTree = "<group>"; };
+		E1DF5A591477206100DD5BC4 /* NSDataAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSDataAdditions.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +95,7 @@
 		E17FC30D147664D5002DDCF6 = {
 			isa = PBXGroup;
 			children = (
+				E1DF5A561477206100DD5BC4 /* Externals */,
 				E17FC33E14768387002DDCF6 /* JSON */,
 				E17FC322147664D5002DDCF6 /* ObjectiveREST Test Client */,
 				E17FC31B147664D5002DDCF6 /* Frameworks */,
@@ -111,7 +114,6 @@
 		E17FC31B147664D5002DDCF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E17FC33C14767E2A002DDCF6 /* libssl.dylib */,
 				E17FC31C147664D5002DDCF6 /* Cocoa.framework */,
 				E17FC31E147664D5002DDCF6 /* Other Frameworks */,
 			);
@@ -198,6 +200,24 @@
 			path = "../JSON-Framework/Classes";
 			sourceTree = "<group>";
 		};
+		E1DF5A561477206100DD5BC4 /* Externals */ = {
+			isa = PBXGroup;
+			children = (
+				E1DF5A571477206100DD5BC4 /* Colloquy */,
+			);
+			name = Externals;
+			path = ../Externals;
+			sourceTree = "<group>";
+		};
+		E1DF5A571477206100DD5BC4 /* Colloquy */ = {
+			isa = PBXGroup;
+			children = (
+				E1DF5A581477206100DD5BC4 /* NSDataAdditions.h */,
+				E1DF5A591477206100DD5BC4 /* NSDataAdditions.m */,
+			);
+			path = Colloquy;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -264,7 +284,6 @@
 			files = (
 				E17FC329147664D5002DDCF6 /* main.m in Sources */,
 				E17FC330147664D5002DDCF6 /* ORAppDelegate.m in Sources */,
-				E17FC33B14767DF5002DDCF6 /* NSString_Addition.m in Sources */,
 				E17FC35914768399002DDCF6 /* NSObject+SBJson.m in Sources */,
 				E17FC35A14768399002DDCF6 /* SBJsonParser.m in Sources */,
 				E17FC35B14768399002DDCF6 /* SBJsonStreamParser.m in Sources */,
@@ -279,6 +298,8 @@
 				E17FC36414768399002DDCF6 /* SBJsonWriter.m in Sources */,
 				E17FC36714769254002DDCF6 /* OROutlineKeyValueItem.m in Sources */,
 				E1DF5A511476E4CA00DD5BC4 /* NSOutlineView_Additions.m in Sources */,
+				E1DF5A5A1477206100DD5BC4 /* NSDataAdditions.m in Sources */,
+				E1DF5A5B1477215A00DD5BC4 /* NSString_Addition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

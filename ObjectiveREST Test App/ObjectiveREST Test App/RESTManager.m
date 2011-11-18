@@ -16,11 +16,27 @@
 @synthesize modelIsObjectiveRESTReady;
 @synthesize requestHTTPS;
 @synthesize allowDeleteOnCollection;
+@synthesize requestAuthentication;
+@synthesize useDigest;
+@synthesize authenticationDatabase;
 
 + (RESTManager*)sharedInstance {
 	static RESTManager* sharedInstanceRESTManager = nil;
 	if (!sharedInstanceRESTManager) sharedInstanceRESTManager = [RESTManager new];
 	return sharedInstanceRESTManager;
+}
+
+-(id)init {
+	self = [super init];
+	if (self) {
+		self.authenticationDatabase = [[NSMutableDictionary new] autorelease];
+	}
+	return self;
+}
+
+- (void)dealloc {
+    self.authenticationDatabase = nil;
+    [super dealloc];
 }
 
 @end

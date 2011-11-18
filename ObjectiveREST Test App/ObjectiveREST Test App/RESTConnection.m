@@ -502,4 +502,37 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	return nil;
 }
 
+#pragma mark - Password
+
+- (BOOL)isPasswordProtected:(NSString *)path
+{
+	return [RESTManager sharedInstance].requestAuthentication;
+}
+
+- (BOOL)useDigestAccessAuthentication
+{
+	HTTPLogTrace();
+	
+	// Digest access authentication is the default setting.
+	// Notice in Safari that when you're prompted for your password,
+	// Safari tells you "Your login information will be sent securely."
+	// 
+	// If you return NO in this method, the HTTP server will use
+	// basic authentication. Try it and you'll see that Safari
+	// will tell you "Your password will be sent unencrypted",
+	// which is strongly discouraged.
+	
+	return [RESTManager sharedInstance].useDigest;
+}
+
+- (NSString *)passwordForUser:(NSString *)username
+{
+	HTTPLogTrace();
+	
+	// You can do all kinds of cool stuff here.
+	// For simplicity, we're not going to check the username, only the password.
+	
+	return [[RESTManager sharedInstance].authenticationDatabase valueForKey:username];
+}
+
 @end

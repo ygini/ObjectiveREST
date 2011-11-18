@@ -11,4 +11,5 @@
 @interface NSOutlineView (Additions)
 - (void)expandParentsOfItem:(id)item;
 - (void)selectItem:(id)item;
+- (id)selectedItem;
 @end

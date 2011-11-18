@@ -32,4 +32,8 @@
 	
     [self selectRowIndexes: [NSIndexSet indexSetWithIndex: itemIndex] byExtendingSelection: NO];
 }
+
+- (id)selectedItem {
+	return [self itemAtRow:[self selectedRow]];
+}
 @end

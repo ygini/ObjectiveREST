@@ -187,11 +187,6 @@
 	} else return [item description];
 }
 
-- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item {
-	[self.EntityContentTableView reloadData];
-	return YES;
-}
-
 #pragma mark - NSTableView
 
 -(NSInteger)numberOfRowsInTableView:(NSTableView *)tableView {
@@ -210,6 +205,12 @@
 -(void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
 	NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
 	[[self selectedEntity] setValue:object forKey:key];
+}
+
+#pragma mark Notification
+
+-(void)outlineViewDidChangeSelection:(NSNotification*)notif {
+	[self.EntityContentTableView reloadData];
 }
 
 #pragma mark - Application LifeCycle
@@ -246,6 +247,11 @@
 	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
 	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
 	[RESTManager sharedInstance].modelIsObjectiveRESTReady = YES;
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(outlineViewDidChangeSelection:)
+												 name:NSOutlineViewSelectionDidChangeNotification 
+											   object:self.EntitiesOutlineView];
 	
 	[self updateGUI];
 }

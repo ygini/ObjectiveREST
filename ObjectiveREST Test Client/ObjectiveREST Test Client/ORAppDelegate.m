@@ -9,6 +9,7 @@
 #import "ORAppDelegate.h"
 #import "NSString_Addition.h"
 #import "SBJsonParser.h"
+#import "NSObject+SBJson.h"
 #import "OROutlineKeyValueItem.h"
 #import "NSOutlineView_Additions.h"
 
@@ -186,6 +187,21 @@
 	return nil;
 }
 
+-(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	return [item isKindOfClass:[OROutlineKeyValueItem class]];
+}
+
+-(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+	if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
+		NSURL *restURI = [NSURL URLWithString:self.StateTextField.stringValue];
+		NSDictionary *info = [self getPath:[restURI relativePath]];
+		
+		[[info valueForKey:@"content"] setValue:object forKey:((OROutlineKeyValueItem*)item).key];
+		[self putInfo:info toPath:[restURI relativePath]];
+		[self updateGUI];
+	}
+}
+
 #pragma mark Internal
 
 - (void)updateSelectedContentTypeWithSender:(NSButtonCell*)sender {
@@ -221,6 +237,78 @@
 }
 
 #pragma mark REST
+
+- (NSDictionary*)putInfo:(NSDictionary*)info toPath:(NSString*)path {
+	NSMutableDictionary *dict = nil;
+	
+	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
+																						 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
+																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
+																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
+																						 path]]];
+	
+	[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
+	
+	[req setValue:[NSString stringWithFormat:@"%@:%@",
+				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
+				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"]] 
+forHTTPHeaderField:@"Host"];
+	
+	[req setHTTPMethod:@"PUT"];
+	
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestAuthentication"]) {
+		// Only Basic authentication here, Digest need async connection, so maybe latter for this demo…
+		[req setValue:[NSString stringWithFormat:@"Basic %@", 
+					   [[NSString stringWithFormat:@"%@:%@",
+						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
+						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
+						base64EncodedString]]
+   forHTTPHeaderField:@"Authorization"];
+	}
+	
+	NSData *bodyData = nil;
+	NSString *errorString = nil;
+	
+	switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"ContentType"]) {
+		case kContentTypeBPlist:
+			bodyData = [NSPropertyListSerialization dataFromPropertyList:info format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorString];
+			break;
+		case kContentTypePlist:
+			bodyData = [NSPropertyListSerialization dataFromPropertyList:info format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
+			break;
+		case kContentTypeJSON:
+			bodyData = [[info JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding];
+			break;
+	}
+	
+	[req setHTTPBody:bodyData];
+	
+	NSURLResponse *rep = nil;
+	NSError *err = nil;
+	NSString *errString = nil;
+	
+	NSData * answer = [NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
+	
+	switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"ContentType"]) {
+		case kContentTypeBPlist:
+		case kContentTypePlist:
+			dict = [NSPropertyListSerialization propertyListFromData:answer
+													mutabilityOption:NSPropertyListMutableContainersAndLeaves
+															  format:nil
+													errorDescription:&errString];
+			break;
+		case kContentTypeJSON: {
+			SBJsonParser *parser = [SBJsonParser new];
+			dict = [parser objectWithData:answer];
+			[parser release];
+		}
+			break;
+	}
+	
+	[_displayedContent setValue:dict forKey:path];
+	
+	return dict;
+}
 
 - (void)deletePath:(NSString*)path {
 	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 

@@ -1749,7 +1749,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 																	</object>
 																	<int key="NSResizingMask">3</int>
 																	<bool key="NSIsResizeable">YES</bool>
-																	<bool key="NSIsEditable">YES</bool>
 																	<reference key="NSTableView" ref="992752883"/>
 																</object>
 																<object class="NSTableColumn" id="513616612">

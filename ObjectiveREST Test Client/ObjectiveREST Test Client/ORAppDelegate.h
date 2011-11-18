@@ -14,7 +14,7 @@ typedef enum {
 	kContentTypeJSON
 } kContentType;
 
-@interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource> {
+@interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSOutlineViewDelegate> {
 	NSMutableArray *_rootContent;
 	
 	NSMutableDictionary *_displayedContent;
@@ -44,6 +44,7 @@ typedef enum {
 - (IBAction)connectAction:(id)sender;
 - (IBAction)deleteEntryAction:(id)sender;
 
+- (NSDictionary*)putInfo:(NSDictionary*)info toPath:(NSString*)path;
 - (NSMutableDictionary*)getPath:(NSString*)path;
 - (void)deletePath:(NSString*)path;
 

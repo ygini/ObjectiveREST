@@ -48,6 +48,8 @@
 
 - (IBAction)settingsHaveChanges:(id)sender;
 
+- (IBAction)refreshAction:(id)sender;
+
 - (void)updateGUI;
 
 - (BOOL)serverIsRunning;

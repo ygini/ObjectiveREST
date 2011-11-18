@@ -126,7 +126,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		NSError *error = nil;
 		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
 		
-		entities = [[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)];
+		entities = [[[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
 		
 		
 		NSMutableArray *retainedContentType = [NSMutableArray new];
@@ -204,17 +204,18 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                                         autorelease];
                             }
                             
-                            NSFetchRequest *r = [[[NSFetchRequest alloc] init] autorelease];
-                            [r setEntity:[entry entity]];
+                            NSFetchRequest *validityRequest = [[NSFetchRequest alloc] init];
+                            [validityRequest setEntity:[entry entity]];
                             
-                            NSPredicate *p = [NSComparisonPredicate predicateWithLeftExpression:[NSExpression expressionForEvaluatedObject] 
-                                                                                rightExpression:[NSExpression expressionForConstantValue:entry]
-                                                                                       modifier:NSDirectPredicateModifier
-                                                                                           type:NSEqualToPredicateOperatorType 
-                                                                                        options:0];
-                            [r setPredicate:p];
+                            [validityRequest setPredicate:[NSComparisonPredicate predicateWithLeftExpression:[NSExpression expressionForEvaluatedObject] 
+																							 rightExpression:[NSExpression expressionForConstantValue:entry]
+																									modifier:NSDirectPredicateModifier
+																										type:NSEqualToPredicateOperatorType 
+																									 options:0]];
                             
-                            NSArray *results = [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:r error:&error];
+                            NSArray *results = [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:validityRequest error:&error];
+							[validityRequest release];
+							
                             if ([results count] > 0) {   
                                 return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[[results objectAtIndex:0] dictionnaryValue], @"content", nil]
                                                                                                     withContentType:ContentType]] 
@@ -313,7 +314,12 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					
 					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
 					// Delete all entities ?
+						NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
 						
+						NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
+												   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
+						
+						[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
 					} else {
 						
 						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
@@ -321,7 +327,9 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
 							// Delete entity from REST UUID
+							NSManagedObject *entry = [self instanceOfEntityWithName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];
 							
+							[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
 						}
 					}
 				}

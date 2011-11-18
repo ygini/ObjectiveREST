@@ -8,6 +8,8 @@
 
 #import "HTTPConnection.h"
 
-@interface RESTConnection : HTTPConnection
+@interface RESTConnection : HTTPConnection {
+	NSString *baseURLForURI;
+}
 
 @end

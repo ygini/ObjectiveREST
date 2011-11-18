@@ -149,9 +149,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 
 #pragma mark - HTTP Session
-/**
- * Called if the client ask for a unavaiable content type
- **/
+
 - (void)handleOptionNotImplemented
 {
 	// Override me for custom error handling of 404 not found responses
@@ -162,6 +160,24 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	
 	// Status Code 404 - Not Found
 	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:501 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_FINAL_RESPONSE];
+	
+	[response release];
+}
+
+- (void)handleMethodOK
+{
+	// Override me for custom error handling of 404 not found responses
+	// If you simply want to add a few extra header fields, see the preprocessErrorResponse: method.
+	// You can also use preprocessErrorResponse: to add an optional HTML body.
+	
+	HTTPLogInfo(@"HTTP Server: OK 200 - Success (%@)", [self requestURI]);
+	
+	// Status Code 404 - Not Found
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:200 description:nil version:HTTPVersion1_1];
 	[response setHeaderField:@"Content-Length" value:@"0"];
 	
 	NSData *responseData = [self preprocessErrorResponse:response];
@@ -374,13 +390,17 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						dict = [dict valueForKey:@"content"];
 						
-						NSLog(@"%@", dict);
-						
 						id value = nil;
 						for (NSString *supportedKey in [[[entry entity] attributesByName] allKeys]) {
 							value = [dict valueForKey:supportedKey];
 							if (value) [entry setValue:value forKey:supportedKey];
 						}
+						
+						[[RESTManager sharedInstance].managedObjectContext save:&error];
+						
+						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+																							withContentType:ContentType]] 
+								autorelease];
 					}
 				}
 				
@@ -403,9 +423,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							for (NSManagedObject *entry in entries) {
 								[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
 							}
-						}
+							[self handleMethodOK];
+						} else [self handleOptionNotImplemented];
 					} else {						
 						[[RESTManager sharedInstance].managedObjectContext deleteObject:[self entityWithPath:path]];
+						[self handleMethodOK];
 					}
 				}
 				

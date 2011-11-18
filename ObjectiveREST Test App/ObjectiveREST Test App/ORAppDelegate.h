@@ -35,6 +35,7 @@
 @property (assign) IBOutlet NSButton *StartAndStopButton;
 @property (assign) IBOutlet NSTextField *UsernameTextField;
 @property (assign) IBOutlet NSTextField *PasswordTextField;
+@property (assign) IBOutlet NSButton *PatchedModelCheckBox;
 
 @property (assign) IBOutlet NSTextField *ServerStateLabel;
 

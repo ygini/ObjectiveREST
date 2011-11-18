@@ -185,7 +185,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:entries error:&error];
 							
 							for (NSManagedObject *entry in entries) {						
-								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@%@", baseURLString, [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:REST_REF_KEYWORD]];
+								[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", baseURLString, [[[[entry objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]] forKey:REST_REF_KEYWORD]];
 							}
 						}
 						

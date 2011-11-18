@@ -28,6 +28,7 @@
 @synthesize StartAndStopButton = _StartAndStopButton;
 @synthesize UsernameTextField = _UsernameTextField;
 @synthesize PasswordTextField = _PasswordTextField;
+@synthesize PatchedModelCheckBox = _PatchedModelCheckBox;
 @synthesize ServerStateLabel = _ServerStateLabel;
 @synthesize EntitiesOutlineView = _EntitiesOutlineView;
 @synthesize EntityContentTableView = _EntityContentTableView;
@@ -89,6 +90,7 @@
 		[_httpServer release];
 		_httpServer = nil;
 	} else {
+		[RESTManager sharedInstance].modelIsObjectiveRESTReady = self.PatchedModelCheckBox.state == NSOnState;;
 		[RESTManager sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
 		_httpServer = [HTTPServer new];
 		[_httpServer setConnectionClass:[RESTConnection class]];
@@ -107,6 +109,8 @@
 												forKey:@"ServerRequestHTTPS"];
 		[[NSUserDefaults standardUserDefaults] setBool:self.AuthenticationCheckBox.state == NSOnState
 												forKey:@"ServerRequestAuthentication"];
+		[[NSUserDefaults standardUserDefaults] setBool:self.PatchedModelCheckBox.state == NSOnState
+												forKey:@"PatchedModel"];
 		[[NSUserDefaults standardUserDefaults] setValue:self.UsernameTextField.stringValue
 												 forKey:@"ServerLogin"];
 		[[NSUserDefaults standardUserDefaults] setValue:self.PasswordTextField.stringValue
@@ -238,6 +242,7 @@
 	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
 															 [NSNumber numberWithBool:NO], @"ServerRequestHTTPS",
 															 [NSNumber numberWithBool:NO], @"ServerRequestAuthentication",
+															 [NSNumber numberWithBool:YES], @"PatchedModel",
 															 @"alice", @"ServerLogin",
 															 @"bob", @"ServerPassword",
 															 @"1984", @"ServerTCPPort",
@@ -246,7 +251,7 @@
 	[RESTManager sharedInstance].persistentStoreCoordinator = self.persistentStoreCoordinator;
 	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
 	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
-	[RESTManager sharedInstance].modelIsObjectiveRESTReady = YES;
+	//[RESTManager sharedInstance].modelIsObjectiveRESTReady = YES;
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(outlineViewDidChangeSelection:)

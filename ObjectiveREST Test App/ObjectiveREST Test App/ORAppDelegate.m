@@ -240,7 +240,7 @@
 	[RESTManager sharedInstance].persistentStoreCoordinator = self.persistentStoreCoordinator;
 	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
 	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
-	[RESTManager sharedInstance].modelIsObjectiveRESTReady = YES;
+	[RESTManager sharedInstance].modelIsObjectiveRESTReady = NO;
 	
 	[self updateGUI];
 }

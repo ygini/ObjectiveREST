@@ -29,6 +29,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 @implementation RESTConnection
 
+#pragma mark - Core Data
 
 - (NSArray*)instanceOfEntityWithName:(NSString*)name {
 	NSError *err = nil;
@@ -45,6 +46,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	return [[[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err] objectAtIndex:0];
 }
 
+#pragma mark - Data Conversion
+
+- (NSDictionary*)convertInDictionaryTheManagedObject:(NSManagedObject*)object {
+#warning Ici Hideoo
+}
 
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict withContentType:(NSString*)ContentType {
 	NSString *errorString = nil;
@@ -59,6 +65,8 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		return nil;
 }
 
+
+#pragma mark - HTTP Session
 /**
  * Called if the client ask for a unavaiable content type
  **/

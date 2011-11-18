@@ -15,6 +15,7 @@
 #import "RESTManager.h"
 #import "NSManagedObject+Additions.h"
 #import "RESTManagedObject.h"
+#import "SBJsonParser.h"
 
 // Log levels: off, error, warn, info, verbose
 // Other flags: trace
@@ -349,7 +350,38 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					
 				} else {
 					
-
+					NSString *selectedEntity = [pathComponents objectAtIndex:0];
+					NSString *errString = nil;
+					
+					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+						// No PUT on collection, use POST instead
+						
+					} else {
+						NSManagedObject *entry = [self entityWithPath:path];
+						
+						NSDictionary *dict = nil;
+						if ([ContentType isEqualToString:@"application/x-bplist"] || [ContentType isEqualToString:@"application/x-plist"]) 
+							dict = [NSPropertyListSerialization propertyListFromData:[request body]
+																	mutabilityOption:NSPropertyListMutableContainersAndLeaves
+																			  format:nil
+																	errorDescription:&errString];
+						
+						else if ([ContentType isEqualToString:@"application/json"]) {
+							SBJsonParser *parser = [SBJsonParser new];
+							dict = [parser objectWithData:[request body]];
+							[parser release];
+						}
+						
+						dict = [dict valueForKey:@"content"];
+						
+						NSLog(@"%@", dict);
+						
+						id value = nil;
+						for (NSString *supportedKey in [[[entry entity] attributesByName] allKeys]) {
+							value = [dict valueForKey:supportedKey];
+							if (value) [entry setValue:value forKey:supportedKey];
+						}
+					}
 				}
 				
 			} else if ([method isEqualToString:@"DELETE"]) {

@@ -15,6 +15,7 @@
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize modelIsObjectiveRESTReady;
 @synthesize requestHTTPS;
+@synthesize allowDeleteOnCollection;
 
 + (RESTManager*)sharedInstance {
 	static RESTManager* sharedInstanceRESTManager = nil;

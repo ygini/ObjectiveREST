@@ -321,24 +321,49 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 				
 				if ([pathComponents count] == 0) {
 					// No entity name provided
-					
+
 				} else {
 					
 					NSString *selectedEntity = [pathComponents objectAtIndex:0];
 					
 					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
 					// Delete all entities ?
-						NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
-						
-						NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
-												   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
-						
-						[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
+						if ([RESTManager sharedInstance].allowDeleteOnCollection) {
+							NSString *selectedEntity = [pathComponents objectAtIndex:0];
+							NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
+							
+							for (NSManagedObject *entry in entries) {
+								[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
+							}
+						}
 					} else {
 						
 						if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
 							// Delete entity from CoreData URI
+							NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
 							
+							NSManagedObject *entry =  [[RESTManager sharedInstance].managedObjectContext objectWithID:
+													   [[RESTManager sharedInstance].persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
+                            
+                            if (![entry isFault]) {
+                                [[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
+                            }
+                            
+                            NSFetchRequest *validityRequest = [[NSFetchRequest alloc] init];
+                            [validityRequest setEntity:[entry entity]];
+                            
+                            [validityRequest setPredicate:[NSComparisonPredicate predicateWithLeftExpression:[NSExpression expressionForEvaluatedObject] 
+																							 rightExpression:[NSExpression expressionForConstantValue:entry]
+																									modifier:NSDirectPredicateModifier
+																										type:NSEqualToPredicateOperatorType 
+																									 options:0]];
+                            
+                            NSArray *results = [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:validityRequest error:&error];
+							[validityRequest release];
+							
+                            if ([results count] > 0) {   
+								[[RESTManager sharedInstance].managedObjectContext deleteObject:[results objectAtIndex:0]];
+                            }
 						} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
 							// Delete entity from REST UUID
 							NSManagedObject *entry = [self instanceOfEntityWithName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];

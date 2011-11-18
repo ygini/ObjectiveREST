@@ -252,6 +252,7 @@
 	[RESTManager sharedInstance].managedObjectModel = self.managedObjectModel;
 	[RESTManager sharedInstance].managedObjectContext = self.managedObjectContext;
 	//[RESTManager sharedInstance].modelIsObjectiveRESTReady = YES;
+	[RESTManager sharedInstance].allowDeleteOnCollection = YES;
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self
 											 selector:@selector(outlineViewDidChangeSelection:)

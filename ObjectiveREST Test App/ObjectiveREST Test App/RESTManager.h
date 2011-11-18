@@ -15,6 +15,7 @@
 @property (retain, nonatomic) NSManagedObjectContext *managedObjectContext;
 @property (assign, nonatomic) BOOL modelIsObjectiveRESTReady;
 @property (assign, nonatomic) BOOL requestHTTPS;
+@property (assign, nonatomic) BOOL allowDeleteOnCollection;
 
 + (RESTManager*)sharedInstance;
 

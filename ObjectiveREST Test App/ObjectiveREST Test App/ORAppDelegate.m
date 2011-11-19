@@ -138,6 +138,15 @@
 	
 	NSManagedObject *newObject = [NSEntityDescription insertNewObjectForEntityForName:[entityDesc name]
 															   inManagedObjectContext:self.managedObjectContext];
+    
+    // Relationships autopilot 
+    NSDictionary *relationships = [[newObject entity] relationshipsByName];
+    
+    [relationships enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+        NSRelationshipDescription *r = (NSRelationshipDescription *)obj;
+        [newObject setValue:[NSEntityDescription insertNewObjectForEntityForName:[[r destinationEntity] name]
+                                                          inManagedObjectContext:self.managedObjectContext] forKey:key];
+    }];
 	
 	[self updateGUI];
 	

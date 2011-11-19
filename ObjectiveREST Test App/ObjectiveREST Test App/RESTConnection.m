@@ -13,7 +13,6 @@
 #import "GCDAsyncSocket.h"
 #import "NSObject+SBJson.h"
 #import "RESTManager.h"
-#import "NSManagedObject+Additions.h"
 #import "RESTManagedObject.h"
 #import "SBJsonParser.h"
 
@@ -133,8 +132,40 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 #pragma mark - Data Conversion
 
-- (NSDictionary*)convertInDictionaryTheManagedObject:(NSManagedObject*)object {
-#warning Ici Hideoo
+- (NSDictionary *)convertInDictionaryTheManagedObject:(NSManagedObject *)object 
+{
+    NSArray *attributes = [[[object entity] attributesByName] allKeys];
+    NSArray *relationships = [[[object entity] relationshipsByName] allKeys];
+	NSMutableDictionary *d = [NSMutableDictionary dictionaryWithCapacity:[attributes count]  + [relationships count]];
+    
+	for (NSString *attribute in attributes) {
+		NSObject *v = [object valueForKey:attribute];
+        
+		if (v != nil)
+			[d setObject:v forKey:attribute];
+	}
+    
+    for (NSString *relationship in relationships) {
+        NSObject *value = [object valueForKey:relationship];
+        
+        if ([value isKindOfClass:[NSSet class]]) { // To-many
+            NSSet *objects = (NSSet *)value;
+            
+            NSMutableSet *objectsSet = [NSMutableSet setWithCapacity:[objects count]];
+            
+            for (NSManagedObject *relation in objects)
+                [objectsSet addObject:[self convertInDictionaryTheManagedObject:relation]];
+            
+            [d setObject:objectsSet forKey:relationship];
+        }
+        else if ([value isKindOfClass:[NSManagedObject class]]) { // To-one
+            NSManagedObject *o = (NSManagedObject *)value;
+            
+            [d setObject:[self convertInDictionaryTheManagedObject:o] forKey:relationship];
+        }
+    }
+    
+	return d;
 }
 
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict withContentType:(NSString*)ContentType {
@@ -293,7 +324,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 					} else {
 						// return the selected entity
-						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[[self entityWithPath:path] dictionnaryValue], @"content", nil]
+                        return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self convertInDictionaryTheManagedObject:[self entityWithPath:path]], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
 					}
@@ -304,45 +335,29 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 				
                 if (numberOfComponents == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
                     NSString *entityString = [pathComponents objectAtIndex:0];
-                    
-                    NSString *requestBody = [[NSString alloc] initWithBytes:[[request body] bytes] 
-                                                                     length:[[request body] length] 
-                                                                   encoding:NSUTF8StringEncoding];
+                    NSString *errString = nil;
                     
                     NSManagedObject <RESTManagedObject> *newObject = [NSEntityDescription insertNewObjectForEntityForName:entityString
 																								   inManagedObjectContext:[[RESTManager sharedInstance] managedObjectContext]];
                     
-                    // Time to parse the body :)
-                    NSMutableDictionary *parameters = [NSMutableDictionary new];
-                    for (NSString *p in [requestBody componentsSeparatedByString:@"&"]) {
-                        NSArray *keyValue = [p componentsSeparatedByString:@"="];
-                        [parameters setObject:[keyValue objectAtIndex:1] forKey:[keyValue objectAtIndex:0]];
+                    NSDictionary *dict = nil;
+                    if ([ContentType isEqualToString:@"application/x-bplist"] || [ContentType isEqualToString:@"application/x-plist"]) 
+                        dict = [NSPropertyListSerialization propertyListFromData:[request body]
+                                                                mutabilityOption:NSPropertyListMutableContainersAndLeaves
+                                                                          format:nil
+                                                                errorDescription:&errString];
+                    
+                    else if ([ContentType isEqualToString:@"application/json"]) {
+                        SBJsonParser *parser = [SBJsonParser new];
+                        dict = [parser objectWithData:[request body]];
+                        [parser release];
                     }
                     
-                    // Fetch the entity attributes
-                    NSDictionary *attributes = [[newObject entity] attributesByName];
+                    dict = [dict valueForKey:@"content"];
 					
-                    [parameters enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                        if ([newObject respondsToSelector:NSSelectorFromString(key)]) {
-                            
-                            NSAttributeDescription *a = [attributes objectForKey:key];
-                            
-                            if ([a attributeType] == NSFloatAttributeType || 
-                                [a attributeType] == NSInteger16AttributeType || 
-                                [a attributeType] == NSInteger32AttributeType || 
-                                [a attributeType] == NSInteger64AttributeType || 
-                                [a attributeType] == NSDecimalAttributeType || 
-                                [a attributeType] == NSDoubleAttributeType || 
-                                [a attributeType] == NSBooleanAttributeType) 
-                            {
-                                NSNumberFormatter *f = [[NSNumberFormatter alloc] init];
-                                [f setNumberStyle:NSNumberFormatterDecimalStyle];                                
-                                [newObject setValue:[f numberFromString:obj] forKey:key];   
-                                [f release];
-                            } else {
-                                [newObject setValue:obj forKey:key];   
-                            }
-                        }
+                    [dict enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                        if ([newObject respondsToSelector:NSSelectorFromString(key)])
+                            [newObject setValue:obj forKey:key];
                     }];
                     
                     [[RESTManager sharedInstance].managedObjectContext save:&error];
@@ -353,8 +368,6 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
                         entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", [[request url] absoluteString], [newObject rest_uuid]] forKey:REST_REF_KEYWORD]];
                     else
                         entityRef = [NSArray arrayWithObject:[NSDictionary dictionaryWithObject:[[NSString stringWithFormat:@"%@%@", [[request url] baseURL], [[[newObject objectID] URIRepresentation] absoluteString]] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"] forKey:REST_REF_KEYWORD]];
-                    
-					[parameters release];
 					
                     return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entityRef, @"content", nil]
                                                                                         withContentType:ContentType]] 
@@ -406,7 +419,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						[[RESTManager sharedInstance].managedObjectContext save:&error];
 						
-						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entry dictionnaryValue], @"content", nil]
+						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self convertInDictionaryTheManagedObject:entry], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
 					}

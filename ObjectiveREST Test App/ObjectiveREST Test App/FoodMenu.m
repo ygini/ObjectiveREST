@@ -2,12 +2,14 @@
 //  FoodMenu.m
 //  ObjectiveREST Test App
 //
-//  Created by Yoann Gini on 17/11/11.
+//  Created by HiDeo on 19/11/11.
 //  Copyright (c) 2011 iNig-Services. All rights reserved.
 //
 
 #import "FoodMenu.h"
+#import "FoodMenu.h"
 #import "NSString-UUID.h"
+
 
 @implementation FoodMenu
 
@@ -15,6 +17,7 @@
 @dynamic name;
 @dynamic price;
 @dynamic rest_uuid;
+@dynamic foodNumber;
 
 - (id)initWithEntity:(NSEntityDescription*)entity insertIntoManagedObjectContext:(NSManagedObjectContext*)context
 {

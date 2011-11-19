@@ -28,9 +28,7 @@
 		E1CCB7CE1475A24E0087EFF2 /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7C11475A24E0087EFF2 /* SBJsonUTF8Stream.m */; };
 		E1CCB7CF1475A24E0087EFF2 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7C31475A24E0087EFF2 /* SBJsonWriter.m */; };
 		E1CCB7D21475A67C0087EFF2 /* RESTManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7D11475A67C0087EFF2 /* RESTManager.m */; };
-		E1CCB7E11475BFE50087EFF2 /* NSManagedObject+Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7E01475BFE50087EFF2 /* NSManagedObject+Additions.m */; };
 		E1CCB7E71475C5B50087EFF2 /* PhoneBookEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7E61475C5B40087EFF2 /* PhoneBookEntry.m */; };
-		E1CCB7EA1475C5B60087EFF2 /* FoodMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7E91475C5B50087EFF2 /* FoodMenu.m */; };
 		E1CCB7ED1475C6580087EFF2 /* NSString-UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */; };
 		E1FC6918147585F200D2052F /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC68EB147585F200D2052F /* DDData.m */; };
 		E1FC6919147585F200D2052F /* DDNumber.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC68ED147585F200D2052F /* DDNumber.m */; };
@@ -55,6 +53,7 @@
 		E1FC692C147585F200D2052F /* DDTTYLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6917147585F200D2052F /* DDTTYLogger.m */; };
 		E1FC692F147586E700D2052F /* RESTConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC692E147586E700D2052F /* RESTConnection.m */; };
 		E1FC6931147587CE00D2052F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1FC6930147587CE00D2052F /* Security.framework */; };
+		E88E2A1114772876000D742B /* FoodMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = E88E2A1014772876000D742B /* FoodMenu.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -101,13 +100,9 @@
 		E1CCB7C31475A24E0087EFF2 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		E1CCB7D01475A67C0087EFF2 /* RESTManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTManager.h; sourceTree = "<group>"; };
 		E1CCB7D11475A67C0087EFF2 /* RESTManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTManager.m; sourceTree = "<group>"; };
-		E1CCB7DF1475BFE50087EFF2 /* NSManagedObject+Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+Additions.h"; sourceTree = "<group>"; };
-		E1CCB7E01475BFE50087EFF2 /* NSManagedObject+Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+Additions.m"; sourceTree = "<group>"; };
 		E1CCB7E31475C0BA0087EFF2 /* RESTManagedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTManagedObject.h; sourceTree = "<group>"; };
 		E1CCB7E51475C5B40087EFF2 /* PhoneBookEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneBookEntry.h; sourceTree = "<group>"; };
 		E1CCB7E61475C5B40087EFF2 /* PhoneBookEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneBookEntry.m; sourceTree = "<group>"; };
-		E1CCB7E81475C5B50087EFF2 /* FoodMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoodMenu.h; sourceTree = "<group>"; };
-		E1CCB7E91475C5B50087EFF2 /* FoodMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoodMenu.m; sourceTree = "<group>"; };
 		E1CCB7EB1475C6580087EFF2 /* NSString-UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-UUID.h"; sourceTree = "<group>"; };
 		E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-UUID.m"; sourceTree = "<group>"; };
 		E1CCB7EE1475C6C40087EFF2 /* ObjectiveREST_Test_App ORReady.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "ObjectiveREST_Test_App ORReady.xcdatamodel"; sourceTree = "<group>"; };
@@ -156,6 +151,8 @@
 		E1FC692D147586E700D2052F /* RESTConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTConnection.h; sourceTree = "<group>"; };
 		E1FC692E147586E700D2052F /* RESTConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTConnection.m; sourceTree = "<group>"; };
 		E1FC6930147587CE00D2052F /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		E88E2A0F14772876000D742B /* FoodMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoodMenu.h; sourceTree = "<group>"; };
+		E88E2A1014772876000D742B /* FoodMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoodMenu.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,9 +215,9 @@
 				E194D22D14755C0300D81F4D /* ORAppDelegate.h */,
 				E194D22E14755C0300D81F4D /* ORAppDelegate.m */,
 				E194D23014755C0400D81F4D /* MainMenu.xib */,
+				E88E2A0F14772876000D742B /* FoodMenu.h */,
+				E88E2A1014772876000D742B /* FoodMenu.m */,
 				E194D23314755C0400D81F4D /* ObjectiveREST_Test_App.xcdatamodeld */,
-				E1CCB7E81475C5B50087EFF2 /* FoodMenu.h */,
-				E1CCB7E91475C5B50087EFF2 /* FoodMenu.m */,
 				E1CCB7E51475C5B40087EFF2 /* PhoneBookEntry.h */,
 				E1CCB7E61475C5B40087EFF2 /* PhoneBookEntry.m */,
 				E194D22214755C0300D81F4D /* Supporting Files */,
@@ -287,8 +284,6 @@
 		E1CCB7E41475C55A0087EFF2 /* ObjectiveREST */ = {
 			isa = PBXGroup;
 			children = (
-				E1CCB7DF1475BFE50087EFF2 /* NSManagedObject+Additions.h */,
-				E1CCB7E01475BFE50087EFF2 /* NSManagedObject+Additions.m */,
 				E1FC692D147586E700D2052F /* RESTConnection.h */,
 				E1FC692E147586E700D2052F /* RESTConnection.m */,
 				E1CCB7D01475A67C0087EFF2 /* RESTManager.h */,
@@ -500,10 +495,9 @@
 				E1CCB7CE1475A24E0087EFF2 /* SBJsonUTF8Stream.m in Sources */,
 				E1CCB7CF1475A24E0087EFF2 /* SBJsonWriter.m in Sources */,
 				E1CCB7D21475A67C0087EFF2 /* RESTManager.m in Sources */,
-				E1CCB7E11475BFE50087EFF2 /* NSManagedObject+Additions.m in Sources */,
 				E1CCB7E71475C5B50087EFF2 /* PhoneBookEntry.m in Sources */,
-				E1CCB7EA1475C5B60087EFF2 /* FoodMenu.m in Sources */,
 				E1CCB7ED1475C6580087EFF2 /* NSString-UUID.m in Sources */,
+				E88E2A1114772876000D742B /* FoodMenu.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

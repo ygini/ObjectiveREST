@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="872" systemVersion="11C74" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="872" systemVersion="11C73" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="FoodMenu" representedClassName="FoodMenu" syncable="YES">
         <attribute name="content" attributeType="String" defaultValueString="Here come the description" syncable="YES"/>
         <attribute name="name" attributeType="String" defaultValueString="Item's name" syncable="YES"/>
         <attribute name="price" attributeType="Float" defaultValueString="99.98999999999999" syncable="YES"/>
         <attribute name="rest_uuid" attributeType="String" syncable="YES"/>
+        <relationship name="foodNumber" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PhoneBookEntry" syncable="YES"/>
     </entity>
     <entity name="PhoneBookEntry" representedClassName="PhoneBookEntry" syncable="YES">
         <attribute name="internal" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
@@ -13,7 +14,7 @@
         <attribute name="rest_uuid" attributeType="String" syncable="YES"/>
     </entity>
     <elements>
-        <element name="FoodMenu" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="PhoneBookEntry" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="FoodMenu" positionX="331" positionY="-135" width="128" height="105"/>
+        <element name="PhoneBookEntry" positionX="-45" positionY="54" width="128" height="105"/>
     </elements>
 </model>

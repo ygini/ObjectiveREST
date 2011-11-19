@@ -158,7 +158,7 @@
 	[self updateGUI];
 }
 
-- (NSArray*)instanceOfEntityWithName:(NSString*)name {
+- (NSArray*)managedObjectsWithEntityName:(NSString*)name {
 	NSError *err = nil;
 	
 	NSFetchRequest * request = [NSFetchRequest fetchRequestWithEntityName:name];
@@ -177,13 +177,13 @@
 	if (item == nil) {		// Root
 		return [_entitiesList count];
 	} else {				// Entity, find the total of existing entries for this kind
-		return [[self instanceOfEntityWithName:[((NSEntityDescription*)item) name]] count];
+		return [[self managedObjectsWithEntityName:[((NSEntityDescription*)item) name]] count];
 	}
 }
 
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
-    return [item isKindOfClass:[NSEntityDescription class]] && [[self instanceOfEntityWithName:[((NSEntityDescription*)item) name]] count] > 0;	// Only one level of expandable items for this demo
+    return [item isKindOfClass:[NSEntityDescription class]] && [[self managedObjectsWithEntityName:[((NSEntityDescription*)item) name]] count] > 0;	// Only one level of expandable items for this demo
 }
 
 
@@ -191,7 +191,7 @@
     if (item == nil) {		// Root
 		return [_entitiesList objectAtIndex:index];
 	} else {				// Entity, find the total of existing entries for this kind
-		return [[[self instanceOfEntityWithName:[((NSEntityDescription*)item) name]] objectAtIndex:index] retain];
+		return [[[self managedObjectsWithEntityName:[((NSEntityDescription*)item) name]] objectAtIndex:index] retain];
 		#warning Memory leak insert here, the outline view don't retain items and we dont keep it too. It's a test applications so we can let it like that but if it's possible, a fix should be welcome
 	}
 }
@@ -214,7 +214,12 @@
 	NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
 	
 	if ([[tableColumn identifier] isEqualToString:@"key"]) return key;
-	else if ([[tableColumn identifier] isEqualToString:@"value"]) return [[self selectedEntity] valueForKey:key];
+	else if ([[tableColumn identifier] isEqualToString:@"value"]) {
+		id value = [[self selectedEntity] valueForKey:key];
+		
+		if ([value isKindOfClass:[NSManagedObject class]]) return [((NSManagedObject*)value) description];
+		return value;
+	}
 	else return nil;
 }
 

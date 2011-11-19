@@ -58,7 +58,7 @@
 - (IBAction)addEntity:(id)sender;
 - (IBAction)removeEntity:(id)sender;
 
-- (NSArray*)instanceOfEntityWithName:(NSString*)name;
+- (NSArray*)managedObjectsWithEntityName:(NSString*)name;
 - (NSManagedObject*)selectedEntity;
 
 @end

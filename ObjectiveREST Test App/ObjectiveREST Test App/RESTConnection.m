@@ -38,14 +38,14 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 #pragma mark - Core Data
 
-- (NSArray*)instanceOfEntityWithName:(NSString*)name {
+- (NSArray*)managedObjectWithEntityName:(NSString*)name {
 	NSError *err = nil;
 	
 	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
 	return [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err];
 }
 
-- (NSManagedObject*)instanceOfEntityWithName:(NSString*)name andRESTUUID:(NSString*)rest_uuid {
+- (NSManagedObject*)managedObjectWithEntityName:(NSString*)name andRESTUUID:(NSString*)rest_uuid {
 	NSError *err = nil;
 	
 	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
@@ -56,7 +56,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	else return nil;
 }
 
-- (NSManagedObject*)entityWithPath:(NSString*)path {
+- (NSManagedObject*)managedObjectWithRelativePath:(NSString*)path {
 	NSManagedObject *entry = nil;
 	NSError *error = nil;
 	NSMutableArray *pathComponents = [NSMutableArray new];
@@ -102,7 +102,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		}							
 	} else if ([entities indexOfObject:selectedEntity] != NSNotFound) {
 		// Update entity from REST UUID
-		entry = [self instanceOfEntityWithName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];
+		entry = [self managedObjectWithEntityName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];
 	}
 	
 	return entry;
@@ -116,7 +116,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	return baseURLForURI;
 }
 
-- (NSString*)restURIForEntity:(NSManagedObject<RESTManagedObject>*)object {
+- (NSString*)restURIForManagedObject:(NSManagedObject<RESTManagedObject>*)object {
 	NSError *error = nil;
 	if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
 		// If the data model has been patched, we use dedicated UUID to make URI
@@ -130,9 +130,13 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	}
 }
 
+- (NSDictionary*)restLinkRepresentationForManagedObject:(NSManagedObject<RESTManagedObject>*)object {
+	return [NSDictionary dictionaryWithObject:[self restURIForManagedObject:object] forKey:REST_REF_KEYWORD];
+}
+
 #pragma mark - Data Conversion
 
-- (NSDictionary *)convertInDictionaryTheManagedObject:(NSManagedObject *)object 
+- (NSDictionary *)dictionaryRepresentationForManagedObject:(NSManagedObject *)object 
 {
     NSArray *attributes = [[[object entity] attributesByName] allKeys];
     NSArray *relationships = [[[object entity] relationshipsByName] allKeys];
@@ -154,14 +158,14 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
             NSMutableSet *objectsSet = [NSMutableSet setWithCapacity:[objects count]];
             
             for (NSManagedObject *relation in objects)
-                [objectsSet addObject:[self convertInDictionaryTheManagedObject:relation]];
+                [objectsSet addObject:[self restLinkRepresentationForManagedObject:relation]];
             
             [d setObject:objectsSet forKey:relationship];
         }
         else if ([value isKindOfClass:[NSManagedObject class]]) { // To-one
             NSManagedObject *o = (NSManagedObject *)value;
             
-            [d setObject:[self convertInDictionaryTheManagedObject:o] forKey:relationship];
+            [d setObject:[self restLinkRepresentationForManagedObject:o] forKey:relationship];
         }
     }
     
@@ -311,11 +315,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
 						// return the list of entry for the kind of requested entity
 						
-						NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
+						NSArray *entries = [self managedObjectWithEntityName:selectedEntity];
 						NSMutableArray *entriesRESTRefs = [NSMutableArray new];
 						
 						for (NSManagedObject <RESTManagedObject> *entry in entries) {						
-							[entriesRESTRefs addObject:[NSDictionary dictionaryWithObject:[self restURIForEntity:entry] forKey:REST_REF_KEYWORD]];
+							[entriesRESTRefs addObject:[self restLinkRepresentationForManagedObject:entry]];
 						}
 						
 						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
@@ -324,7 +328,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
 					} else {
 						// return the selected entity
-                        return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self convertInDictionaryTheManagedObject:[self entityWithPath:path]], @"content", nil]
+                        return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self dictionaryRepresentationForManagedObject:[self managedObjectWithRelativePath:path]], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
 					}
@@ -389,7 +393,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						// No PUT on collection, use POST instead
 						
 					} else {
-						NSManagedObject *entry = [self entityWithPath:path];
+						NSManagedObject *entry = [self managedObjectWithRelativePath:path];
 						
 						if (!entry && [RESTManager sharedInstance].modelIsObjectiveRESTReady) {
 							entry = [NSEntityDescription insertNewObjectForEntityForName:selectedEntity
@@ -419,7 +423,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 						
 						[[RESTManager sharedInstance].managedObjectContext save:&error];
 						
-						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self convertInDictionaryTheManagedObject:entry], @"content", nil]
+						return [[[HTTPDataResponse alloc] initWithData:[self preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self dictionaryRepresentationForManagedObject:entry], @"content", nil]
 																							withContentType:ContentType]] 
 								autorelease];
 					}
@@ -439,7 +443,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 					// Delete all entities ?
 						if ([RESTManager sharedInstance].allowDeleteOnCollection) {
 							NSString *selectedEntity = [pathComponents objectAtIndex:0];
-							NSArray *entries = [self instanceOfEntityWithName:selectedEntity];
+							NSArray *entries = [self managedObjectWithEntityName:selectedEntity];
 							
 							for (NSManagedObject *entry in entries) {
 								[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
@@ -447,7 +451,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							[self handleMethodOK];
 						} else [self handleOptionNotImplemented];
 					} else {						
-						[[RESTManager sharedInstance].managedObjectContext deleteObject:[self entityWithPath:path]];
+						[[RESTManager sharedInstance].managedObjectContext deleteObject:[self managedObjectWithRelativePath:path]];
 						[self handleMethodOK];
 					}
 				}

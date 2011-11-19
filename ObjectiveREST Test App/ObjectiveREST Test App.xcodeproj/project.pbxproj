@@ -43,9 +43,7 @@
 		E1FC6922147585F200D2052F /* HTTPFileResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6902147585F200D2052F /* HTTPFileResponse.m */; };
 		E1FC6923147585F200D2052F /* HTTPRedirectResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6904147585F200D2052F /* HTTPRedirectResponse.m */; };
 		E1FC6924147585F200D2052F /* WebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6906147585F200D2052F /* WebSocket.m */; };
-		E1FC6925147585F200D2052F /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = E1FC6909147585F200D2052F /* About.txt */; };
 		E1FC6926147585F200D2052F /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC690B147585F200D2052F /* GCDAsyncSocket.m */; };
-		E1FC6927147585F200D2052F /* About.txt in Resources */ = {isa = PBXBuildFile; fileRef = E1FC690D147585F200D2052F /* About.txt */; };
 		E1FC6928147585F200D2052F /* DDAbstractDatabaseLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC690F147585F200D2052F /* DDAbstractDatabaseLogger.m */; };
 		E1FC6929147585F200D2052F /* DDASLLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6911147585F200D2052F /* DDASLLogger.m */; };
 		E1FC692A147585F200D2052F /* DDFileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC6913147585F200D2052F /* DDFileLogger.m */; };
@@ -446,8 +444,6 @@
 				E194D22614755C0300D81F4D /* InfoPlist.strings in Resources */,
 				E194D22C14755C0300D81F4D /* Credits.rtf in Resources */,
 				E194D23214755C0400D81F4D /* MainMenu.xib in Resources */,
-				E1FC6925147585F200D2052F /* About.txt in Resources */,
-				E1FC6927147585F200D2052F /* About.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

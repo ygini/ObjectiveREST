@@ -135,13 +135,25 @@
 		if ([item isKindOfClass:[NSDictionary class]]) {
 			NSString *rest_ref = [((NSDictionary*)item) valueForKey:REST_REF_KEYWORD];
 			if (rest_ref) {
-				// We are on a dict representing a referenced
+				// We are on a dict representing a linked object
 				id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
 				
 				if ([info isKindOfClass:[NSDictionary class]]) {
 					// The referenced object is a object
-					returnValue =  [OROutlineKeyValueItem itemWithKey:[[info allKeys] objectAtIndex:index] andValue:[info valueForKey:[[info allKeys] objectAtIndex:index]]];
-					[_itemKeyValueCache addObject:returnValue];
+					id value = [info valueForKey:[[info allKeys] objectAtIndex:index]];
+					
+					if ([value isKindOfClass:[NSDictionary class]]) {
+						// If the value is a unique relationship
+						returnValue = value;
+					} else if ([value isKindOfClass:[NSArray class]]) {
+						// If the value is a to-many relationship
+						returnValue = value;
+					} else {
+						// If the value is a standard object
+						returnValue =  [OROutlineKeyValueItem itemWithKey:[[info allKeys] objectAtIndex:index] andValue:value];
+						[_itemKeyValueCache addObject:returnValue];
+						
+					}
 				} else if ([info isKindOfClass:[NSArray class]]) {
 					// The referenced object is a collection
 					returnValue =  [((NSArray*)info) objectAtIndex:index];

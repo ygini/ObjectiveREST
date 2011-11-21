@@ -20,8 +20,55 @@
 // Other flags: trace
 static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 
-#define TIMEOUT_WRITE_ERROR					30
-#define HTTP_FINAL_RESPONSE					91
+// Define chunk size used to read in data for responses
+// This is how much data will be read from disk into RAM at a time
+#if TARGET_OS_IPHONE
+#define READ_CHUNKSIZE  (1024 * 128)
+#else
+#define READ_CHUNKSIZE  (1024 * 512)
+#endif
+
+// Define chunk size used to read in POST upload data
+#if TARGET_OS_IPHONE
+#define POST_CHUNKSIZE  (1024 * 32)
+#else
+#define POST_CHUNKSIZE  (1024 * 128)
+#endif
+
+// Define the various timeouts (in seconds) for various parts of the HTTP process
+#define TIMEOUT_READ_FIRST_HEADER_LINE       30
+#define TIMEOUT_READ_SUBSEQUENT_HEADER_LINE  30
+#define TIMEOUT_READ_BODY                    -1
+#define TIMEOUT_WRITE_HEAD                   30
+#define TIMEOUT_WRITE_BODY                   -1
+#define TIMEOUT_WRITE_ERROR                  30
+#define TIMEOUT_NONCE                       300
+
+// Define the various limits
+// MAX_HEADER_LINE_LENGTH: Max length (in bytes) of any single line in a header (including \r\n)
+// MAX_HEADER_LINES      : Max number of lines in a single header (including first GET line)
+#define MAX_HEADER_LINE_LENGTH  8190
+#define MAX_HEADER_LINES         100
+// MAX_CHUNK_LINE_LENGTH : For accepting chunked transfer uploads, max length of chunk size line (including \r\n)
+#define MAX_CHUNK_LINE_LENGTH    200
+
+// Define the various tags we'll use to differentiate what it is we're currently doing
+#define HTTP_REQUEST_HEADER                10
+#define HTTP_REQUEST_BODY                  11
+#define HTTP_REQUEST_CHUNK_SIZE            12
+#define HTTP_REQUEST_CHUNK_DATA            13
+#define HTTP_REQUEST_CHUNK_TRAILER         14
+#define HTTP_REQUEST_CHUNK_FOOTER          15
+#define HTTP_PARTIAL_RESPONSE              20
+#define HTTP_PARTIAL_RESPONSE_HEADER       21
+#define HTTP_PARTIAL_RESPONSE_BODY         22
+#define HTTP_CHUNKED_RESPONSE_HEADER       30
+#define HTTP_CHUNKED_RESPONSE_BODY         31
+#define HTTP_CHUNKED_RESPONSE_FOOTER       32
+#define HTTP_PARTIAL_RANGE_RESPONSE_BODY   40
+#define HTTP_PARTIAL_RANGES_RESPONSE_BODY  50
+#define HTTP_RESPONSE                      90
+#define HTTP_FINAL_RESPONSE                91
 
 #define SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 
@@ -227,17 +274,83 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		return nil;
 }
 
-#pragma mark - HTTP Session
+#pragma mark - HTTP Return code
 
-- (void)handleOptionNotImplemented
-{
-	// Override me for custom error handling of 404 not found responses
-	// If you simply want to add a few extra header fields, see the preprocessErrorResponse: method.
-	// You can also use preprocessErrorResponse: to add an optional HTML body.
+- (void)httpReturnCode200Success {
+	HTTPLogInfo(@"HTTP Server: OK 200 - Success (%@)", [self requestURI]);
 	
-	HTTPLogInfo(@"HTTP Server: Error 501 - Not Implemented (%@)", [self requestURI]);
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:200 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
 	
-	// Status Code 404 - Not Found
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode201Created {
+	HTTPLogInfo(@"HTTP Server: OK 201 - Created (%@)", [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:201 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode202Accepted {
+	HTTPLogInfo(@"HTTP Server: OK 202 - Accepted (%@)", [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:202 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode400BadRequest {
+	HTTPLogInfo(@"HTTP Server: Error 400 - Bad Request (%@)", [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:400 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_FINAL_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode404NotFound {
+	HTTPLogInfo(@"HTTP Server: Error 404 - Not Found (%@)", [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:404 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_FINAL_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode415UnsupportedMediaType {
+	HTTPLogInfo(@"HTTP Server: Error 415 - Unsupported Media Type (%@ %@)", [request headerField:@"Accept"], [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:415 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_FINAL_RESPONSE];
+	
+	[response release];
+}
+
+- (void)httpReturnCode500InternalServerError {
+	HTTPLogInfo(@"HTTP Server: Error 500 - Internal Server Error (%@)", [self requestURI]);
+	
 	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:501 description:nil version:HTTPVersion1_1];
 	[response setHeaderField:@"Content-Length" value:@"0"];
 	
@@ -247,16 +360,10 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	[response release];
 }
 
-- (void)handleMethodOK
-{
-	// Override me for custom error handling of 404 not found responses
-	// If you simply want to add a few extra header fields, see the preprocessErrorResponse: method.
-	// You can also use preprocessErrorResponse: to add an optional HTML body.
+- (void)httpReturnCode501NotImplemented {
+	HTTPLogInfo(@"HTTP Server: Error 501 - Not Implemented (%@)", [self requestURI]);
 	
-	HTTPLogInfo(@"HTTP Server: OK 200 - Success (%@)", [self requestURI]);
-	
-	// Status Code 404 - Not Found
-	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:200 description:nil version:HTTPVersion1_1];
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:501 description:nil version:HTTPVersion1_1];
 	[response setHeaderField:@"Content-Length" value:@"0"];
 	
 	NSData *responseData = [self preprocessErrorResponse:response];
@@ -264,6 +371,20 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	
 	[response release];
 }
+
+- (void)httpReturnCode503ServiceUnavailable {
+	HTTPLogInfo(@"HTTP Server: Error 503 - Service Unavailable (%@)", [self requestURI]);
+	
+	HTTPMessage *response = [[HTTPMessage alloc] initResponseWithStatusCode:503 description:nil version:HTTPVersion1_1];
+	[response setHeaderField:@"Content-Length" value:@"0"];
+	
+	NSData *responseData = [self preprocessErrorResponse:response];
+	[asyncSocket writeData:responseData withTimeout:TIMEOUT_WRITE_ERROR tag:HTTP_FINAL_RESPONSE];
+	
+	[response release];
+}
+
+#pragma mark - HTTP Session
 
 - (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path
 {
@@ -397,7 +518,6 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 	
 	@try {
 		HTTPLogTrace();
-		NSError *error = nil;
 		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
 		
 		entities = [[[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
@@ -415,7 +535,7 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 		
 		
 		if (!ContentType) { 
-			[self handleOptionNotImplemented];		
+			[self httpReturnCode501NotImplemented];		
 		} else {			
 			
 			if ([method isEqualToString:@"GET"]) {
@@ -556,11 +676,11 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 							for (NSManagedObject *entry in entries) {
 								[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
 							}
-							[self handleMethodOK];
-						} else [self handleOptionNotImplemented];
+							[self httpReturnCode200Success];
+						} else [self httpReturnCode501NotImplemented];
 					} else {						
 						[[RESTManager sharedInstance].managedObjectContext deleteObject:[self managedObjectWithRelativePath:path]];
-						[self handleMethodOK];
+						[self httpReturnCode200Success];
 					}
 				}
 				

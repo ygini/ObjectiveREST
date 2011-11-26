@@ -16,6 +16,7 @@
 #import <Cocoa/Cocoa.h>
 
 @class HTTPServer;
+@class ORTableColumn;
 
 @interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSTableViewDelegate, NSTableViewDataSource> {
 	NSArray *_entitiesList;
@@ -60,5 +61,7 @@
 
 - (NSArray*)managedObjectsWithEntityName:(NSString*)name;
 - (NSManagedObject*)selectedEntity;
+
+- (id)tableView:(NSTableView *)tableView dataCellForRow:(NSInteger)row column:(ORTableColumn *)column;
 
 @end

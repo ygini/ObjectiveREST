@@ -15,6 +15,6 @@
     </entity>
     <elements>
         <element name="FoodMenu" positionX="331" positionY="-135" width="128" height="105"/>
-        <element name="PhoneBookEntry" positionX="-45" positionY="54" width="128" height="105"/>
+        <element name="PhoneBookEntry" positionX="268" positionY="-450" width="128" height="105"/>
     </elements>
 </model>

@@ -10,6 +10,7 @@
 
 #import "RESTManager.h"
 #import "NSOutlineView_Additions.h"
+#import "ORTableColumn.h"
 
 #import "HTTPServer.h"
 #import "RESTConnection.h"
@@ -216,16 +217,55 @@
 	if ([[tableColumn identifier] isEqualToString:@"key"]) return key;
 	else if ([[tableColumn identifier] isEqualToString:@"value"]) {
 		id value = [[self selectedEntity] valueForKey:key];
-		
-		if ([value isKindOfClass:[NSManagedObject class]]) return [((NSManagedObject*)value) description];
+        
+        if ([value isKindOfClass:[NSManagedObject class]])
+            return [NSNumber numberWithUnsignedInteger:[[self managedObjectsWithEntityName:[[value entity] name]] indexOfObject:value]];
+        
 		return value;
 	}
 	else return nil;
 }
 
--(void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+-(void)tableView:(NSTableView *)tableView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row 
+{
 	NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
-	[[self selectedEntity] setValue:object forKey:key];
+    
+    id value = [[self selectedEntity] valueForKey:key];
+    
+    if (![value isKindOfClass:[NSManagedObject class]])    
+        [[self selectedEntity] setValue:object forKey:key];
+    else
+        [[self selectedEntity] setValue:value forKey:key];
+}
+
+- (id)tableView:(NSTableView *)tableView dataCellForRow:(NSInteger)row column:(ORTableColumn *)column
+{
+    if ([[column identifier] isEqualToString:@"value"]) {
+        NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
+        
+        id value = [[self selectedEntity] valueForKey:key];
+        
+        if ([value isKindOfClass:[NSManagedObject class]]) {
+            NSPopUpButtonCell* cell = [[[NSPopUpButtonCell alloc] init] autorelease];
+            NSMenu *menu = [[NSMenu alloc] initWithTitle:@"To-one relationship"];
+            
+            NSArray *values = [self managedObjectsWithEntityName:[[value entity] name]];
+            
+            [values enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[obj description] action:nil keyEquivalent:@""];
+                [menu addItem:menuItem];
+                [menuItem release];
+            }];
+            
+            [cell setMenu:menu];
+            
+            [menu release];
+            
+            return cell;
+        }
+    }
+
+    return nil;
 }
 
 #pragma mark Notification

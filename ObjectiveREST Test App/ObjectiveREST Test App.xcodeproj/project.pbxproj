@@ -52,6 +52,7 @@
 		E1FC692F147586E700D2052F /* RESTConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC692E147586E700D2052F /* RESTConnection.m */; };
 		E1FC6931147587CE00D2052F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1FC6930147587CE00D2052F /* Security.framework */; };
 		E88E2A1114772876000D742B /* FoodMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = E88E2A1014772876000D742B /* FoodMenu.m */; };
+		E8BA87B6148198BE002C5979 /* ORTableColumn.m in Sources */ = {isa = PBXBuildFile; fileRef = E8BA87B5148198BE002C5979 /* ORTableColumn.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -151,6 +152,8 @@
 		E1FC6930147587CE00D2052F /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		E88E2A0F14772876000D742B /* FoodMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoodMenu.h; sourceTree = "<group>"; };
 		E88E2A1014772876000D742B /* FoodMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoodMenu.m; sourceTree = "<group>"; };
+		E8BA87B4148198BE002C5979 /* ORTableColumn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORTableColumn.h; sourceTree = "<group>"; };
+		E8BA87B5148198BE002C5979 /* ORTableColumn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORTableColumn.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -212,6 +215,8 @@
 				E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */,
 				E194D22D14755C0300D81F4D /* ORAppDelegate.h */,
 				E194D22E14755C0300D81F4D /* ORAppDelegate.m */,
+				E8BA87B4148198BE002C5979 /* ORTableColumn.h */,
+				E8BA87B5148198BE002C5979 /* ORTableColumn.m */,
 				E194D23014755C0400D81F4D /* MainMenu.xib */,
 				E88E2A0F14772876000D742B /* FoodMenu.h */,
 				E88E2A1014772876000D742B /* FoodMenu.m */,
@@ -494,6 +499,7 @@
 				E1CCB7E71475C5B50087EFF2 /* PhoneBookEntry.m in Sources */,
 				E1CCB7ED1475C6580087EFF2 /* NSString-UUID.m in Sources */,
 				E88E2A1114772876000D742B /* FoodMenu.m in Sources */,
+				E8BA87B6148198BE002C5979 /* ORTableColumn.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

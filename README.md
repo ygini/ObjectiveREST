@@ -24,7 +24,7 @@ You have two demo application, one server and one client to see how it's work.
 
 ###REST Ready model
 
-##Example
+##Examples
 ###Configure the RESTManager
 ###Execute a request
 ####Get list of entities

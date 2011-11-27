@@ -243,33 +243,37 @@
 								 forKey:key];
 }
 
-- (id)tableView:(NSTableView *)tableView dataCellForRow:(NSInteger)row column:(ORTableColumn *)column
-{
-    if ([[column identifier] isEqualToString:@"value"]) {
-        NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
-        
-        id value = [[self selectedEntity] valueForKey:key];
-        
-        if ([value isKindOfClass:[NSManagedObject class]]) {
-            NSPopUpButtonCell* cell = [[[NSPopUpButtonCell alloc] init] autorelease];
-            NSMenu *menu = [[NSMenu alloc] initWithTitle:@"To-one relationship"];
-            
-            NSArray *values = [self managedObjectsWithEntityName:[[value entity] name]];
-            
-            [values enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[obj description] action:nil keyEquivalent:@""];
-                [menu addItem:menuItem];
-                [menuItem release];
-            }];
-            
-            [cell setMenu:menu];
-            
-            [menu release];
-            
-            return cell;
-        }
-    }
-
+- (NSCell *)tableView:(NSTableView *)tableView dataCellForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row {
+	if (tableColumn) {
+		
+		if ([[tableColumn identifier] isEqualToString:@"value"]) {
+			NSString *key = [[[[[[self selectedEntity] entity] propertiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] objectAtIndex:row];
+			
+			id value = [[self selectedEntity] valueForKey:key];
+			
+			if ([value isKindOfClass:[NSManagedObject class]]) {
+				NSPopUpButtonCell* cell = [[[NSPopUpButtonCell alloc] init] autorelease];
+				NSMenu *menu = [[NSMenu alloc] initWithTitle:@"To-one relationship"];
+				
+				NSArray *values = [self managedObjectsWithEntityName:[[value entity] name]];
+				
+				[values enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+					NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[obj description] action:nil keyEquivalent:@""];
+					[menu addItem:menuItem];
+					[menuItem release];
+				}];
+				
+				[cell setMenu:menu];
+				
+				[menu release];
+				
+				return cell;
+			}
+		}
+		
+		return [[[NSTextFieldCell alloc]init]autorelease];
+	}
+	
     return nil;
 }
 

@@ -17,7 +17,7 @@
     
     SEL selector = @selector(tableView:dataCellForRow:column:);
     
-    if ([delegate respondsToSelector:selector]) {
+    if ([delegate respondsToSelector:selector] && row >= 0) {
         id cell = nil;
         
         cell = (ORAppDelegate *)[delegate tableView:[self tableView] dataCellForRow:row column:self];

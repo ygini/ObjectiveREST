@@ -163,7 +163,11 @@
 	NSError *err = nil;
 	
 	NSFetchRequest * request = [NSFetchRequest fetchRequestWithEntityName:name];
-	return [self.managedObjectContext executeFetchRequest:request error:&err];
+	return [[self.managedObjectContext executeFetchRequest:request error:&err] sortedArrayUsingComparator:^NSComparisonResult(NSManagedObject* obj1, NSManagedObject* obj2) {
+		if ([obj1 respondsToSelector:@selector(compare:)])
+			return [obj1 compare:obj2];
+		return [[[[obj1 objectID] URIRepresentation] absoluteString] compare:[[[obj2 objectID] URIRepresentation] absoluteString]];
+	}];
 }
 
 - (NSManagedObject*)selectedEntity {
@@ -235,7 +239,8 @@
     if (![value isKindOfClass:[NSManagedObject class]])    
         [[self selectedEntity] setValue:object forKey:key];
     else
-        [[self selectedEntity] setValue:value forKey:key];
+        [[self selectedEntity] setValue:[[self managedObjectsWithEntityName:[[value entity] name]] objectAtIndex:[object intValue]]
+								 forKey:key];
 }
 
 - (id)tableView:(NSTableView *)tableView dataCellForRow:(NSInteger)row column:(ORTableColumn *)column

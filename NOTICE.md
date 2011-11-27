@@ -1,5 +1,5 @@
 #NOTICE
-**Objective REST is based on different other project who use their own license, you can find each specific license in the sub-project's folder**
+**Objective REST is based on others projects who use their own license, you can find each specific license in the sub-project’s folder.**
 
 ##[CocoaHTTPServer](http://code.google.com/p/cocoahttpserver/)
 ###Software License Agreement (BSD License)

@@ -10,7 +10,6 @@
 
 #import "RESTManager.h"
 #import "NSOutlineView_Additions.h"
-#import "ORTableColumn.h"
 
 #import "HTTPServer.h"
 #import "RESTConnection.h"
@@ -271,7 +270,7 @@
 			}
 		}
 		
-		return [[[NSTextFieldCell alloc]init]autorelease];
+		return [tableColumn dataCellForRow:row];
 	}
 	
     return nil;

@@ -88,8 +88,12 @@ static const int httpLogLevel = HTTP_LOG_LEVEL_WARN; // | HTTP_LOG_FLAG_TRACE;
 - (NSArray*)managedObjectWithEntityName:(NSString*)name {
 	NSError *err = nil;
 	
-	NSFetchRequest * req = [NSFetchRequest fetchRequestWithEntityName:name];
-	return [[RESTManager sharedInstance].managedObjectContext executeFetchRequest:req error:&err];
+	NSFetchRequest * fetchRequest = [NSFetchRequest fetchRequestWithEntityName:name];
+	return [[[RESTManager sharedInstance].managedObjectContext executeFetchRequest:fetchRequest error:&err] sortedArrayUsingComparator:^NSComparisonResult(NSManagedObject<RESTManagedObject>* obj1, NSManagedObject<RESTManagedObject>* obj2) {
+		if ([obj1 respondsToSelector:@selector(compare:)])
+			return [obj1 compare:obj2];
+		return [[[[obj1 objectID] URIRepresentation] absoluteString] compare:[[[obj2 objectID] URIRepresentation] absoluteString]];
+	}];
 }
 
 - (NSManagedObject*)managedObjectWithEntityName:(NSString*)name andRESTUUID:(NSString*)rest_uuid {

@@ -509,7 +509,11 @@ forHTTPHeaderField:@"Host"];
 		return [[self getAbsolutePath:[path stringByDeletingLastPathComponent]] valueForKey:@"content"];
 	} else {
 		// Standard database
-		NSLog(@"getAllObjectOfThisEntityKind pathComponents %@", [path pathComponents]);
+		NSArray *compo = [path pathComponents];
+		
+		NSLog(@"%@", [NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]);
+		
+		return [[self getPath:[NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]] valueForKey:@"content"];
 	}
 	return nil;
 }

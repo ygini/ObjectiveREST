@@ -26,6 +26,7 @@
 		E17FC36314768399002DDCF6 /* SBJsonUTF8Stream.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC35614768399002DDCF6 /* SBJsonUTF8Stream.m */; };
 		E17FC36414768399002DDCF6 /* SBJsonWriter.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC35814768399002DDCF6 /* SBJsonWriter.m */; };
 		E17FC36714769254002DDCF6 /* OROutlineKeyValueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */; };
+		E1DC2E6B148250D200AE3B5F /* OROutlineRelationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */; };
 		E1DF5A511476E4CA00DD5BC4 /* NSOutlineView_Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */; };
 		E1DF5A5A1477206100DD5BC4 /* NSDataAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DF5A591477206100DD5BC4 /* NSDataAdditions.m */; };
 		E1DF5A5B1477215A00DD5BC4 /* NSString_Addition.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC33A14767DF5002DDCF6 /* NSString_Addition.m */; };
@@ -74,6 +75,8 @@
 		E17FC35814768399002DDCF6 /* SBJsonWriter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SBJsonWriter.m; sourceTree = "<group>"; };
 		E17FC36514769254002DDCF6 /* OROutlineKeyValueItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OROutlineKeyValueItem.h; sourceTree = "<group>"; };
 		E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineKeyValueItem.m; sourceTree = "<group>"; };
+		E1DC2E69148250D200AE3B5F /* OROutlineRelationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OROutlineRelationItem.h; sourceTree = "<group>"; };
+		E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineRelationItem.m; sourceTree = "<group>"; };
 		E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSOutlineView_Additions.h; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.h"; sourceTree = "<group>"; };
 		E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSOutlineView_Additions.m; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.m"; sourceTree = "<group>"; };
 		E1DF5A581477206100DD5BC4 /* NSDataAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSDataAdditions.h; sourceTree = "<group>"; };
@@ -141,6 +144,8 @@
 				E17FC32F147664D5002DDCF6 /* ORAppDelegate.m */,
 				E17FC36514769254002DDCF6 /* OROutlineKeyValueItem.h */,
 				E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */,
+				E1DC2E69148250D200AE3B5F /* OROutlineRelationItem.h */,
+				E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */,
 				E17FC331147664D6002DDCF6 /* MainMenu.xib */,
 				E17FC323147664D5002DDCF6 /* Supporting Files */,
 			);
@@ -300,6 +305,7 @@
 				E1DF5A511476E4CA00DD5BC4 /* NSOutlineView_Additions.m in Sources */,
 				E1DF5A5A1477206100DD5BC4 /* NSDataAdditions.m in Sources */,
 				E1DF5A5B1477215A00DD5BC4 /* NSString_Addition.m in Sources */,
+				E1DC2E6B148250D200AE3B5F /* OROutlineRelationItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1664,7 +1664,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 											<string key="NSFrame">{{47, 14}, {382, 17}}</string>
 											<reference key="NSSuperview" ref="1023041897"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView"/>
 											<string key="NSReuseIdentifierKey">_NS:3944</string>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTextFieldCell" key="NSCell" id="475786800">
@@ -1692,7 +1691,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 															<string key="NSFrameSize">{406, 101}</string>
 															<reference key="NSSuperview" ref="1031268407"/>
 															<reference key="NSWindow"/>
-															<reference key="NSNextKeyView" ref="947823991"/>
+															<reference key="NSNextKeyView" ref="660096614"/>
 															<string key="NSReuseIdentifierKey">_NS:1703</string>
 															<bool key="NSEnabled">YES</bool>
 															<object class="NSTableHeaderView" key="NSHeaderView" id="482003740">
@@ -1792,10 +1791,10 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 																</object>
 															</object>
 															<double key="NSRowHeight">17</double>
-															<int key="NSTvFlags">-767557632</int>
+															<int key="NSTvFlags">-767524864</int>
 															<reference key="NSDelegate"/>
 															<reference key="NSDataSource"/>
-															<int key="NSColumnAutoresizingStyle">4</int>
+															<int key="NSColumnAutoresizingStyle">1</int>
 															<int key="NSDraggingSourceMaskForLocal">15</int>
 															<int key="NSDraggingSourceMaskForNonLocal">0</int>
 															<bool key="NSAllowsTypeSelect">YES</bool>
@@ -1857,7 +1856,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 											<string key="NSFrame">{{18, 39}, {408, 119}}</string>
 											<reference key="NSSuperview" ref="1023041897"/>
 											<reference key="NSWindow"/>
-											<reference key="NSNextKeyView" ref="660096614"/>
+											<reference key="NSNextKeyView" ref="1031268407"/>
 											<string key="NSReuseIdentifierKey">_NS:1699</string>
 											<int key="NSsFlags">133682</int>
 											<reference key="NSVScroller" ref="797464460"/>

@@ -11,6 +11,7 @@
 #import "SBJsonParser.h"
 #import "NSObject+SBJson.h"
 #import "OROutlineKeyValueItem.h"
+#import "OROutlineRelationItem.h"
 #import "NSOutlineView_Additions.h"
 
 @implementation ORAppDelegate
@@ -117,6 +118,11 @@
 				
 				return [[((NSDictionary*)item) allKeys] count];
 			}
+		} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
+			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
+			
+			id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+			return [[((NSDictionary*)info) allKeys] count];
 		} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 			return 0;
 		} else {
@@ -140,17 +146,20 @@
 				
 				if ([info isKindOfClass:[NSDictionary class]]) {
 					// The referenced object is a object
-					id value = [info valueForKey:[[info allKeys] objectAtIndex:index]];
+					
+					NSArray *allKeys = [[info allKeys] sortedArrayUsingSelector:@selector(compare:)];
+					id value = [info valueForKey:[allKeys objectAtIndex:index]];
 					
 					if ([value isKindOfClass:[NSDictionary class]]) {
 						// If the value is a unique relationship
-						returnValue = value;
+						returnValue = [OROutlineRelationItem itemWithKey:[allKeys objectAtIndex:index] andValue:value];
+						[_itemKeyValueCache addObject:returnValue];
 					} else if ([value isKindOfClass:[NSArray class]]) {
 						// If the value is a to-many relationship
 						returnValue = value;
 					} else {
 						// If the value is a standard object
-						returnValue =  [OROutlineKeyValueItem itemWithKey:[[info allKeys] objectAtIndex:index] andValue:value];
+						returnValue =  [OROutlineKeyValueItem itemWithKey:[allKeys objectAtIndex:index] andValue:value];
 						[_itemKeyValueCache addObject:returnValue];
 						
 					}
@@ -161,6 +170,28 @@
 			} else {
 				// We shouldn't be here…
 				returnValue = nil;
+			}
+		} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
+			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
+			
+			id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+			// The referenced object is a object
+			
+			NSArray *allKeys = [[info allKeys] sortedArrayUsingSelector:@selector(compare:)];
+			id value = [info valueForKey:[allKeys objectAtIndex:index]];
+			
+			if ([value isKindOfClass:[NSDictionary class]]) {
+				// If the value is a unique relationship
+				returnValue = [OROutlineRelationItem itemWithKey:[allKeys objectAtIndex:index] andValue:value];
+				[_itemKeyValueCache addObject:returnValue];
+			} else if ([value isKindOfClass:[NSArray class]]) {
+				// If the value is a to-many relationship
+				returnValue = value;
+			} else {
+				// If the value is a standard object
+				returnValue =  [OROutlineKeyValueItem itemWithKey:[allKeys objectAtIndex:index] andValue:value];
+				[_itemKeyValueCache addObject:returnValue];
+				
 			}
 		} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 			returnValue =  nil;
@@ -174,6 +205,8 @@
 
 -(BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item {
 	if ([item isKindOfClass:[NSDictionary class]]) {
+		return YES;
+	} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
 		return YES;
 	} else {
 		return NO;
@@ -190,17 +223,27 @@
 		} else {
 			return nil;
 		}
+	} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
+		if ([[tableColumn identifier] isEqualToString:@"value"]) {
+			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
+			if (rest_ref) {
+				NSArray *values = [self getAllObjectOfThisEntityKind:rest_ref];
+				int i = 0;
+				for (NSDictionary *dict in values) {
+					if ([[dict valueForKey:REST_REF_KEYWORD] isEqualToString:rest_ref]) return [NSNumber numberWithInt:i];
+					else i++;
+				}
+			}
+		} else return [item valueForKey:@"key"];
 	} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 		return [item valueForKey:[tableColumn identifier]];
-	} else {
-		return nil;
 	}
 	
 	return nil;
 }
 
 -(BOOL)outlineView:(NSOutlineView *)outlineView shouldEditTableColumn:(NSTableColumn *)tableColumn item:(id)item {
-	return [item isKindOfClass:[OROutlineKeyValueItem class]];
+	return [item isKindOfClass:[OROutlineKeyValueItem class]] || [item isKindOfClass:[OROutlineRelationItem class]];
 }
 
 -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
@@ -211,8 +254,54 @@
 		[[info valueForKey:@"content"] setValue:object forKey:((OROutlineKeyValueItem*)item).key];
 		[self putInfo:info toPath:[restURI relativePath]];
 		[self updateGUI];
+	} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
+		NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
+		int i = [object intValue];
+		NSString *newRef = [[[self getAllObjectOfThisEntityKind:rest_ref] objectAtIndex:i] valueForKey:REST_REF_KEYWORD];
+		
+		NSURL *restURI = [NSURL URLWithString:self.StateTextField.stringValue];
+		NSDictionary *info = [self getPath:[restURI relativePath]];
+		
+		[[info valueForKey:@"content"] setValue:[NSDictionary dictionaryWithObject:newRef forKey:REST_REF_KEYWORD] forKey:((OROutlineRelationItem*)item).key];
+		[self putInfo:info toPath:[restURI relativePath]];
+		[self updateGUI];
 	}
 }
+
+- (NSCell *)outlineView:(NSOutlineView *)outlineView dataCellForTableColumn:(NSTableColumn *)tableColumn item:(id)item {
+	if (tableColumn) {
+		
+		if ([item isKindOfClass:[OROutlineRelationItem class]]) {
+			if ([[tableColumn identifier] isEqualToString:@"value"]) {
+				NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
+				
+				if (rest_ref) {
+					NSPopUpButtonCell* cell = [[[NSPopUpButtonCell alloc] init] autorelease];
+					NSMenu *menu = [[NSMenu alloc] initWithTitle:@"To-one relationship"];
+					
+					NSArray *values = [self getAllObjectOfThisEntityKind:rest_ref];
+
+					[values enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
+						NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[[NSURL URLWithString:[obj valueForKey:REST_REF_KEYWORD]] relativePath] action:nil keyEquivalent:@""];
+						[menu addItem:menuItem];
+						[menuItem release];
+					}];
+					
+					[cell setMenu:menu];
+					
+					[menu release];
+					
+					return cell;
+				}
+			}
+		}
+		
+		return [tableColumn dataCellForRow:[outlineView rowForItem:item]];
+	}
+	
+	return nil;
+}
+
 
 #pragma mark Internal
 
@@ -355,14 +444,17 @@ forHTTPHeaderField:@"Host"];
 }
 
 - (NSMutableDictionary*)getPath:(NSString*)path {
-	
+	return [self getAbsolutePath:[NSString stringWithFormat:@"%@://%@:%@/%@", 
+								  [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
+								  [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
+								  [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
+								  path]];
+}
+
+- (NSMutableDictionary*)getAbsolutePath:(NSString*)path {
 	NSMutableDictionary *dict = [_displayedContent valueForKey:path];
 	if (!dict) {
-		NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
-																							 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
-																							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-																							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
-																							 path]]];
+		NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:path]];
 		
 		[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
 		
@@ -407,8 +499,19 @@ forHTTPHeaderField:@"Host"];
 		
 		[_displayedContent setValue:dict forKey:path];
 	}
-		
+	
 	return dict;
+}
+
+- (NSArray*)getAllObjectOfThisEntityKind:(NSString*)path {
+	if ([path rangeOfString:@"x-coredata"].location == NSNotFound) {
+		// REST Ready database
+		return [[self getAbsolutePath:[path stringByDeletingLastPathComponent]] valueForKey:@"content"];
+	} else {
+		// Standard database
+		NSLog(@"getAllObjectOfThisEntityKind pathComponents %@", [path pathComponents]);
+	}
+	return nil;
 }
 
 #pragma mark Actions

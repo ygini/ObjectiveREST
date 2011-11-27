@@ -10,5 +10,9 @@
 
 @protocol RESTManagedObject <NSObject>
 // i.e. 6E4D3BA3-FCD3-4611-9796-583301DA30B
+@required
 - (NSString *)rest_uuid;
+
+@optional
+- (NSComparisonResult)compare:(NSManagedObject<RESTManagedObject>*)obj;
 @end

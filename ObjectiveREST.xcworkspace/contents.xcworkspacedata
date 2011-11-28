@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:ObjectiveREST Test App/ObjectiveREST Demo Server.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ObjectiveREST Test Client/ObjectiveREST Demo Client.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ObjectiveREST/OS X/ObjectiveREST/ObjectiveREST.xcodeproj">
+   </FileRef>
+</Workspace>

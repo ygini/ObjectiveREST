@@ -7,12 +7,11 @@
 //
 
 #import "ORAppDelegate.h"
-#import "NSString_Addition.h"
-#import "SBJsonParser.h"
-#import "NSObject+SBJson.h"
 #import "OROutlineKeyValueItem.h"
 #import "OROutlineRelationItem.h"
 #import "NSOutlineView_Additions.h"
+
+#import <ObjectiveREST/RESTManager.h>
 
 @implementation ORAppDelegate
 
@@ -30,10 +29,6 @@
 @synthesize JSONRadioButton = _JSONRadioButton;
 @synthesize ContentTypeMatrix = _ContentTypeMatrix;
 @synthesize StateTextField = _StateTextField;
-
-
-#define	REST_REF_KEYWORD					@"rest_ref"
-
 
 #pragma mark GUI
 
@@ -340,8 +335,6 @@
 #pragma mark REST
 
 - (NSDictionary*)putInfo:(NSDictionary*)info toPath:(NSString*)path {
-	NSMutableDictionary *dict = nil;
-	
 	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
 																						 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
 																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
@@ -363,52 +356,24 @@ forHTTPHeaderField:@"Host"];
 					   [[NSString stringWithFormat:@"%@:%@",
 						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
 						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-						base64EncodedString]]
+						RESTbase64EncodedString]]
    forHTTPHeaderField:@"Authorization"];
 	}
 	
-	NSData *bodyData = nil;
-	NSString *errorString = nil;
-	
-	switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"ContentType"]) {
-		case kContentTypeBPlist:
-			bodyData = [NSPropertyListSerialization dataFromPropertyList:info format:NSPropertyListBinaryFormat_v1_0 errorDescription:&errorString];
-			break;
-		case kContentTypePlist:
-			bodyData = [NSPropertyListSerialization dataFromPropertyList:info format:NSPropertyListXMLFormat_v1_0 errorDescription:&errorString];
-			break;
-		case kContentTypeJSON:
-			bodyData = [[info JSONRepresentation] dataUsingEncoding:NSUTF8StringEncoding];
-			break;
-	}
-	
-	[req setHTTPBody:bodyData];
+	[req setHTTPBody:[RESTManager preparedResponseFromDictionary:info
+						     withContentType:[self selectedContentType]]];
 	
 	NSURLResponse *rep = nil;
 	NSError *err = nil;
-	NSString *errString = nil;
 	
 	NSData * answer = [NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
 	
-	switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"ContentType"]) {
-		case kContentTypeBPlist:
-		case kContentTypePlist:
-			dict = [NSPropertyListSerialization propertyListFromData:answer
-													mutabilityOption:NSPropertyListMutableContainersAndLeaves
-															  format:nil
-													errorDescription:&errString];
-			break;
-		case kContentTypeJSON: {
-			SBJsonParser *parser = [SBJsonParser new];
-			dict = [parser objectWithData:answer];
-			[parser release];
-		}
-			break;
-	}
+	NSMutableDictionary *dict = [[RESTManager dictionaryFromResponse:answer 
+							withContentType:[self selectedContentType]] mutableCopy];
 	
 	[_displayedContent setValue:dict forKey:path];
 	
-	return dict;
+	return [dict autorelease];
 }
 
 - (void)deletePath:(NSString*)path {
@@ -433,7 +398,7 @@ forHTTPHeaderField:@"Host"];
 					   [[NSString stringWithFormat:@"%@:%@",
 						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
 						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-						base64EncodedString]]
+						RESTbase64EncodedString]]
    forHTTPHeaderField:@"Authorization"];
 	}
 	
@@ -471,31 +436,17 @@ forHTTPHeaderField:@"Host"];
 						   [[NSString stringWithFormat:@"%@:%@",
 							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
 							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-							base64EncodedString]]
+							RESTbase64EncodedString]]
 	   forHTTPHeaderField:@"Authorization"];
 		}
 		
 		NSURLResponse *rep = nil;
 		NSError *err = nil;
-		NSString *errString = nil;
 		
 		NSData * answer = [NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
 		
-		switch ([[NSUserDefaults standardUserDefaults] integerForKey:@"ContentType"]) {
-			case kContentTypeBPlist:
-			case kContentTypePlist:
-				dict = [NSPropertyListSerialization propertyListFromData:answer
-														mutabilityOption:NSPropertyListMutableContainersAndLeaves
-																  format:nil
-														errorDescription:&errString];
-				break;
-			case kContentTypeJSON: {
-				SBJsonParser *parser = [SBJsonParser new];
-				dict = [parser objectWithData:answer];
-				[parser release];
-			}
-				break;
-		}
+		dict = [[RESTManager dictionaryFromResponse:answer 
+					    withContentType:[self selectedContentType]] mutableCopy];
 		
 		[_displayedContent setValue:dict forKey:path];
 	}

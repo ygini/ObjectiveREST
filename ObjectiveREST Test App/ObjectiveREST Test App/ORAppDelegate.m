@@ -8,13 +8,9 @@
 
 #import "ORAppDelegate.h"
 
-#import "RESTManager.h"
+#import <ObjectiveREST/RESTManager.h>
+#import <ObjectiveREST/RESTManagedObject.h>
 #import "NSOutlineView_Additions.h"
-
-#import "HTTPServer.h"
-#import "RESTConnection.h"
-
-#import "RESTManagedObject.h"
 
 @implementation ORAppDelegate
 
@@ -46,7 +42,7 @@
 	self.PasswordTextField.stringValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"];
 	self.TCPPortTextField.stringValue = [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"];
 	
-	if ([self serverIsRunning]) {
+	if ([RESTManager sharedInstance].isRunning) {
 		guiControlState = NO;
 		
 		self.ServerStateLabel.stringValue = @"Server is running";
@@ -68,10 +64,6 @@
 	[self.EntityContentTableView reloadData];
 }
 
-- (BOOL)serverIsRunning {
-	return _httpServer != nil;
-}
-
 #pragma mark - Actions
 
 - (IBAction)saveAction:(id)sender {
@@ -87,29 +79,24 @@
 }
 
 - (IBAction)startServerAction:(id)sender {
-	if (_httpServer) {
-		[_httpServer stop];
-		[_httpServer release];
-		_httpServer = nil;
+	if ([RESTManager sharedInstance].isRunning) {
+		[[RESTManager sharedInstance] stopServer];
 	} else {
 		[[RESTManager sharedInstance].authenticationDatabase removeAllObjects];
 		[[RESTManager sharedInstance].authenticationDatabase setValue:self.PasswordTextField.stringValue forKey:self.UsernameTextField.stringValue];
 		[RESTManager sharedInstance].modelIsObjectiveRESTReady = self.PatchedModelCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].requestAuthentication = self.AuthenticationCheckBox.state == NSOnState;
-		_httpServer = [HTTPServer new];
-		[_httpServer setConnectionClass:[RESTConnection class]];
-		[_httpServer setType:@"_http._tcp."];
-		[_httpServer setPort:self.TCPPortTextField.intValue];
+		[RESTManager sharedInstance].mDNSType = @"_http._tcp";
+		[RESTManager sharedInstance].tcpPort = [self.TCPPortTextField intValue];
 		
-		NSError *error;
-		[_httpServer start:&error];
+		[[RESTManager sharedInstance] startServer];
 	}
 	[self updateGUI];
 }
 
 - (IBAction)settingsHaveChanges:(id)sender {
-	if (![self serverIsRunning]) {
+	if (![RESTManager sharedInstance].isRunning) {
 		[[NSUserDefaults standardUserDefaults] setBool:self.HTTPSCheckBox.state == NSOnState
 												forKey:@"ServerRequestHTTPS"];
 		[[NSUserDefaults standardUserDefaults] setBool:self.AuthenticationCheckBox.state == NSOnState
@@ -385,7 +372,7 @@
 	
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	NSURL *libraryURL = [[fileManager URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
-	return [libraryURL URLByAppendingPathComponent:@"ObjectiveREST_Test_App"];
+	return [libraryURL URLByAppendingPathComponent:[NSString stringWithFormat:@"Application Support/%@", [[NSBundle mainBundle] bundleIdentifier]]];
 }
 
 /**
@@ -396,7 +383,7 @@
 		return __managedObjectModel;
 	}
 	
-	NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ObjectiveREST_Test_App" withExtension:@"momd"];
+	NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ObjectiveREST_Server_Demo" withExtension:@"momd"];
 	__managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];    
 	return __managedObjectModel;
 }

@@ -15,13 +15,10 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class HTTPServer;
 @class ORTableColumn;
 
 @interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSTableViewDelegate, NSTableViewDataSource> {
 	NSArray *_entitiesList;
-	
-	HTTPServer *_httpServer;
 }
 
 @property (assign) IBOutlet NSWindow *window;
@@ -53,8 +50,6 @@
 - (IBAction)refreshAction:(id)sender;
 
 - (void)updateGUI;
-
-- (BOOL)serverIsRunning;
 
 - (IBAction)addEntity:(id)sender;
 - (IBAction)removeEntity:(id)sender;

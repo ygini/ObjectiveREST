@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E15BB2791484135F005BDBED /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15BB2781484135F005BDBED /* ObjectiveREST.framework */; };
-		E15BB27A14841360005BDBED /* ObjectiveREST.framework in Copy Framework */ = {isa = PBXBuildFile; fileRef = E15BB2781484135F005BDBED /* ObjectiveREST.framework */; };
 		E17FC31D147664D5002DDCF6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17FC31C147664D5002DDCF6 /* Cocoa.framework */; };
 		E17FC327147664D5002DDCF6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E17FC325147664D5002DDCF6 /* InfoPlist.strings */; };
 		E17FC329147664D5002DDCF6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC328147664D5002DDCF6 /* main.m */; };
@@ -18,24 +16,35 @@
 		E17FC36714769254002DDCF6 /* OROutlineKeyValueItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */; };
 		E1DC2E6B148250D200AE3B5F /* OROutlineRelationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */; };
 		E1DF5A511476E4CA00DD5BC4 /* NSOutlineView_Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */; };
+		E1FFA071148421F300531596 /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1FFA070148421CB00531596 /* ObjectiveREST.framework */; };
+		E1FFA0731484225800531596 /* ObjectiveREST.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E1FFA070148421CB00531596 /* ObjectiveREST.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		E1FFA06F148421CB00531596 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1A885D01483F72D00B834A8;
+			remoteInfo = ObjectiveREST;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
-		E15708AD14840D0C0091302A /* Copy Framework */ = {
+		E1FFA0721484224D00531596 /* Copy Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E15BB27A14841360005BDBED /* ObjectiveREST.framework in Copy Framework */,
+				E1FFA0731484225800531596 /* ObjectiveREST.framework in Copy Frameworks */,
 			);
-			name = "Copy Framework";
+			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E15BB2781484135F005BDBED /* ObjectiveREST.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectiveREST.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug/ObjectiveREST.framework"; sourceTree = "<group>"; };
 		E17FC318147664D5002DDCF6 /* ObjectiveREST Demo Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ObjectiveREST Demo Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17FC31C147664D5002DDCF6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E17FC31F147664D5002DDCF6 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -55,6 +64,7 @@
 		E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineRelationItem.m; sourceTree = "<group>"; };
 		E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSOutlineView_Additions.h; sourceTree = "<group>"; };
 		E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOutlineView_Additions.m; sourceTree = "<group>"; };
+		E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjectiveREST.xcodeproj; path = "../../ObjectiveREST Frameworks/OS X/ObjectiveREST/ObjectiveREST.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E15BB2791484135F005BDBED /* ObjectiveREST.framework in Frameworks */,
+				E1FFA071148421F300531596 /* ObjectiveREST.framework in Frameworks */,
 				E17FC31D147664D5002DDCF6 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,6 +83,7 @@
 		E17FC30D147664D5002DDCF6 = {
 			isa = PBXGroup;
 			children = (
+				E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */,
 				E17FC322147664D5002DDCF6 /* ObjectiveREST Demo Client */,
 				E17FC31B147664D5002DDCF6 /* Frameworks */,
 				E17FC319147664D5002DDCF6 /* Products */,
@@ -90,7 +101,6 @@
 		E17FC31B147664D5002DDCF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E15BB2781484135F005BDBED /* ObjectiveREST.framework */,
 				E17FC31C147664D5002DDCF6 /* Cocoa.framework */,
 				E17FC31E147664D5002DDCF6 /* Other Frameworks */,
 			);
@@ -136,6 +146,14 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		E1FFA06C148421CB00531596 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E1FFA070148421CB00531596 /* ObjectiveREST.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -146,7 +164,7 @@
 				E17FC314147664D5002DDCF6 /* Sources */,
 				E17FC315147664D5002DDCF6 /* Frameworks */,
 				E17FC316147664D5002DDCF6 /* Resources */,
-				E15708AD14840D0C0091302A /* Copy Framework */,
+				E1FFA0721484224D00531596 /* Copy Frameworks */,
 			);
 			buildRules = (
 			);
@@ -176,12 +194,28 @@
 			mainGroup = E17FC30D147664D5002DDCF6;
 			productRefGroup = E17FC319147664D5002DDCF6 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E1FFA06C148421CB00531596 /* Products */;
+					ProjectRef = E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				E17FC317147664D5002DDCF6 /* ObjectiveREST Demo Client */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E1FFA070148421CB00531596 /* ObjectiveREST.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ObjectiveREST.framework;
+			remoteRef = E1FFA06F148421CB00531596 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		E17FC316147664D5002DDCF6 /* Resources */ = {

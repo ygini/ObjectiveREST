@@ -16,7 +16,6 @@
 		E194D23214755C0400D81F4D /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = E194D23014755C0400D81F4D /* MainMenu.xib */; };
 		E194D23D1475798800D81F4D /* NSOutlineView_Additions.m in Sources */ = {isa = PBXBuildFile; fileRef = E194D23C1475798800D81F4D /* NSOutlineView_Additions.m */; };
 		E1CCB7E71475C5B50087EFF2 /* PhoneBookEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7E61475C5B40087EFF2 /* PhoneBookEntry.m */; };
-		E1CCB7ED1475C6580087EFF2 /* NSString-UUID.m in Sources */ = {isa = PBXBuildFile; fileRef = E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */; };
 		E1FFA07B148423DB00531596 /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1FFA07A148423C800531596 /* ObjectiveREST.framework */; };
 		E1FFA07C148423DD00531596 /* ObjectiveREST.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E1FFA07A148423C800531596 /* ObjectiveREST.framework */; };
 		E88E2A1114772876000D742B /* FoodMenu.m in Sources */ = {isa = PBXBuildFile; fileRef = E88E2A1014772876000D742B /* FoodMenu.m */; };
@@ -65,8 +64,6 @@
 		E194D23C1475798800D81F4D /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOutlineView_Additions.m; sourceTree = "<group>"; };
 		E1CCB7E51475C5B40087EFF2 /* PhoneBookEntry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneBookEntry.h; sourceTree = "<group>"; };
 		E1CCB7E61475C5B40087EFF2 /* PhoneBookEntry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhoneBookEntry.m; sourceTree = "<group>"; };
-		E1CCB7EB1475C6580087EFF2 /* NSString-UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString-UUID.h"; sourceTree = "<group>"; };
-		E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString-UUID.m"; sourceTree = "<group>"; };
 		E1FFA075148423C800531596 /* ObjectiveREST.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjectiveREST.xcodeproj; path = "../../ObjectiveREST Frameworks/OS X/ObjectiveREST/ObjectiveREST.xcodeproj"; sourceTree = "<group>"; };
 		E88E2A0F14772876000D742B /* FoodMenu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoodMenu.h; sourceTree = "<group>"; };
 		E88E2A1014772876000D742B /* FoodMenu.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoodMenu.m; sourceTree = "<group>"; };
@@ -125,8 +122,6 @@
 		E194D22114755C0300D81F4D /* ObjectiveREST Demo Server */ = {
 			isa = PBXGroup;
 			children = (
-				E1CCB7EB1475C6580087EFF2 /* NSString-UUID.h */,
-				E1CCB7EC1475C6580087EFF2 /* NSString-UUID.m */,
 				E194D22D14755C0300D81F4D /* ORAppDelegate.h */,
 				E194D22E14755C0300D81F4D /* ORAppDelegate.m */,
 				E194D23014755C0400D81F4D /* MainMenu.xib */,
@@ -247,7 +242,6 @@
 				E194D22F14755C0300D81F4D /* ORAppDelegate.m in Sources */,
 				E194D23D1475798800D81F4D /* NSOutlineView_Additions.m in Sources */,
 				E1CCB7E71475C5B50087EFF2 /* PhoneBookEntry.m in Sources */,
-				E1CCB7ED1475C6580087EFF2 /* NSString-UUID.m in Sources */,
 				E88E2A1114772876000D742B /* FoodMenu.m in Sources */,
 				E15BB27714841253005BDBED /* ObjectiveRESTDemo.xcdatamodeld in Sources */,
 			);

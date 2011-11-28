@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E1A885DE1483F72D00B834A8 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1A885DC1483F72D00B834A8 /* InfoPlist.strings */; };
-		E1A885FA1483F82C00B834A8 /* RESTConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A885F51483F82C00B834A8 /* RESTConnection.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E1A885FA1483F82C00B834A8 /* RESTConnection.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A885F51483F82C00B834A8 /* RESTConnection.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		E1A885FB1483F82C00B834A8 /* RESTConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = E1A885F61483F82C00B834A8 /* RESTConnection.m */; };
 		E1A885FC1483F82C00B834A8 /* RESTManagedObject.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A885F71483F82C00B834A8 /* RESTManagedObject.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E1A885FD1483F82C00B834A8 /* RESTManager.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A885F81483F82C00B834A8 /* RESTManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -88,6 +88,9 @@
 		E1A88ADF1483FA3800B834A8 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A88ADE1483FA3800B834A8 /* CoreFoundation.framework */; };
 		E1A88AE11483FA6700B834A8 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1A88AE01483FA6700B834A8 /* CoreServices.framework */; };
 		E1A88AE31483FBE100B834A8 /* RESTPrivateSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = E1A88AE21483FBE100B834A8 /* RESTPrivateSettings.h */; };
+		E1FFA07F148425C000531596 /* NSString_RESTAddition.h in Headers */ = {isa = PBXBuildFile; fileRef = E1FFA07D148425C000531596 /* NSString_RESTAddition.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		E1FFA080148425C000531596 /* NSString_RESTAddition.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FFA07E148425C000531596 /* NSString_RESTAddition.m */; };
+		E1FFA0831484262F00531596 /* ObjectiveREST.h in Headers */ = {isa = PBXBuildFile; fileRef = E1FFA0821484262F00531596 /* ObjectiveREST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -177,6 +180,9 @@
 		E1A88ADE1483FA3800B834A8 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		E1A88AE01483FA6700B834A8 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		E1A88AE21483FBE100B834A8 /* RESTPrivateSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTPrivateSettings.h; sourceTree = "<group>"; };
+		E1FFA07D148425C000531596 /* NSString_RESTAddition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSString_RESTAddition.h; sourceTree = "<group>"; };
+		E1FFA07E148425C000531596 /* NSString_RESTAddition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSString_RESTAddition.m; sourceTree = "<group>"; };
+		E1FFA0821484262F00531596 /* ObjectiveREST.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjectiveREST.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -249,12 +255,15 @@
 		E1A885F41483F82C00B834A8 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				E1FFA0821484262F00531596 /* ObjectiveREST.h */,
 				E1A885F51483F82C00B834A8 /* RESTConnection.h */,
 				E1A885F61483F82C00B834A8 /* RESTConnection.m */,
 				E1A885F71483F82C00B834A8 /* RESTManagedObject.h */,
 				E1A885F81483F82C00B834A8 /* RESTManager.h */,
 				E1A885F91483F82C00B834A8 /* RESTManager.m */,
 				E1A88AE21483FBE100B834A8 /* RESTPrivateSettings.h */,
+				E1FFA07D148425C000531596 /* NSString_RESTAddition.h */,
+				E1FFA07E148425C000531596 /* NSString_RESTAddition.m */,
 			);
 			name = Common;
 			path = ../../../Common;
@@ -465,6 +474,8 @@
 				E1A8897D1483F8F900B834A8 /* SBJsonUTF8Stream.h in Headers */,
 				E1A8897F1483F8F900B834A8 /* SBJsonWriter.h in Headers */,
 				E1A88AE31483FBE100B834A8 /* RESTPrivateSettings.h in Headers */,
+				E1FFA07F148425C000531596 /* NSString_RESTAddition.h in Headers */,
+				E1FFA0831484262F00531596 /* ObjectiveREST.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -568,6 +579,7 @@
 				E1A8897C1483F8F900B834A8 /* SBJsonTokeniser.m in Sources */,
 				E1A8897E1483F8F900B834A8 /* SBJsonUTF8Stream.m in Sources */,
 				E1A889801483F8F900B834A8 /* SBJsonWriter.m in Sources */,
+				E1FFA080148425C000531596 /* NSString_RESTAddition.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

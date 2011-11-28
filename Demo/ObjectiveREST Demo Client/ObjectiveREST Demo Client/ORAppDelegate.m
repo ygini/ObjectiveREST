@@ -11,7 +11,7 @@
 #import "OROutlineRelationItem.h"
 #import "NSOutlineView_Additions.h"
 
-#import <ObjectiveREST/RESTManager.h>
+#import <ObjectiveREST/ObjectiveREST.h>
 
 @implementation ORAppDelegate
 

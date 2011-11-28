@@ -7,8 +7,8 @@
 //
 
 #import "PhoneBookEntry.h"
-#import "NSString-UUID.h"
 
+#import <ObjectiveREST/ObjectiveREST.h>
 
 @implementation PhoneBookEntry
 
@@ -21,7 +21,7 @@
 {
     self = [super initWithEntity:entity insertIntoManagedObjectContext:context];
     if (self != nil) {
-        if (!self.rest_uuid) self.rest_uuid = [NSString stringWithNewUUID];    }
+        if (!self.rest_uuid) self.rest_uuid = [NSString stringWithNewUUIDForREST];    }
     return self;
 }
 

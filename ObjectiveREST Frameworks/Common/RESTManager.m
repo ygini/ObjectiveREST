@@ -14,18 +14,6 @@
 #import "SBJsonParser.h"
 #import "NSObject+SBJson.h"
 
-
-#import "NSDataAdditions.h"
-
-@implementation NSString (RESTAddition)
-
-- (NSString *)RESTbase64EncodedString
-{	
-	return [[self dataUsingEncoding:NSUTF8StringEncoding] base64Encoding];
-}
-
-@end
-
 @implementation RESTManager
 
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;

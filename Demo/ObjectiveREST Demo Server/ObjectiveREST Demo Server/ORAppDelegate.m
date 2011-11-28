@@ -8,8 +8,7 @@
 
 #import "ORAppDelegate.h"
 
-#import <ObjectiveREST/RESTManager.h>
-#import <ObjectiveREST/RESTManagedObject.h>
+#import <ObjectiveREST/ObjectiveREST.h>
 #import "NSOutlineView_Additions.h"
 
 @implementation ORAppDelegate

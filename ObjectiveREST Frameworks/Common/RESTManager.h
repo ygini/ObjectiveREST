@@ -13,10 +13,6 @@
 #define REST_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 #define	REST_REF_KEYWORD					@"rest_ref"
 
-@interface NSString (RESTAddition)
-- (NSString *)RESTbase64EncodedString;
-@end
-
 @class HTTPServer;
 
 @interface RESTManager : NSObject {

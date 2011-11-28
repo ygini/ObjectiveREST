@@ -383,7 +383,7 @@
 		return __managedObjectModel;
 	}
 	
-	NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ObjectiveREST_Server_Demo" withExtension:@"momd"];
+	NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"ObjectiveRESTDemo" withExtension:@"momd"];
 	__managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];    
 	return __managedObjectModel;
 }
@@ -432,7 +432,7 @@
 		}
 	}
 	
-	NSURL *url = [applicationFilesDirectory URLByAppendingPathComponent:@"ObjectiveREST_Test_App.storedata"];
+	NSURL *url = [applicationFilesDirectory URLByAppendingPathComponent:@"ObjectiveRESTDemo.storedata"];
 	NSPersistentStoreCoordinator *coordinator = [[[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:mom] autorelease];
 	if (![coordinator addPersistentStoreWithType:NSXMLStoreType configuration:nil URL:url options:nil error:&error]) {
 		[[NSApplication sharedApplication] presentError:error];

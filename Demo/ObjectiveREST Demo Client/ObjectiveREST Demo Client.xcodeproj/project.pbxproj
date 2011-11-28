@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E15708AB14840CFB0091302A /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15708AA14840CFB0091302A /* ObjectiveREST.framework */; };
-		E15708AE14840D180091302A /* ObjectiveREST.framework in Copy Framework */ = {isa = PBXBuildFile; fileRef = E15708AA14840CFB0091302A /* ObjectiveREST.framework */; };
+		E15BB2791484135F005BDBED /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15BB2781484135F005BDBED /* ObjectiveREST.framework */; };
+		E15BB27A14841360005BDBED /* ObjectiveREST.framework in Copy Framework */ = {isa = PBXBuildFile; fileRef = E15BB2781484135F005BDBED /* ObjectiveREST.framework */; };
 		E17FC31D147664D5002DDCF6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E17FC31C147664D5002DDCF6 /* Cocoa.framework */; };
 		E17FC327147664D5002DDCF6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E17FC325147664D5002DDCF6 /* InfoPlist.strings */; };
 		E17FC329147664D5002DDCF6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E17FC328147664D5002DDCF6 /* main.m */; };
@@ -27,7 +27,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E15708AE14840D180091302A /* ObjectiveREST.framework in Copy Framework */,
+				E15BB27A14841360005BDBED /* ObjectiveREST.framework in Copy Framework */,
 			);
 			name = "Copy Framework";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -35,7 +35,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E15708AA14840CFB0091302A /* ObjectiveREST.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectiveREST.framework; path = "../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug/ObjectiveREST.framework"; sourceTree = "<group>"; };
+		E15BB2781484135F005BDBED /* ObjectiveREST.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ObjectiveREST.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug/ObjectiveREST.framework"; sourceTree = "<group>"; };
 		E17FC318147664D5002DDCF6 /* ObjectiveREST Demo Client.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ObjectiveREST Demo Client.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E17FC31C147664D5002DDCF6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		E17FC31F147664D5002DDCF6 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -53,8 +53,8 @@
 		E17FC36614769254002DDCF6 /* OROutlineKeyValueItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineKeyValueItem.m; sourceTree = "<group>"; };
 		E1DC2E69148250D200AE3B5F /* OROutlineRelationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OROutlineRelationItem.h; sourceTree = "<group>"; };
 		E1DC2E6A148250D200AE3B5F /* OROutlineRelationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OROutlineRelationItem.m; sourceTree = "<group>"; };
-		E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSOutlineView_Additions.h; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.h"; sourceTree = "<group>"; };
-		E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSOutlineView_Additions.m; path = "../../ObjectiveREST Test App/ObjectiveREST Test App/NSOutlineView_Additions.m"; sourceTree = "<group>"; };
+		E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSOutlineView_Additions.h; sourceTree = "<group>"; };
+		E1DF5A501476E4CA00DD5BC4 /* NSOutlineView_Additions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOutlineView_Additions.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E15708AB14840CFB0091302A /* ObjectiveREST.framework in Frameworks */,
+				E15BB2791484135F005BDBED /* ObjectiveREST.framework in Frameworks */,
 				E17FC31D147664D5002DDCF6 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -73,7 +73,7 @@
 		E17FC30D147664D5002DDCF6 = {
 			isa = PBXGroup;
 			children = (
-				E17FC322147664D5002DDCF6 /* ObjectiveREST Test Client */,
+				E17FC322147664D5002DDCF6 /* ObjectiveREST Demo Client */,
 				E17FC31B147664D5002DDCF6 /* Frameworks */,
 				E17FC319147664D5002DDCF6 /* Products */,
 			);
@@ -90,7 +90,7 @@
 		E17FC31B147664D5002DDCF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				E15708AA14840CFB0091302A /* ObjectiveREST.framework */,
+				E15BB2781484135F005BDBED /* ObjectiveREST.framework */,
 				E17FC31C147664D5002DDCF6 /* Cocoa.framework */,
 				E17FC31E147664D5002DDCF6 /* Other Frameworks */,
 			);
@@ -107,7 +107,7 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
-		E17FC322147664D5002DDCF6 /* ObjectiveREST Test Client */ = {
+		E17FC322147664D5002DDCF6 /* ObjectiveREST Demo Client */ = {
 			isa = PBXGroup;
 			children = (
 				E1DF5A4F1476E4CA00DD5BC4 /* NSOutlineView_Additions.h */,
@@ -121,7 +121,7 @@
 				E17FC331147664D6002DDCF6 /* MainMenu.xib */,
 				E17FC323147664D5002DDCF6 /* Supporting Files */,
 			);
-			path = "ObjectiveREST Test Client";
+			path = "ObjectiveREST Demo Client";
 			sourceTree = "<group>";
 		};
 		E17FC323147664D5002DDCF6 /* Supporting Files */ = {
@@ -289,11 +289,11 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "ObjectiveREST Test Client/ObjectiveREST Demo Client-Prefix.pch";
-				INFOPLIST_FILE = "ObjectiveREST Test Client/ObjectiveREST Demo Client-Info.plist";
+				GCC_PREFIX_HEADER = "ObjectiveREST Demo Client/ObjectiveREST Demo Client-Prefix.pch";
+				INFOPLIST_FILE = "ObjectiveREST Demo Client/ObjectiveREST Demo Client-Info.plist";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "ObjectiveREST Demo Client";
 				WRAPPER_EXTENSION = app;
@@ -305,11 +305,11 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug\"",
+					"\"$(SRCROOT)/../../../../../Library/Developer/Xcode/DerivedData/ObjectiveREST-haytzvrdfqbnbqbladdwxyizptdm/Build/Products/Debug\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "ObjectiveREST Test Client/ObjectiveREST Demo Client-Prefix.pch";
-				INFOPLIST_FILE = "ObjectiveREST Test Client/ObjectiveREST Demo Client-Info.plist";
+				GCC_PREFIX_HEADER = "ObjectiveREST Demo Client/ObjectiveREST Demo Client-Prefix.pch";
+				INFOPLIST_FILE = "ObjectiveREST Demo Client/ObjectiveREST Demo Client-Info.plist";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "ObjectiveREST Demo Client";
 				WRAPPER_EXTENSION = app;

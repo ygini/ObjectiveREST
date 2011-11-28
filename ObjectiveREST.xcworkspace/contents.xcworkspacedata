@@ -2,12 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:ObjectiveREST Test App/ObjectiveREST Demo Server.xcodeproj">
+      location = "group:Demo/ObjectiveREST Demo Server/ObjectiveREST Demo Server.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:ObjectiveREST Test Client/ObjectiveREST Demo Client.xcodeproj">
+      location = "group:Demo/ObjectiveREST Demo Client/ObjectiveREST Demo Client.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:ObjectiveREST/OS X/ObjectiveREST/ObjectiveREST.xcodeproj">
+      location = "group:ObjectiveREST Frameworks/OS X/ObjectiveREST/ObjectiveREST.xcodeproj">
    </FileRef>
 </Workspace>

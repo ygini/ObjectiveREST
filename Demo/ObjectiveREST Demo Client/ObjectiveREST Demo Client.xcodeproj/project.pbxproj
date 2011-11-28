@@ -83,7 +83,6 @@
 		E17FC30D147664D5002DDCF6 = {
 			isa = PBXGroup;
 			children = (
-				E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */,
 				E17FC322147664D5002DDCF6 /* ObjectiveREST Demo Client */,
 				E17FC31B147664D5002DDCF6 /* Frameworks */,
 				E17FC319147664D5002DDCF6 /* Products */,
@@ -101,6 +100,7 @@
 		E17FC31B147664D5002DDCF6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E1FFA06B148421CB00531596 /* ObjectiveREST.xcodeproj */,
 				E17FC31C147664D5002DDCF6 /* Cocoa.framework */,
 				E17FC31E147664D5002DDCF6 /* Other Frameworks */,
 			);

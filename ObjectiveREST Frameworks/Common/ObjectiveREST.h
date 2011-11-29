@@ -9,8 +9,20 @@
 #ifndef ObjectiveREST_ObjectiveREST_h
 #define ObjectiveREST_ObjectiveREST_h
 
+#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
+
+#import <RESTManager.h>
+#import <RESTClient.h>
+#import <NSString_RESTAddition.h>
+#import <RESTManagedObject.h>
+
+#else
+
 #import <ObjectiveREST/RESTManager.h>
+#import <ObjectiveREST/RESTClient.h>
 #import <ObjectiveREST/NSString_RESTAddition.h>
 #import <ObjectiveREST/RESTManagedObject.h>
+
+#endif
 
 #endif

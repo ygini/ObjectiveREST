@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "container:Demo/iOS REST Chat/iOS REST Chat.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:ObjectiveREST Frameworks/iOS/ObjectiveREST/ObjectiveREST iOS.xcodeproj">
+   </FileRef>
+</Workspace>

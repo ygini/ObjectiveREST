@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 #import "RESTManagedObject.h"
 
@@ -31,8 +32,11 @@
 
 @property (retain, nonatomic) NSMutableDictionary *authenticationDatabase;
 
-@property (assign, nonatomic) int tcpPort;
+@property (assign, nonatomic) NSInteger tcpPort;
+
 @property (retain, nonatomic) NSString* mDNSType;
+@property (retain, nonatomic) NSString* mDNSName;
+@property (retain, nonatomic) NSString* mDNSDomain;
 
 @property (assign, nonatomic, readonly) BOOL isRunning;
 
@@ -50,7 +54,9 @@
 + (NSDictionary*)dictionaryFromResponse:(NSData*)response withContentType:(NSString*)ContentType;
 
 + (NSString*)baseURLForURIWithServerAddress:(NSString*)serverAddress;
++ (NSString*)restURIWithServerAddress:(NSString*)serverAddress forEntityWithName:(NSString*)name;
 + (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<RESTManagedObject>*)object;
++ (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<RESTManagedObject>*)object onRESTReadyObjectModel:(BOOL)RESTReady;
 + (NSDictionary*)restLinkRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<RESTManagedObject>*)object;
 + (NSManagedObject<RESTManagedObject>*)insertNewObjectForEntityForName:(NSString*)entityString;
 + (NSDictionary *)dictionaryRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject *)object;

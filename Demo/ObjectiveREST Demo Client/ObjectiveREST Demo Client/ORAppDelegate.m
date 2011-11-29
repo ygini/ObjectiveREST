@@ -99,7 +99,7 @@
 			NSString *rest_ref = [((NSDictionary*)item) valueForKey:REST_REF_KEYWORD];
 			if (rest_ref) {
 				// We are on a dict representing a referenced
-				id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+                id info = [[[RESTClient sharedInstance] getAbsolutePath:rest_ref] valueForKey:@"content"];
 				
 				if ([info isKindOfClass:[NSDictionary class]]) {
 					// The referenced object is a object
@@ -116,7 +116,7 @@
 		} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
 			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
 			
-			id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+			id info = [[[RESTClient sharedInstance] getAbsolutePath:rest_ref] valueForKey:@"content"];
 			return [[((NSDictionary*)info) allKeys] count];
 		} else if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
 			return 0;
@@ -137,7 +137,7 @@
 			NSString *rest_ref = [((NSDictionary*)item) valueForKey:REST_REF_KEYWORD];
 			if (rest_ref) {
 				// We are on a dict representing a linked object
-				id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+                id info = [[[RESTClient sharedInstance] getAbsolutePath:rest_ref] valueForKey:@"content"];
 				
 				if ([info isKindOfClass:[NSDictionary class]]) {
 					// The referenced object is a object
@@ -169,7 +169,7 @@
 		} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
 			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
 			
-			id info = [[self getPath:[[NSURL URLWithString:rest_ref] relativePath]] valueForKey:@"content"];
+			id info = [[[RESTClient sharedInstance] getAbsolutePath:rest_ref] valueForKey:@"content"];
 			// The referenced object is a object
 			
 			NSArray *allKeys = [[info allKeys] sortedArrayUsingSelector:@selector(compare:)];
@@ -222,7 +222,7 @@
 		if ([[tableColumn identifier] isEqualToString:@"value"]) {
 			NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
 			if (rest_ref) {
-				NSArray *values = [self getAllObjectOfThisEntityKind:rest_ref];
+				NSArray *values = [[RESTClient sharedInstance] getAllObjectOfThisEntityKind:rest_ref];
 				int i = 0;
 				for (NSDictionary *dict in values) {
 					if ([[dict valueForKey:REST_REF_KEYWORD] isEqualToString:rest_ref]) return [NSNumber numberWithInt:i];
@@ -242,23 +242,21 @@
 }
 
 -(void)outlineView:(NSOutlineView *)outlineView setObjectValue:(id)object forTableColumn:(NSTableColumn *)tableColumn byItem:(id)item {
+    
+    NSDictionary *info = [[RESTClient sharedInstance] getAbsolutePath:self.StateTextField.stringValue];
+    
 	if ([item isKindOfClass:[OROutlineKeyValueItem class]]) {
-		NSURL *restURI = [NSURL URLWithString:self.StateTextField.stringValue];
-		NSDictionary *info = [self getPath:[restURI relativePath]];
 		
 		[[info valueForKey:@"content"] setValue:object forKey:((OROutlineKeyValueItem*)item).key];
-		[self putInfo:info toPath:[restURI relativePath]];
+		[[RESTClient sharedInstance] putInfo:info toAbsolutePath:self.StateTextField.stringValue];
 		[self updateGUI];
 	} else if ([item isKindOfClass:[OROutlineRelationItem class]]) {
 		NSString *rest_ref = [((NSDictionary*)((OROutlineRelationItem*)item).value) valueForKey:REST_REF_KEYWORD];
 		int i = [object intValue];
-		NSString *newRef = [[[self getAllObjectOfThisEntityKind:rest_ref] objectAtIndex:i] valueForKey:REST_REF_KEYWORD];
-		
-		NSURL *restURI = [NSURL URLWithString:self.StateTextField.stringValue];
-		NSDictionary *info = [self getPath:[restURI relativePath]];
-		
+		NSString *newRef = [[[[RESTClient sharedInstance] getAllObjectOfThisEntityKind:rest_ref] objectAtIndex:i] valueForKey:REST_REF_KEYWORD];
+				
 		[[info valueForKey:@"content"] setValue:[NSDictionary dictionaryWithObject:newRef forKey:REST_REF_KEYWORD] forKey:((OROutlineRelationItem*)item).key];
-		[self putInfo:info toPath:[restURI relativePath]];
+        [[RESTClient sharedInstance] putInfo:info toAbsolutePath:self.StateTextField.stringValue];
 		[self updateGUI];
 	}
 }
@@ -274,7 +272,7 @@
 					NSPopUpButtonCell* cell = [[[NSPopUpButtonCell alloc] init] autorelease];
 					NSMenu *menu = [[NSMenu alloc] initWithTitle:@"To-one relationship"];
 					
-					NSArray *values = [self getAllObjectOfThisEntityKind:rest_ref];
+					NSArray *values = [[RESTClient sharedInstance] getAllObjectOfThisEntityKind:rest_ref];
 
 					[values enumerateObjectsUsingBlock:^(NSDictionary* obj, NSUInteger idx, BOOL *stop) {
 						NSMenuItem *menuItem = [[NSMenuItem alloc] initWithTitle:[[NSURL URLWithString:[obj valueForKey:REST_REF_KEYWORD]] relativePath] action:nil keyEquivalent:@""];
@@ -308,7 +306,15 @@
 
 - (IBAction)connectAction:(id)sender {	
 	[_rootContent removeAllObjects];
-	[_rootContent addObjectsFromArray:[[self getPath:@"/"] valueForKey:@"content"]];
+    
+    [RESTClient sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
+    [RESTClient sharedInstance].requestAuthentication = self.AuthenticationCheckBox.state == NSOnState;
+    [RESTClient sharedInstance].tcpPort = self.TCPPortTextField.integerValue;
+    [RESTClient sharedInstance].serverAddress = self.ServerAddressTextField.stringValue;
+    [RESTClient sharedInstance].username = self.UsernameTextField.stringValue;
+    [RESTClient sharedInstance].password = self.PasswordTextField.stringValue;
+    [RESTClient sharedInstance].contentType = [NSArray arrayWithObject:[self selectedContentType]];
+	[_rootContent addObjectsFromArray:[[[RESTClient sharedInstance] getPath:@"/"] valueForKey:@"content"]];
 	
 	[self updateGUI];
 }
@@ -332,148 +338,10 @@
 	return self.ConnectButton.state == NSOnState;
 }
 
-#pragma mark REST
-
-- (NSDictionary*)putInfo:(NSDictionary*)info toPath:(NSString*)path {
-	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
-																						 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
-																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
-																						 path]]];
-	
-	[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
-	
-	[req setValue:[NSString stringWithFormat:@"%@:%@",
-				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"]] 
-forHTTPHeaderField:@"Host"];
-	
-	[req setHTTPMethod:@"PUT"];
-	
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestAuthentication"]) {
-		// Only Basic authentication here, Digest need async connection, so maybe latter for this demo…
-		[req setValue:[NSString stringWithFormat:@"Basic %@", 
-					   [[NSString stringWithFormat:@"%@:%@",
-						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
-						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-						RESTbase64EncodedString]]
-   forHTTPHeaderField:@"Authorization"];
-	}
-	
-	[req setHTTPBody:[RESTManager preparedResponseFromDictionary:info
-						     withContentType:[self selectedContentType]]];
-	
-	NSURLResponse *rep = nil;
-	NSError *err = nil;
-	
-	NSData * answer = [NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
-	
-	NSMutableDictionary *dict = [[RESTManager dictionaryFromResponse:answer 
-							withContentType:[self selectedContentType]] mutableCopy];
-	
-	[_displayedContent setValue:dict forKey:path];
-	
-	return [dict autorelease];
-}
-
-- (void)deletePath:(NSString*)path {
-	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@://%@:%@/%@", 
-																						 [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
-																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-																						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
-																						 path]]];
-	
-	[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
-	
-	[req setValue:[NSString stringWithFormat:@"%@:%@",
-				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-				   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"]] 
-forHTTPHeaderField:@"Host"];
-	
-	[req setHTTPMethod:@"DELETE"];
-	
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestAuthentication"]) {
-		// Only Basic authentication here, Digest need async connection, so maybe latter for this demo…
-		[req setValue:[NSString stringWithFormat:@"Basic %@", 
-					   [[NSString stringWithFormat:@"%@:%@",
-						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
-						 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-						RESTbase64EncodedString]]
-   forHTTPHeaderField:@"Authorization"];
-	}
-	
-	NSURLResponse *rep = nil;
-	NSError *err = nil;
-	
-	[NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
-}
-
-- (NSMutableDictionary*)getPath:(NSString*)path {
-	return [self getAbsolutePath:[NSString stringWithFormat:@"%@://%@:%@/%@", 
-								  [[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestHTTPS"] ? @"https" : @"http",
-								  [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-								  [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"],
-								  path]];
-}
-
-- (NSMutableDictionary*)getAbsolutePath:(NSString*)path {
-	NSMutableDictionary *dict = [_displayedContent valueForKey:path];
-	if (!dict) {
-		NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:path]];
-		
-		[req setValue:[self selectedContentType] forHTTPHeaderField:@"Accept"];
-		
-		[req setValue:[NSString stringWithFormat:@"%@:%@",
-					   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerAddress"],
-					   [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerTCPPort"]] 
-   forHTTPHeaderField:@"Host"];
-		
-		[req setHTTPMethod:@"GET"];
-		
-		if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ServerRequestAuthentication"]) {
-			// Only Basic authentication here, Digest need async connection, so maybe latter for this demo…
-			[req setValue:[NSString stringWithFormat:@"Basic %@", 
-						   [[NSString stringWithFormat:@"%@:%@",
-							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerLogin"],
-							 [[NSUserDefaults standardUserDefaults] stringForKey:@"ServerPassword"] ]
-							RESTbase64EncodedString]]
-	   forHTTPHeaderField:@"Authorization"];
-		}
-		
-		NSURLResponse *rep = nil;
-		NSError *err = nil;
-		
-		NSData * answer = [NSURLConnection sendSynchronousRequest:req returningResponse:&rep error:&err];
-		
-		dict = [[RESTManager dictionaryFromResponse:answer 
-					    withContentType:[self selectedContentType]] mutableCopy];
-		
-		[_displayedContent setValue:dict forKey:path];
-	}
-	
-	return dict;
-}
-
-- (NSArray*)getAllObjectOfThisEntityKind:(NSString*)path {
-	if ([path rangeOfString:@"x-coredata"].location == NSNotFound) {
-		// REST Ready database
-		return [[self getAbsolutePath:[path stringByDeletingLastPathComponent]] valueForKey:@"content"];
-	} else {
-		// Standard database
-		NSArray *compo = [path pathComponents];
-		
-		NSLog(@"%@", [NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]);
-		
-		return [[self getPath:[NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]] valueForKey:@"content"];
-	}
-	return nil;
-}
-
 #pragma mark Actions
 
-
 - (IBAction)deleteEntryAction:(id)sender {
-	[self deletePath:[[NSURL URLWithString:self.StateTextField.stringValue] relativePath]];
+    [[RESTClient sharedInstance] deleteAbsolutePath:self.StateTextField.stringValue];
 	[self updateGUI];
 }
 

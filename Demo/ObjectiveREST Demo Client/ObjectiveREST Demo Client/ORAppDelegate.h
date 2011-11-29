@@ -44,12 +44,6 @@ typedef enum {
 - (IBAction)connectAction:(id)sender;
 - (IBAction)deleteEntryAction:(id)sender;
 
-- (NSDictionary*)putInfo:(NSDictionary*)info toPath:(NSString*)path;
-- (NSMutableDictionary*)getPath:(NSString*)path;
-- (NSMutableDictionary*)getAbsolutePath:(NSString*)path;
-- (NSArray*)getAllObjectOfThisEntityKind:(NSString*)path;
-- (void)deletePath:(NSString*)path;
-
 - (NSString*)selectedContentType;
 - (BOOL)isConnected;
 

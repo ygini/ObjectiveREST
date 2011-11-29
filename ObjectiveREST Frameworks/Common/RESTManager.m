@@ -13,6 +13,7 @@
 #import "RESTPrivateSettings.h"
 #import "SBJsonParser.h"
 #import "NSObject+SBJson.h"
+#import "NSString_RESTAddition.h"
 
 @implementation RESTManager
 
@@ -29,7 +30,10 @@
 @synthesize authenticationDatabase;
 
 @synthesize tcpPort;
+
 @synthesize mDNSType;
+@synthesize mDNSName;
+@synthesize mDNSDomain;
 
 @synthesize isRunning;
 
@@ -45,6 +49,10 @@
 	self = [super init];
 	if (self) {
 		self.authenticationDatabase = [[NSMutableDictionary new] autorelease];
+        self.tcpPort = 0;       // The system choose the port.
+        self.mDNSDomain = @"";  // Use network default domain or local. if no domain is provied by DNS server.
+        self.mDNSName = @"";    // Use computer name by default.
+        self.mDNSType = @"_rest._tcp";  // We need to publish in mDNS to find service with automatic discovered port. Set to nil to hide service.
 	}
 	return self;
 }
@@ -60,6 +68,8 @@
 	_httpServer = [HTTPServer new];
 	[_httpServer setConnectionClass:[RESTConnection class]];
 	[_httpServer setType:self.mDNSType];
+	[_httpServer setName:self.mDNSName];
+	[_httpServer setDomain:self.mDNSDomain];
 	[_httpServer setPort:self.tcpPort];
 	
 	NSError *error = nil;
@@ -233,19 +243,28 @@
 }
 
 + (NSString*)baseURLForURIWithServerAddress:(NSString*)serverAddress {
-	return [[NSString stringWithFormat:@"%@://%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress] retain];
+    return [[NSString stringWithFormat:@"%@://%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress] retain];
+}
+
++ (NSString*)restURIWithServerAddress:(NSString*)serverAddress forEntityWithName:(NSString*)name {
+    return [NSString stringWithFormat:@"%@/%@", [self baseURLForURIWithServerAddress:serverAddress], name];
 }
 
 + (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<RESTManagedObject>*)object {
+    return [self restURIWithServerAddress:serverAddress forManagedObject:object onRESTReadyObjectModel:[RESTManager sharedInstance].modelIsObjectiveRESTReady];
+}
+
++ (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<RESTManagedObject>*)object onRESTReadyObjectModel:(BOOL)RESTReady {
 	NSError *error = nil;
-	if ([RESTManager sharedInstance].modelIsObjectiveRESTReady) {
+	if (RESTReady) {
 		// If the data model has been patched, we use dedicated UUID to make URI
 		return [NSString stringWithFormat:@"%@/%@/%@", [self baseURLForURIWithServerAddress:serverAddress], [[object entity] name], [object rest_uuid]];
 	} else {
 		// If the data model isn't patched to be compatible with ObjectiveREST, we fall back on CoreData ID…
-		if ([[object objectID] isTemporaryID])
+		if ([[object objectID] isTemporaryID]) {
 			[[RESTManager sharedInstance].managedObjectContext obtainPermanentIDsForObjects:[NSArray arrayWithObject:object] error:&error];
-		
+		}
+        
 		return [NSString stringWithFormat:@"%@/%@", [self baseURLForURIWithServerAddress:serverAddress], [[[[object objectID] URIRepresentation] absoluteString] stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:@"x-coredata"]];
 	}
 }
@@ -299,5 +318,6 @@
 	
 	return d;
 }
+
 
 @end

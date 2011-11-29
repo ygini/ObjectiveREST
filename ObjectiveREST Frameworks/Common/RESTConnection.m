@@ -250,12 +250,11 @@
 	}
 	
 	NSInteger numberOfComponents = [pathComponents count];
-	
-	NSString *baseURLString = [NSString stringWithFormat:@"%@://%@", [self isSecureServer] ? @"https" : @"http" , [request headerField:@"Host"]];
-	
+		
 	@try {
 		HTTPLogTrace();
 		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
+        if ([acceptedContentType count] == 0) acceptedContentType = [[request headerField:@"Content-Type"] componentsSeparatedByString:@","];
 		
 		entities = [[[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
 		
@@ -283,7 +282,7 @@
 					
 					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
 					for (NSString *entity in entities) {
-						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"%@/%@", baseURLString, entity] forKey:REST_REF_KEYWORD]];
+						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[RESTManager restURIWithServerAddress:[request headerField:@"Host"] forEntityWithName:entity] forKey:REST_REF_KEYWORD]];
 					}
 					
 					return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]

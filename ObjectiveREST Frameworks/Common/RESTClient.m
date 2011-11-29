@@ -148,7 +148,7 @@
     dict = [[RESTManager dictionaryFromResponse:answer 
                                 withContentType:[self.contentType objectAtIndex:0]] mutableCopy];
     
-	return dict;
+	return [dict autorelease];
 }
 
 - (NSMutableDictionary*)getPath:(NSString*)path {

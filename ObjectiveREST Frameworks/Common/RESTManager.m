@@ -169,6 +169,8 @@
 		entry = [self managedObjectWithEntityName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];
 	}
 	
+    [pathComponents release];
+    [entities release];
 	return entry;
 }
 
@@ -243,7 +245,7 @@
 }
 
 + (NSString*)baseURLForURIWithServerAddress:(NSString*)serverAddress {
-    return [[NSString stringWithFormat:@"%@://%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress] retain];
+    return [NSString stringWithFormat:@"%@://%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress];
 }
 
 + (NSString*)restURIWithServerAddress:(NSString*)serverAddress forEntityWithName:(NSString*)name {

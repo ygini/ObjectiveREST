@@ -123,7 +123,20 @@ The result look like:
     </dict>
     </plist>
 
+####Create a object
+
+    [[RESTClient sharedInstance] postInfo:[NSDictionary dictionaryWithObject:objectInfo forKey:@"content"] toPath:@"/RCMessage"]];
+
+Here, objectInfo is a NSDictionary representing the object. It must use the same convention as the server. You could build it by your self or use the RESTManager:
+
+    NSDictionary *objectInfo = [RESTManager dictionaryRepresentationWithServerAddress:[[RESTClient sharedInstance] hostInfo] forManagedObject:mo]
 
 ####Update specific object
-####Create a object
+
+    [[RESTClient sharedInstance] putInfo:[NSDictionary dictionaryWithObject:objectInfo forKey:@"content"] toPath:@"/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3"]];
+    
+We must specify the server information to build a correct REST link for relationship, bur be careful with that, relationship base on client CoreData base used to update a server must use a REST Ready database, with internal UUID.
+
 ####Get resume for a object
+
+No yet implemented, should be avaiable soon but only for REST Ready database.

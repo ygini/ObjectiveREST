@@ -26,6 +26,25 @@ You have two demo application, one server and one client to see how it's work.
 
 ##Examples
 ###Configure the RESTManager
+
+`
+    [RESTManager sharedInstance].modelIsObjectiveRESTReady = NO;
+    
+    [RESTManager sharedInstance].authenticationDatabase = [NSDictionary dictionaryWithObject:@"password" forKey:@"username"];
+    [RESTManager sharedInstance].tcpPort = 0; // Let the system choose the port
+    [RESTManager sharedInstance].mDNSDomain = @""; // Use the network provided domain for registration. It's "local." on standard network or anything else if we have Wide Area Bonjour
+    [RESTManager sharedInstance].mDNSName = @""; // If empty, use the device name
+    [RESTManager sharedInstance].mDNSType = @"_rest._tcp"; // Should be unique to your application, the format is _application._tcp
+    
+    [RESTManager sharedInstance].managedObjectModel = [AppDelegate sharedInstance].managedObjectModel;
+    [RESTManager sharedInstance].persistentStoreCoordinator = [AppDelegate sharedInstance].persistentStoreCoordinator;
+    [RESTManager sharedInstance].managedObjectContext = [AppDelegate sharedInstance].managedObjectContext;
+    
+    [[RESTManager sharedInstance] startServer];
+    
+    // That's all!
+`
+
 ###Execute a request
 ####Get list of entities
 ####Get list of object for specific entities

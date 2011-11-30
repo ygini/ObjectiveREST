@@ -76,7 +76,7 @@ The result look like:
 
     NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/RCMessage"]];
 
-The result look like:
+The result look like (for a non REST Ready model):
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -102,6 +102,28 @@ The result look like:
 
 
 ####Get specific object
+
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3"]];
+
+The result look like:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+        <key>content</key>
+    	<dict>
+    		<key>date</key>
+    		<date>2011-11-30T10:51:20Z</date>
+    		<key>message</key>
+    		<string>\o/</string>
+    		<key>nickname</key>
+    		<string>iPhone Simulator</string>
+    	</dict>
+    </dict>
+    </plist>
+
+
 ####Update specific object
 ####Create a object
 ####Get resume for a object

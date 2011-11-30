@@ -27,8 +27,6 @@ You have two demo application, one server and one client to see how it's work.
 ##Examples
 ###Configure the RESTManager
 
-`
-
     [RESTManager sharedInstance].modelIsObjectiveRESTReady = NO;
     [RESTManager sharedInstance].authenticationDatabase = [NSDictionary dictionaryWithObject:@"password" forKey:@"username"];
     
@@ -44,8 +42,6 @@ You have two demo application, one server and one client to see how it's work.
     [[RESTManager sharedInstance] startServer];
     
     // That's all!
-    
-`
 
 ###Execute a request
 ####Get list of entities

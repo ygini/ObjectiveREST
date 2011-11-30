@@ -54,11 +54,52 @@ You have two demo application, one server and one client to see how it's work.
 
 ####Get list of entities
 
-    [[RESTClient sharedInstance] getPath:@"/"]];
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/"]];
+
+The result look like:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+    	<key>content</key>
+    	<array>
+    		<dict>
+    			<key>rest_ref</key>
+    			<string>http://10.20.11.55:52625/RCMessage</string>
+    		</dict>
+    	</array>
+    </dict>
+    </plist>
 
 ####Get list of instance for specific entity
 
-    [[RESTClient sharedInstance] getPath:@"/RCMessage"]];
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/RCMessage"]];
+
+The result look like:
+
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+    <dict>
+    <key>content</key>
+    	<array>
+    		<dict>
+    			<key>rest_ref</key>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p1</string>
+    		</dict>
+    		<dict>
+    			<key>rest_ref</key>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p2</string>
+    		</dict>
+    		<dict>
+    			<key>rest_ref</key>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3</string>
+    		</dict>
+    	</array>
+    </dict>
+    </plist>
+
 
 ####Get specific object
 ####Update specific object

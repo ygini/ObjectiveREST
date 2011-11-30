@@ -7,6 +7,18 @@ This project is provide under the Apache License Version 2.0. You can read more 
 ##Notice
 This project is based on different others projects who use their own license. You can read more about it in the NOTICE.md file.
 
+##Get ObjectiveREST
+
+Becareful when you create your git clone, this project use submodule, so the best way to get your copy is:
+
+    git clone --recursive https://github.com/ygini/ObjectiveREST.git
+
+Or
+
+    git clone https://github.com/ygini/ObjectiveREST.git
+    git submodule init
+    git submodule update
+
 ##Presentation
 Objective REST is build to provide a REST interface to any CoreData application. We have two working mode :
 

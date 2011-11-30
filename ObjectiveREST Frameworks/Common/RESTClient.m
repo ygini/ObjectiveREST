@@ -44,7 +44,6 @@
 }
 
 - (NSString*)absoluteVersionForPath:(NSString*)path {
-    NSLog(@"%@", [self baseURL]);
     return [NSString stringWithFormat:@"%@%@", [self baseURL], path];
 }
 

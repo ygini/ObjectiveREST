@@ -105,7 +105,7 @@
                     <navigationItem key="navigationItem" id="xQu-q5-KlT"/>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="1040" y="-253"/>
+            <point key="canvasLocation" x="1040" y="-269"/>
         </scene>
         <scene sceneID="wT3-OE-hDE">
             <objects>
@@ -142,7 +142,7 @@
                     </connections>
                 </viewController>
             </objects>
-            <point key="canvasLocation" x="1040" y="525"/>
+            <point key="canvasLocation" x="1468" y="402"/>
         </scene>
         <scene sceneID="blm-8r-OZh">
             <objects>
@@ -165,6 +165,6 @@
         <simulatedScreenMetrics key="destination"/>
     </simulatedMetricsContainer>
     <inferredMetricsTieBreakers>
-        <segue reference="1vv-ik-url"/>
+        <segue reference="rjQ-Zc-9dw"/>
     </inferredMetricsTieBreakers>
 </document>

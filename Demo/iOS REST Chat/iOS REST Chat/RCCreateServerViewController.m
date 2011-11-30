@@ -23,6 +23,10 @@
 
 #pragma mark - View lifecycle
 
+-(void)viewDidAppear:(BOOL)animated {
+    [[RESTManager sharedInstance] stopServer];
+}
+
 - (void)viewDidUnload
 {
     [super viewDidUnload];

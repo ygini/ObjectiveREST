@@ -8,7 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface RCChatViewController : UIViewController <UITextFieldDelegate>
+@interface RCChatViewController : UIViewController <UITextFieldDelegate> {
+    BOOL _continueAutoRefresh;
+}
 
 @property (retain, nonatomic) IBOutlet UITextView *chatRoom;
 @property (retain, nonatomic) IBOutlet UITextField *textEntry;

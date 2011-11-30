@@ -31,7 +31,7 @@
 
 - (void)automaticUpdateMessage {
     [self updateMessage];
-    [self performSelector:@selector(automaticUpdateMessage) withObject:nil afterDelay:3];
+    if (_continueAutoRefresh) [self performSelector:@selector(automaticUpdateMessage) withObject:nil afterDelay:3];
 }
 
 - (void)didReceiveMemoryWarning
@@ -66,7 +66,12 @@
 }
 
 -(void)viewWillAppear:(BOOL)animated {
-    [self updateMessage];
+    _continueAutoRefresh = YES;
+    [self automaticUpdateMessage];
+}
+
+-(void)viewWillDisappear:(BOOL)animated {
+    _continueAutoRefresh = NO;
 }
 
 #pragma mark - TextField

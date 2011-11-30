@@ -50,6 +50,7 @@
 
 -(void)viewWillAppear:(BOOL)animated {
     [_discoveredServices removeAllObjects];
+    [self.nearServerTableView reloadData];
     [_serviceBrowser searchForServicesOfType:CHAT_NET_SERVICE_TYPE inDomain:@""];
 }
 
@@ -129,6 +130,7 @@
     [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
     [RESTClient sharedInstance].tcpPort = [services port];
     [RESTClient sharedInstance].serverAddress = [services hostName];
+    [RESTClient sharedInstance].contentType = REST_SUPPORTED_CONTENT_TYPE;
     
     [services release];
     

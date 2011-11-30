@@ -33,7 +33,7 @@
         NSManagedObject *newMessage = [RESTManager insertNewObjectForEntityForName:@"RCMessage"];
         [RESTManager updateManagedObject:newMessage withInfo:messageInfo];
     } else {
-        [[RESTClient sharedInstance] postInfo:messageInfo toPath:[RESTManager restURIWithServerAddress:[[RESTClient sharedInstance] hostInfo] forEntityWithName:@"RCMessage"]];
+        [[RESTClient sharedInstance] postInfo:[NSDictionary dictionaryWithObject:messageInfo forKey:@"content"] toAbsolutePath:[RESTManager restURIWithServerAddress:[[RESTClient sharedInstance] hostInfo] forEntityWithName:@"RCMessage"]];
     }
 }
 

@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#define CHAT_NET_SERVICE_TYPE   @"_iOSRESTChat._tcp"
+#define CHAT_NET_SERVICE_TYPE   @"_demochat._tcp"
 
 @interface RCAppDelegate : UIResponder <UIApplicationDelegate>
 

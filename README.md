@@ -44,8 +44,22 @@ You have two demo application, one server and one client to see how it's work.
     // That's all!
 
 ###Execute a request
+####Configure the RESTClient
+
+    [RESTClient sharedInstance].tcpPort = 0;
+    [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
+    [RESTClient sharedInstance].tcpPort = [services port];
+    [RESTClient sharedInstance].serverAddress = [services hostName];
+    [RESTClient sharedInstance].contentType = @"application/x-bplist"; // Support also application/x-plist and application/json
+
 ####Get list of entities
-####Get list of object for specific entities
+
+    [[RESTClient sharedInstance] getPath:@"/"]];
+
+####Get list of instance for specific entity
+
+    [[RESTClient sharedInstance] getPath:@"/RCMessage"]];
+
 ####Get specific object
 ####Update specific object
 ####Create a object

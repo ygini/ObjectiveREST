@@ -34,6 +34,8 @@ Thanks to the really good management of library in iOS, you have to add this two
 
 You can simply copy this two line and past it in your build settings (Select your project in Xcode then the tab *build settings*, select any line and past).
 
+The last step for iOS is to add CFNetwork framework to your link phase.
+
 ##Presentation
 Objective REST is build to provide a REST interface to any CoreData application. We have two working mode :
 

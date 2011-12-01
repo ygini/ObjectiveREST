@@ -7,9 +7,9 @@ This project is provide under the Apache License Version 2.0. You can read more 
 ##Notice
 This project is based on different others projects who use their own license. You can read more about it in the NOTICE.md file.
 
-##Get ObjectiveREST
+##Get and set ObjectiveREST
 
-Becareful when you create your git clone, this project use submodule, so the best way to get your copy is:
+Be careful when you create your git clone, this project use submodule, so the best way to get your copy is:
 
     git clone --recursive https://github.com/ygini/ObjectiveREST.git
 
@@ -18,6 +18,21 @@ Or
     git clone https://github.com/ygini/ObjectiveREST.git
     git submodule init
     git submodule update
+
+The most easiest method to use ObjectiveREST is to import the folder *ObjectiveREST/ObjectiveREST Frameworks/Common* in your project.
+
+The most cleanest way to use ObjectiveREST is to import the good framework project in your workspace: *ObjectiveREST/ObjectiveREST Frameworks/* **[iOS | OS X]** */ObjectiveREST/ObjectiveREST iOS.xcodeproj*
+
+For iOS and OS X application, you have to add the new imported framework in your dependancies then as a link target (Select your project in Xcode then the tab *build phases*).
+
+###Special addition for iOS
+
+Thanks to the really good management of library in iOS, you have to add this two options to your project's build settings
+
+	OTHER_LDFLAGS = -ObjC
+	HEADER_SEARCH_PATHS = $(TARGET_BUILD_DIR)/usr/local/include
+
+You can simply copy this two line and past it in your build settings (Select your project in Xcode then the tab *build settings*, select any line and past).
 
 ##Presentation
 Objective REST is build to provide a REST interface to any CoreData application. We have two working mode :
@@ -147,8 +162,8 @@ Here, objectInfo is a NSDictionary representing the object. It must use the same
 
     [[RESTClient sharedInstance] putInfo:[NSDictionary dictionaryWithObject:objectInfo forKey:@"content"] toPath:@"/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3"]];
     
-We must specify the server information to build a correct REST link for relationship, but becareful with that, relationship base on client CoreData base used to update a server must use a REST Ready database, with internal UUID.
+We must specify the server information to build a correct REST link for relationship, but be careful with that, relationship base on client CoreData base used to update a server must use a REST Ready database, with internal UUID.
 
 ####Get resume for a object
 
-No yet implemented, should be avaiable soon but only for REST Ready database.
+No yet implemented, should be available soon but only for REST Ready database.

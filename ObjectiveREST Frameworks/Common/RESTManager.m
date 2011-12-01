@@ -65,6 +65,8 @@
 #pragma mark - Server Commands
 
 - (BOOL)startServer {
+	if (_httpServer) [self stopServer];
+
 	_httpServer = [HTTPServer new];
 	[_httpServer setConnectionClass:[RESTConnection class]];
 	[_httpServer setType:self.mDNSType];

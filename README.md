@@ -79,7 +79,7 @@ You have two demo application, one server and one client to see how it's work.
     [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
     [RESTClient sharedInstance].tcpPort = [services port];
     [RESTClient sharedInstance].serverAddress = [services hostName];
-    [RESTClient sharedInstance].contentType = @"application/x-bplist"; // Support also application/x-plist and application/json
+    [RESTClient sharedInstance].contentType = [NSArray arrayWithObject:@"application/x-bplist"]; // Support also application/x-plist and application/json
 
 ####Get list of entities
 

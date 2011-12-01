@@ -75,7 +75,6 @@ You have two demo application, one server and one client to see how it's work.
 ###Execute a request
 ####Configure the RESTClient
 
-    [RESTClient sharedInstance].tcpPort = 0;
     [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
     [RESTClient sharedInstance].tcpPort = [services port];
     [RESTClient sharedInstance].serverAddress = [services hostName];

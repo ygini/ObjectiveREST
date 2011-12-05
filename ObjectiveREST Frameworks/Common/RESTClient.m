@@ -31,16 +31,28 @@
 - (id)init {
     self = [super init];
     if (self) {
-        [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
-        [RESTClient sharedInstance].useDigest = NO;
-        [RESTClient sharedInstance].requestHTTPS = NO;
-        [RESTClient sharedInstance].requestAuthentication = NO;
-        [RESTClient sharedInstance].contentType = REST_SUPPORTED_CONTENT_TYPE;
+        self.modelIsObjectiveRESTReady = NO;
+        self.useDigest = NO;
+        self.requestHTTPS = NO;
+        self.requestAuthentication = NO;
+        self.contentType = REST_SUPPORTED_CONTENT_TYPE;
     }
     return self;
 }
 
 #pragma mark - Routines
+
+- (NSString*)stringContentType {
+    NSMutableString *str = [NSMutableString new];
+    NSInteger i = [self.contentType count];
+    for (NSInteger j = 0; j < i; j++) {
+        [str appendString:[self.contentType objectAtIndex:j]];
+        if (j < i - 1) [str appendString:@","];
+    }
+    
+    return [str autorelease];
+}
+
 - (NSString*)hostInfoWithServer:(NSString*)address andPort:(NSInteger)port {
     return [NSString stringWithFormat:@"%@:%d", address, port];
 }
@@ -62,7 +74,8 @@
 - (NSMutableURLRequest*)baseRequestForPath:(NSString*)path {
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:path]];
 	
-	[req setValue:[self.contentType objectAtIndex:0] forHTTPHeaderField:@"Accept"];
+    [req setValue:[self stringContentType] forHTTPHeaderField:@"Accept"];
+
 	
 	[req setValue:self.hostInfo forHTTPHeaderField:@"Host"];
 		
@@ -87,10 +100,13 @@
 - (NSDictionary*)postInfo:(NSDictionary*)info toAbsolutePath:(NSString*)path {
 	NSMutableURLRequest *req = [self baseRequestForPath:path];
 	
+    
 	[req setHTTPMethod:@"POST"];
 	
 	[req setHTTPBody:[RESTManager preparedResponseFromDictionary:info
                                                  withContentType:[self.contentType objectAtIndex:0]]];
+    
+    [req setValue:[self.contentType objectAtIndex:0] forHTTPHeaderField:@"Content-Type"];
 	
 	NSURLResponse *rep = nil;
 	NSError *err = nil;
@@ -114,6 +130,8 @@
 	
 	[req setHTTPBody:[RESTManager preparedResponseFromDictionary:info
                                                  withContentType:[self.contentType objectAtIndex:0]]];
+    
+    [req setValue:[self.contentType objectAtIndex:0] forHTTPHeaderField:@"Content-Type"];
 	
 	NSURLResponse *rep = nil;
 	NSError *err = nil;
@@ -150,7 +168,7 @@
 	NSMutableURLRequest *req = [self baseRequestForPath:path];
     
     [req setHTTPMethod:@"GET"];
-    
+        
     NSURLResponse *rep = nil;
     NSError *err = nil;
     

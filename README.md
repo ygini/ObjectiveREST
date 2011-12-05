@@ -60,25 +60,31 @@ You have two demo application, one server and one client to see how it's work.
     [RESTManager sharedInstance].authenticationDatabase = [NSDictionary dictionaryWithObject:@"password" forKey:@"username"];
     
     [RESTManager sharedInstance].tcpPort = 0; // Let the system choose the port
-    [RESTManager sharedInstance].mDNSDomain = @""; // Use the network provided domain for registration. It's "local." on standard network or anything else if we have Wide Area Bonjour
+    [RESTManager sharedInstance].mDNSDomain = @""; // Use the network provided domain for registration. That's to say "local." on standard network or anything else if we have Wide Area Bonjour
     [RESTManager sharedInstance].mDNSName = @""; // If empty, use the device name
     [RESTManager sharedInstance].mDNSType = @"_rest._tcp"; // Should be unique to your application, the format is _application._tcp
     
-    [RESTManager sharedInstance].managedObjectModel = [AppDelegate sharedInstance].managedObjectModel;
-    [RESTManager sharedInstance].persistentStoreCoordinator = [AppDelegate sharedInstance].persistentStoreCoordinator;
-    [RESTManager sharedInstance].managedObjectContext = [AppDelegate sharedInstance].managedObjectContext;
+    [RESTManager sharedInstance].managedObjectModel = [ICAppDelegate sharedInstance].managedObjectModel;
+    [RESTManager sharedInstance].managedObjectContext = [ICAppDelegate sharedInstance].managedObjectContext;
+    [RESTManager sharedInstance].persistentStoreCoordinator = [ICAppDelegate sharedInstance].persistentStoreCoordinator;
     
     [[RESTManager sharedInstance] startServer];
     
-    // That's all!
 
 ###Execute a request
 ####Configure the RESTClient
 
+<<<<<<< HEAD
+	[RESTClient sharedInstance].tcpPort = [_remoteService port];
+	[RESTClient sharedInstance].serverAddress = [_remoteService hostName];
+	[RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
+	[RESTClient sharedInstance].contentType = [NSArray arrayWithObject:@"application/x-bplist"]; // Support also application/x-plist and application/json. You can use the const REST_SUPPORTED_CONTENT_TYPE to specify all standard supported method
+=======
     [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
     [RESTClient sharedInstance].tcpPort = [services port];
     [RESTClient sharedInstance].serverAddress = [services hostName];
     [RESTClient sharedInstance].contentType = [NSArray arrayWithObject:@"application/x-bplist"]; // Support also application/x-plist and application/json
+>>>>>>> 16a857f48a954952c37266a98b57ac26cfe21989
 
 ####Get list of entities
 
@@ -86,25 +92,27 @@ You have two demo application, one server and one client to see how it's work.
 
 The result look like:
 
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-    <dict>
-    	<key>content</key>
-    	<array>
-    		<dict>
-    			<key>rest_ref</key>
-    			<string>http://10.20.11.55:52625/RCMessage</string>
-    		</dict>
-    	</array>
-    </dict>
-    </plist>
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>content</key>
+		<array>
+			<dict>
+				<key>rest_ref</key>
+				<string>http://192.168.232.1:54167/Message</string>
+			</dict>
+		</array>
+	</dict>
+	</plist>
+
 
 ####Get list of instance for specific entity
+#####Standard Model
 
-    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/RCMessage"]];
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/Message"]];
 
-The result look like (for a non REST Ready model):
+Give
 
     <?xml version="1.0" encoding="UTF-8"?>
     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -114,24 +122,51 @@ The result look like (for a non REST Ready model):
     	<array>
     		<dict>
     			<key>rest_ref</key>
-    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p1</string>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/Message/p1</string>
     		</dict>
     		<dict>
     			<key>rest_ref</key>
-    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p2</string>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/Message/p2</string>
     		</dict>
     		<dict>
     			<key>rest_ref</key>
-    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3</string>
+    			<string>http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/Message/p3</string>
     		</dict>
     	</array>
     </dict>
     </plist>
 
+#####REST Ready Model
+
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/FoodMenu"]];
+
+Give
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>content</key>
+		<array>
+			<dict>
+				<key>rest_ref</key>
+				<string>http://127.0.0.1:1984/FoodMenu/5DC0E5F4-0191-4254-964A-8E7B1CE22524</string>
+			</dict>
+		</array>
+	</dict>
+	</plist>
+
+Where 5DC0E5F4-0191-4254-964A-8E7B1CE22524 is the content of the field rest_uuid
+
 
 ####Get specific object
+#####Standard Model
 
     NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/RCMessage/p3"]];
+
+Or
+
+    NSArray *restLinks = [[RESTClient sharedInstance] getAboslutePath:@"http://10.20.11.55:52625/x-coredata/D708F67A-3404-48B1-AEA3-389AC17BE550/Message/p3"]];
 
 The result look like:
 
@@ -151,9 +186,39 @@ The result look like:
     </dict>
     </plist>
 
+#####REST Ready Model
+
+    NSArray *restLinks = [[RESTClient sharedInstance] getPath:@"/FoodMenu/5DC0E5F4-0191-4254-964A-8E7B1CE22524"]];
+
+The result look like:
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+	<plist version="1.0">
+	<dict>
+		<key>content</key>
+		<dict>
+			<key>content</key>
+			<string>Here come the description</string>
+			<key>foodNumber</key>
+			<dict>
+				<key>rest_ref</key>
+				<string>http://127.0.0.1:1984/PhoneBookEntry/D05947AC-93A0-45A5-977B-7A0894B3B712</string>
+			</dict>
+			<key>name</key>
+			<string>TEST</string>
+			<key>price</key>
+			<real>99.989997863769531</real>
+			<key>rest_uuid</key>
+			<string>5DC0E5F4-0191-4254-964A-8E7B1CE22524</string>
+		</dict>
+	</dict>
+	</plist>
+
+
 ####Create a object
 
-    [[RESTClient sharedInstance] postInfo:[NSDictionary dictionaryWithObject:objectInfo forKey:@"content"] toPath:@"/RCMessage"]];
+    [[RESTClient sharedInstance] postInfo:[NSDictionary dictionaryWithObject:objectInfo forKey:@"content"] toPath:@"/Message"]];
 
 Here, objectInfo is a NSDictionary representing the object. It must use the same convention as the server. You could build it by your self or use the RESTManager:
 

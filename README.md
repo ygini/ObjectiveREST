@@ -74,17 +74,10 @@ You have two demo application, one server and one client to see how it's work.
 ###Execute a request
 ####Configure the RESTClient
 
-<<<<<<< HEAD
 	[RESTClient sharedInstance].tcpPort = [_remoteService port];
 	[RESTClient sharedInstance].serverAddress = [_remoteService hostName];
 	[RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
 	[RESTClient sharedInstance].contentType = [NSArray arrayWithObject:@"application/x-bplist"]; // Support also application/x-plist and application/json. You can use the const REST_SUPPORTED_CONTENT_TYPE to specify all standard supported method
-=======
-    [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
-    [RESTClient sharedInstance].tcpPort = [services port];
-    [RESTClient sharedInstance].serverAddress = [services hostName];
-    [RESTClient sharedInstance].contentType = [NSArray arrayWithObject:@"application/x-bplist"]; // Support also application/x-plist and application/json
->>>>>>> 16a857f48a954952c37266a98b57ac26cfe21989
 
 ####Get list of entities
 

@@ -324,7 +324,8 @@
                     NSDictionary *dict = [[RESTManager dictionaryFromResponse:[request body] withContentType:ContentType] valueForKey:@"content"];
 					
                     [RESTManager updateManagedObject:newObject withInfo:dict];
-					
+					[self httpReturnCode201Created];
+                    
 					return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:newObject], @"content", nil]
 																						withContentType:ContentType]] 
 							autorelease];
@@ -348,6 +349,7 @@
 						
 						if (!entry && [RESTManager sharedInstance].modelIsObjectiveRESTReady) {
 							entry = [RESTManager insertNewObjectForEntityForName:selectedEntity];
+                            [self httpReturnCode201Created];
 						}
 						
 						if (entry) {
@@ -355,6 +357,7 @@
 							
 							[RESTManager updateManagedObject:entry withInfo:dict];
 							
+                            [self httpReturnCode200Success];
 							return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry], @"content", nil]
 																								withContentType:ContentType]] 
 									autorelease];

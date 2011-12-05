@@ -28,6 +28,18 @@
 	return sharedInstanceRESTClient;
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
+        [RESTClient sharedInstance].useDigest = NO;
+        [RESTClient sharedInstance].requestHTTPS = NO;
+        [RESTClient sharedInstance].requestAuthentication = NO;
+        [RESTClient sharedInstance].contentType = REST_SUPPORTED_CONTENT_TYPE;
+    }
+    return self;
+}
+
 #pragma mark - Routines
 - (NSString*)hostInfoWithServer:(NSString*)address andPort:(NSInteger)port {
     return [NSString stringWithFormat:@"%@:%d", address, port];

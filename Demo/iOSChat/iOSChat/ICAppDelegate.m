@@ -1,107 +1,66 @@
 //
-//  RCAppDelegate.m
-//  iOS REST Chat
+//  ICAppDelegate.m
+//  iOSChat
 //
-//  Created by Yoann Gini on 28/11/11.
+//  Created by Yoann Gini on 30/11/11.
 //  Copyright (c) 2011 iNig-Services. All rights reserved.
 //
 
-#import "RCAppDelegate.h"
+#import "ICAppDelegate.h"
 
-#import <ObjectiveREST.h>
-
-@implementation RCAppDelegate
+@implementation ICAppDelegate
 
 @synthesize window = _window;
 @synthesize managedObjectContext = __managedObjectContext;
 @synthesize managedObjectModel = __managedObjectModel;
 @synthesize persistentStoreCoordinator = __persistentStoreCoordinator;
 
-#pragma mark - Messages
-
--(void)sendMessage:(NSString*)stringMessage {
-    NSString *deviceName = [[UIDevice currentDevice] name];
-    NSDate *date = [NSDate date];
-    
-    NSDictionary *messageInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                 stringMessage, @"message",
-                                 deviceName, @"nickname",
-                                 date, @"date",
-                                 nil];
-    
-    if ([RESTManager sharedInstance].isRunning) {
-        NSManagedObject *newMessage = [RESTManager insertNewObjectForEntityForName:@"RCMessage"];
-        [RESTManager updateManagedObject:newMessage withInfo:messageInfo];
-    } else {
-        [[RESTClient sharedInstance] postInfo:[NSDictionary dictionaryWithObject:messageInfo forKey:@"content"] toAbsolutePath:[RESTManager restURIWithServerAddress:[[RESTClient sharedInstance] hostInfo] forEntityWithName:@"RCMessage"]];
-    }
++ (ICAppDelegate*)sharedInstance {
+    return [UIApplication sharedApplication].delegate;
 }
 
--(NSArray*)getMessages {
-    NSMutableArray *returnArray = [NSMutableArray new];
-    
-    if ([RESTManager sharedInstance].isRunning) {
-        for (NSManagedObject *mo in [RESTManager managedObjectWithEntityName:@"RCMessage"]) {
-            [returnArray addObject:[RESTManager dictionaryRepresentationWithServerAddress:[[RESTClient sharedInstance] hostInfo] forManagedObject:mo]];
-        }
-    } else {
-        for (NSDictionary *restRef in [[[RESTClient sharedInstance] getAbsolutePath:[RESTManager restURIWithServerAddress:[[RESTClient sharedInstance] hostInfo] forEntityWithName:@"RCMessage"]] valueForKey:@"content"]) {
-            [returnArray addObject:[[[RESTClient sharedInstance] getAbsolutePath:[restRef valueForKey:REST_REF_KEYWORD]] valueForKey:@"content"]];
-        }
-    }
-    
-    return [returnArray autorelease];
-}
-
-#pragma mark - Application LifeCycle
-
-+(RCAppDelegate*)sharedInstance {
-    return (RCAppDelegate*)[UIApplication sharedApplication].delegate;
-}
-
-- (void)dealloc
-{
-	[_window release];
-	[__managedObjectContext release];
-	[__managedObjectModel release];
-	[__persistentStoreCoordinator release];
-    [super dealloc];
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                             [[UIDevice currentDevice] systemName], @"servername",
+                                                             [[UIDevice currentDevice] name], @"nickname",
+                                                             nil]];
+    return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
-	/*
-	 Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-	 Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-	 */
+    /*
+     Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
+     Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+     */
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-	/*
-	 Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
-	 If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-	 */
+    /*
+     Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later. 
+     If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+     */
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-	/*
-	 Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-	 */
+    /*
+     Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+     */
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-	/*
-	 Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-	 */
+    /*
+     Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+     */
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-	// Saves changes in the application's managed object context before the application terminates.
-	[self saveContext];
+    // Saves changes in the application's managed object context before the application terminates.
+    [self saveContext];
 }
 
 - (void)saveContext
@@ -155,7 +114,7 @@
     {
         return __managedObjectModel;
     }
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"iOS_REST_Chat" withExtension:@"momd"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"iOSChat" withExtension:@"momd"];
     __managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
     return __managedObjectModel;
 }
@@ -171,7 +130,7 @@
         return __persistentStoreCoordinator;
     }
     
-    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"iOS_REST_Chat.sqlite"];
+    NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:@"iOSChat.sqlite"];
     
     NSError *error = nil;
     __persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];

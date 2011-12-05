@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:iOS REST Chat.xcodeproj">
+      location = "self:iOSChat.xcodeproj">
    </FileRef>
 </Workspace>

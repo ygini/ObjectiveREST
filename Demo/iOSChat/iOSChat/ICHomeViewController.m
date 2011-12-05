@@ -1,32 +1,26 @@
 //
-//  RCHomeViewController.m
-//  iOS REST Chat
+//  ICHomeViewController.m
+//  iOSChat
 //
-//  Created by Yoann Gini on 29/11/11.
+//  Created by Yoann Gini on 30/11/11.
 //  Copyright (c) 2011 iNig-Services. All rights reserved.
 //
 
-#import "RCHomeViewController.h"
+#import "ICHomeViewController.h"
+#import "ICMessageProvider.h"
+#import "ICAppDelegate.h"
 
-#import "RCAppDelegate.h"
-#import "RCChatViewController.h"
-#import <ObjectiveREST.h>
-
-@implementation RCHomeViewController
-
-@synthesize nearServerTableView;
+@implementation ICHomeViewController
+@synthesize nicknameField;
+@synthesize nearServerTableView = _nearServerTableView;
 
 - (void)didReceiveMemoryWarning
 {
-	// Releases the view if it doesn't have a superview.
-	[super didReceiveMemoryWarning];
-	
-	// Release any cached data, images, etc that aren't in use.
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - View lifecycle
 
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
 - (void)viewDidLoad
 {
 	[super viewDidLoad];   
@@ -34,6 +28,9 @@
     
     _serviceBrowser = [[NSNetServiceBrowser alloc] init];
     [_serviceBrowser setDelegate:self];
+    [_serviceBrowser searchForServicesOfType:IOSCHAT_M_DNS_TYPE inDomain:@""];
+    
+    self.title = NSLocalizedString(@"home_label", @"Home text");
 }
 
 - (void)viewDidUnload
@@ -42,26 +39,24 @@
 	// Release any retained subviews of the main view.
 	// e.g. self.myOutlet = nil;
     
-    [_serviceBrowser release];
+    [_serviceBrowser stop];
+    
+    [self setNicknameField:nil];
+    [self setNearServerTableView:nil];
     _serviceBrowser = nil;
-    [_discoveredServices release];
     _discoveredServices = nil;
 }
 
 -(void)viewWillAppear:(BOOL)animated {
-    [_discoveredServices removeAllObjects];
-    [self.nearServerTableView reloadData];
-    [_serviceBrowser searchForServicesOfType:CHAT_NET_SERVICE_TYPE inDomain:@""];
+    self.nicknameField.text = [ICMessageProvider sharedInstance].nickName;
 }
 
 -(void)viewDidDisappear:(BOOL)animated {
-    [_serviceBrowser stop];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-	// Return YES for supported orientations
-	return (interfaceOrientation == UIInterfaceOrientationPortrait);
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 #pragma mark - NetBrowser
@@ -81,12 +76,16 @@
     
     if(!moreComing) {
         [self.nearServerTableView reloadData];
-        [self.nearServerTableView reloadData];
+    }
+    
+    if ([[ICMessageProvider sharedInstance].remoteService isEqual:aNetService]) {
+        [ICMessageProvider sharedInstance].remoteService = nil;
     }
 }
 
 -(void)netService:(NSNetService *)sender didNotResolve:(NSDictionary *)errorDict {
     [_discoveredServices removeObject:sender];
+    [self.nearServerTableView reloadData];
 }
 
 -(void)netServiceDidResolveAddress:(NSNetService *)sender {
@@ -95,45 +94,45 @@
 #pragma mark - UITableView
 
 -(NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-	return 1;
+    return 1;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-	return [_discoveredServices count];
+    return [_discoveredServices count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-	static NSString *cellIdentifier = @"MyCell";
-	
-	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-	
-	// -- Unused with storyboard
-	if (cell == nil) {
-		cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier] autorelease];
-	}
-	// --
-	
-    NSNetService *services = [_discoveredServices objectAtIndex:[indexPath row]];
-	cell.textLabel.text = [services name];
-	
-	return cell;
-}
+    static NSString *cellIdentifier = @"Cell";
 
--(NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return @"Services";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    if (cell == nil) {
+        // This part isn't use with storyboard
+        cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier] autorelease];
+    }
+
+    cell.textLabel.text = [[_discoveredServices objectAtIndex:[indexPath row]] name];
+
+    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-	NSNetService *services = [[_discoveredServices objectAtIndex:[indexPath row]] retain];
+    [ICMessageProvider sharedInstance].remoteService = [_discoveredServices objectAtIndex:[indexPath row]];
     
-    [RESTClient sharedInstance].tcpPort = 0;
-    [RESTClient sharedInstance].modelIsObjectiveRESTReady = NO;
-    [RESTClient sharedInstance].tcpPort = [services port];
-    [RESTClient sharedInstance].serverAddress = [services hostName];
-    [RESTClient sharedInstance].contentType = REST_SUPPORTED_CONTENT_TYPE;
-    
-    [services release];
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     [self performSegueWithIdentifier:@"goToChat" sender:self];
 }
+
+#pragma mark - UITextFieldDelegate
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
+}
+
+-(void)textFieldDidEndEditing:(UITextField *)textField {
+    [ICMessageProvider sharedInstance].nickName = self.nicknameField.text;
+    [[NSUserDefaults standardUserDefaults] setValue:self.nicknameField.text
+                                             forKey:@"nickname"];
+}
+
 @end

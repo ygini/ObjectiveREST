@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "container:Demo/iOS REST Chat/iOS REST Chat.xcodeproj">
+      location = "group:ObjectiveREST Frameworks/iOS/ObjectiveREST/ObjectiveREST iOS.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:ObjectiveREST Frameworks/iOS/ObjectiveREST/ObjectiveREST iOS.xcodeproj">
+      location = "group:Demo/iOSChat/iOSChat.xcodeproj">
    </FileRef>
 </Workspace>

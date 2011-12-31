@@ -8,7 +8,6 @@
 
 #import "ORAppDelegate.h"
 
-#import <ObjectiveREST/ObjectiveREST.h>
 #import "NSOutlineView_Additions.h"
 
 @implementation ORAppDelegate
@@ -63,6 +62,21 @@
 	[self.EntityContentTableView reloadData];
 }
 
+#pragma mark - RESTManagerDelegate
+
+-(NSString *)manager:(RESTManager *)manager withRequest:(HTTPMessage *)request requestPasswordForUser:(NSString *)userName {
+    if ([userName isEqualToString:self.UsernameTextField.stringValue]) return self.PasswordTextField.stringValue;
+    else return nil;
+}
+
+-(NSData *)manager:(RESTManager *)manager withRequest:(HTTPMessage *)request externalCommandForMethod:(NSString *)method withURI:(NSString *)path {
+    NSString *errorString = nil;
+    
+    return [NSPropertyListSerialization dataFromPropertyList:[NSDictionary dictionaryWithObject:@"foo" forKey:@"bar"]
+                                                      format:NSPropertyListXMLFormat_v1_0 
+                                            errorDescription:&errorString];
+}
+
 #pragma mark - Actions
 
 - (IBAction)saveAction:(id)sender {
@@ -81,13 +95,15 @@
 	if ([RESTManager sharedInstance].isRunning) {
 		[[RESTManager sharedInstance] stopServer];
 	} else {
-		[[RESTManager sharedInstance].authenticationDatabase removeAllObjects];
-		[[RESTManager sharedInstance].authenticationDatabase setValue:self.PasswordTextField.stringValue forKey:self.UsernameTextField.stringValue];
+        [RESTManager sharedInstance].delegate = self;
 		[RESTManager sharedInstance].modelIsObjectiveRESTReady = self.PatchedModelCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].requestHTTPS = self.HTTPSCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].requestAuthentication = self.AuthenticationCheckBox.state == NSOnState;
 		[RESTManager sharedInstance].mDNSType = @"_http._tcp";
 		[RESTManager sharedInstance].tcpPort = [self.TCPPortTextField intValue];
+        
+        [RESTManager sharedInstance].externalCommands = [NSArray arrayWithObject:@"command"];
+        //[RESTManager sharedInstance].coreDataPrefix = @"data";
 		
 		[[RESTManager sharedInstance] startServer];
 	}

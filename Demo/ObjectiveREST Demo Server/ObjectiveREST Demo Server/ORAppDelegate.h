@@ -14,10 +14,11 @@
  */
 
 #import <Cocoa/Cocoa.h>
+#import <ObjectiveREST/ObjectiveREST.h>
 
 @class ORTableColumn;
 
-@interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSTableViewDelegate, NSTableViewDataSource> {
+@interface ORAppDelegate : NSObject <NSApplicationDelegate, NSOutlineViewDataSource, NSTableViewDelegate, NSTableViewDataSource, RESTManagerDelegate> {
 	NSArray *_entitiesList;
 }
 

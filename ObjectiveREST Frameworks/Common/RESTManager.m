@@ -27,7 +27,10 @@
 @synthesize requestAuthentication;
 @synthesize useDigest;
 
-@synthesize authenticationDatabase;
+@synthesize delegate;
+
+@synthesize externalCommands;
+@synthesize coreDataPrefix;
 
 @synthesize tcpPort;
 
@@ -48,7 +51,6 @@
 -(id)init {
 	self = [super init];
 	if (self) {
-		self.authenticationDatabase = [[NSMutableDictionary new] autorelease];
         self.tcpPort = 0;       // The system choose the port.
         self.mDNSDomain = @"";  // Use network default domain or local. if no domain is provied by DNS server.
         self.mDNSName = @"";    // Use computer name by default.
@@ -58,7 +60,6 @@
 }
 
 - (void)dealloc {
-    self.authenticationDatabase = nil;
     [super dealloc];
 }
 
@@ -247,6 +248,9 @@
 }
 
 + (NSString*)baseURLForURIWithServerAddress:(NSString*)serverAddress {
+    if ([[RESTManager sharedInstance].coreDataPrefix length] > 0) {
+        return [NSString stringWithFormat:@"%@://%@/%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress, [RESTManager sharedInstance].coreDataPrefix];
+    }
     return [NSString stringWithFormat:@"%@://%@", [self sharedInstance].requestHTTPS ? @"https" : @"http" , serverAddress];
 }
 

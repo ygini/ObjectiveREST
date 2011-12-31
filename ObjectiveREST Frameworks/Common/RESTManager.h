@@ -10,6 +10,7 @@
 #import <CoreData/CoreData.h>
 
 #import "RESTManagedObject.h"
+#import "RESTManagerDelegate.h"
 
 #define REST_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 #define	REST_REF_KEYWORD					@"rest_ref"
@@ -30,7 +31,10 @@
 @property (assign, nonatomic) BOOL requestAuthentication;
 @property (assign, nonatomic) BOOL useDigest;
 
-@property (retain, nonatomic) NSMutableDictionary *authenticationDatabase;
+@property (retain, nonatomic) id <RESTManagerDelegate> delegate;
+
+@property (retain, nonatomic) NSArray *externalCommands;
+@property (retain, nonatomic) NSString *coreDataPrefix;
 
 @property (assign, nonatomic) NSInteger tcpPort;
 

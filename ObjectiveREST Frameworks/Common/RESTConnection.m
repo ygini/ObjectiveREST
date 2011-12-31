@@ -228,7 +228,9 @@
 {
 	HTTPLogTrace();
 	
-	return [[RESTManager sharedInstance].authenticationDatabase valueForKey:username];
+	return [[RESTManager sharedInstance].delegate manager:[RESTManager sharedInstance] 
+                                              withRequest:request 
+                                   requestPasswordForUser:username];
 }
 
 #pragma mark - Main method
@@ -249,164 +251,194 @@
 		}
 	}
 	
-	NSInteger numberOfComponents = [pathComponents count];
-		
-	@try {
-		HTTPLogTrace();
-		NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
-        if ([acceptedContentType count] == 0) acceptedContentType = [[request headerField:@"Content-Type"] componentsSeparatedByString:@","];
-		
-		entities = [[[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
-		
-		
-		NSMutableArray *retainedContentType = [NSMutableArray new];
-		for (NSString *contentType in REST_SUPPORTED_CONTENT_TYPE) {
-			if ([acceptedContentType containsObject:contentType]) [retainedContentType addObject:contentType];
-		}
-		
-		if ([retainedContentType count] == 0) ContentType = nil;
-		else ContentType = [[retainedContentType objectAtIndex:0] retain];
-		
-		[retainedContentType release], retainedContentType = nil;
-		
-		
-		if (!ContentType) { 
-			[self httpReturnCode501NotImplemented];		
-		} else {			
-			
-			if ([method isEqualToString:@"GET"]) {
-				/* **** GET ***** */
-				
-				if (numberOfComponents == 0) {
-					// No entity name provided, return the list of entry
-					
-					NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
-					for (NSString *entity in entities) {
-						[entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[RESTManager restURIWithServerAddress:[request headerField:@"Host"] forEntityWithName:entity] forKey:REST_REF_KEYWORD]];
-					}
-					
-					return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
-																						withContentType:ContentType]] 
-							autorelease];
-				} else {
-					NSString *selectedEntity = [pathComponents objectAtIndex:0];
-					
-					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
-						// return the list of entry for the kind of requested entity
-						
-						NSArray *entries = [RESTManager managedObjectWithEntityName:selectedEntity];
-						NSMutableArray *entriesRESTRefs = [NSMutableArray new];
-						
-						for (NSManagedObject <RESTManagedObject> *entry in entries) {						
-							[entriesRESTRefs addObject:[RESTManager restLinkRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry]];
-						}
-						
-						return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
-																							withContentType:ContentType]] 
-								autorelease];
-						
-					} else {
-						// return the selected entity
-                        return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:[RESTManager managedObjectWithRelativePath:path]], @"content", nil]
-																							withContentType:ContentType]] 
-								autorelease];
-					}
-				}
-				
-			} else if ([method isEqualToString:@"POST"]) {
-                /* **** POST ***** */
-				
-                if (numberOfComponents == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
-                    NSString *entityString = [pathComponents objectAtIndex:0];
+	__block NSInteger numberOfComponents = [pathComponents count];
+    
+    if (numberOfComponents > 0) {
+        if ([[RESTManager sharedInstance].externalCommands indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound) {            
+            return [[[HTTPDataResponse alloc] initWithData:[[RESTManager sharedInstance].delegate manager:[RESTManager sharedInstance]
+                                                                                              withRequest:request
+                                                                                 externalCommandForMethod:method
+                                                                                                  withURI:path]] 
+                    autorelease];
+        }
+    }
+    
+    
+    BOOL requestIsForCoreData = NO;
+    if ([[RESTManager sharedInstance].coreDataPrefix length] > 0) {
+        if (numberOfComponents > 0) {
+            if ([[RESTManager sharedInstance].coreDataPrefix isEqualToString:[pathComponents objectAtIndex:0]]) {
+                path = [path stringByReplacingCharactersInRange:(NSRange) {0, [[RESTManager sharedInstance].coreDataPrefix length]+1}
+                                                     withString:@""];
+                [pathComponents removeObjectAtIndex:0];
+                numberOfComponents = [pathComponents count];
+                requestIsForCoreData =  YES;
+            } else requestIsForCoreData = NO;
+        } else requestIsForCoreData = NO;
+    } else requestIsForCoreData =  YES;
+    
+    if (requestIsForCoreData) {
+        
+        @try {
+            HTTPLogTrace();
+            NSArray *acceptedContentType = [[request headerField:@"Accept"] componentsSeparatedByString:@","];
+            if ([acceptedContentType count] == 0) acceptedContentType = [[request headerField:@"Content-Type"] componentsSeparatedByString:@","];
+            
+            entities = [[[[[RESTManager sharedInstance].managedObjectModel entitiesByName] allKeys] sortedArrayUsingSelector:@selector(compare:)] retain];
+            
+            
+            NSMutableArray *retainedContentType = [NSMutableArray new];
+            for (NSString *contentType in REST_SUPPORTED_CONTENT_TYPE) {
+                if ([acceptedContentType containsObject:contentType]) [retainedContentType addObject:contentType];
+            }
+            
+            if ([retainedContentType count] == 0) ContentType = nil;
+            else ContentType = [[retainedContentType objectAtIndex:0] retain];
+            
+            [retainedContentType release], retainedContentType = nil;
+            
+            
+            if (!ContentType) { 
+                [self httpReturnCode501NotImplemented];		
+            } else {			
+                
+                if ([method isEqualToString:@"GET"]) {
+                    /* **** GET ***** */
                     
-                    NSManagedObject <RESTManagedObject> *newObject = [RESTManager insertNewObjectForEntityForName:entityString];
+                    if (numberOfComponents == 0) {
+                        // No entity name provided, return the list of entry
+                        
+                        NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
+                        for (NSString *entity in entities) {
+                            [entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[RESTManager restURIWithServerAddress:[request headerField:@"Host"] forEntityWithName:entity] forKey:REST_REF_KEYWORD]];
+                        }
+                        
+                        return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entitiesRESTRefs autorelease], @"content", nil]
+                                                                                                   withContentType:ContentType]] 
+                                autorelease];
+                    } else {
+                        NSString *selectedEntity = [pathComponents objectAtIndex:0];
+                        
+                        if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+                            // return the list of entry for the kind of requested entity
+                            
+                            NSArray *entries = [RESTManager managedObjectWithEntityName:selectedEntity];
+                            NSMutableArray *entriesRESTRefs = [NSMutableArray new];
+                            
+                            for (NSManagedObject <RESTManagedObject> *entry in entries) {						
+                                [entriesRESTRefs addObject:[RESTManager restLinkRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry]];
+                            }
+                            
+                            return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]
+                                                                                                       withContentType:ContentType]] 
+                                    autorelease];
+                            
+                        } else {
+                            // return the selected entity
+                            return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:[RESTManager managedObjectWithRelativePath:path]], @"content", nil]
+                                                                                                       withContentType:ContentType]] 
+                                    autorelease];
+                        }
+                    }
                     
-                    NSDictionary *dict = [[RESTManager dictionaryFromResponse:[request body] withContentType:ContentType] valueForKey:@"content"];
-					
-                    [RESTManager updateManagedObject:newObject withInfo:dict];
-					[self httpReturnCode201Created];
+                } else if ([method isEqualToString:@"POST"]) {
+                    /* **** POST ***** */
                     
-					return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:newObject], @"content", nil]
-																						withContentType:ContentType]] 
-							autorelease];
-                }
-				
-			} else if ([method isEqualToString:@"PUT"]) {
-				/* **** PUT ***** */
-				
-				if ([pathComponents count] == 0) {
-					// No entity name provided
-					
-				} else if ([[request body] length] > 0) {
-					
-					NSString *selectedEntity = [pathComponents objectAtIndex:0];
-					
-					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
-						// No PUT on collection, use POST instead
-						
-					} else {
-						NSManagedObject *entry = [RESTManager managedObjectWithRelativePath:path];
-						
-						if (!entry && [RESTManager sharedInstance].modelIsObjectiveRESTReady) {
-							entry = [RESTManager insertNewObjectForEntityForName:selectedEntity];
-                            [self httpReturnCode201Created];
-						}
-						
-						if (entry) {
-							NSDictionary *dict = [[RESTManager dictionaryFromResponse:[request body] withContentType:ContentType] valueForKey:@"content"];
-							
-							[RESTManager updateManagedObject:entry withInfo:dict];
-							
+                    if (numberOfComponents == 1 && [entities indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound && [[request body] length] > 0) {   
+                        NSString *entityString = [pathComponents objectAtIndex:0];
+                        
+                        NSManagedObject <RESTManagedObject> *newObject = [RESTManager insertNewObjectForEntityForName:entityString];
+                        
+                        NSDictionary *dict = [[RESTManager dictionaryFromResponse:[request body] withContentType:ContentType] valueForKey:@"content"];
+                        
+                        [RESTManager updateManagedObject:newObject withInfo:dict];
+                        [self httpReturnCode201Created];
+                        
+                        return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:newObject], @"content", nil]
+                                                                                                   withContentType:ContentType]] 
+                                autorelease];
+                    }
+                    
+                } else if ([method isEqualToString:@"PUT"]) {
+                    /* **** PUT ***** */
+                    
+                    if ([pathComponents count] == 0) {
+                        // No entity name provided
+                        
+                    } else if ([[request body] length] > 0) {
+                        
+                        NSString *selectedEntity = [pathComponents objectAtIndex:0];
+                        
+                        if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+                            // No PUT on collection, use POST instead
+                            
+                        } else {
+                            NSManagedObject *entry = [RESTManager managedObjectWithRelativePath:path];
+                            
+                            if (!entry && [RESTManager sharedInstance].modelIsObjectiveRESTReady) {
+                                entry = [RESTManager insertNewObjectForEntityForName:selectedEntity];
+                                [self httpReturnCode201Created];
+                            }
+                            
+                            if (entry) {
+                                NSDictionary *dict = [[RESTManager dictionaryFromResponse:[request body] withContentType:ContentType] valueForKey:@"content"];
+                                
+                                [RESTManager updateManagedObject:entry withInfo:dict];
+                                
+                                [self httpReturnCode200Success];
+                                return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry], @"content", nil]
+                                                                                                           withContentType:ContentType]] 
+                                        autorelease];
+                            } else {
+                                // return invalide reequest code when PUT is used to create a new object with specific ID and standard CoreData model
+                                [self handleInvalidRequest:nil];
+                            }
+                        }
+                    }
+                    
+                } else if ([method isEqualToString:@"DELETE"]) {
+                    /* **** DELETE ***** */
+                    
+                    if ([pathComponents count] == 0) {
+                        // No entity name provided
+                        
+                    } else {
+                        
+                        NSString *selectedEntity = [pathComponents objectAtIndex:0];
+                        
+                        if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
+                            // Delete all entities ?
+                            if ([RESTManager sharedInstance].allowDeleteOnCollection) {
+                                NSString *selectedEntity = [pathComponents objectAtIndex:0];
+                                NSArray *entries = [RESTManager managedObjectWithEntityName:selectedEntity];
+                                
+                                for (NSManagedObject *entry in entries) {
+                                    [[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
+                                }
+                                [self httpReturnCode200Success];
+                            } else [self httpReturnCode501NotImplemented];
+                        } else {						
+                            [[RESTManager sharedInstance].managedObjectContext deleteObject:[RESTManager managedObjectWithRelativePath:path]];
                             [self httpReturnCode200Success];
-							return [[[HTTPDataResponse alloc] initWithData:[RESTManager preparedResponseFromDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[RESTManager dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry], @"content", nil]
-																								withContentType:ContentType]] 
-									autorelease];
-						} else {
-							// return invalide reequest code when PUT is used to create a new object with specific ID and standard CoreData model
-							[self handleInvalidRequest:nil];
-						}
-					}
-				}
-				
-			} else if ([method isEqualToString:@"DELETE"]) {
-				/* **** DELETE ***** */
-				
-				if ([pathComponents count] == 0) {
-					// No entity name provided
-					
-				} else {
-					
-					NSString *selectedEntity = [pathComponents objectAtIndex:0];
-					
-					if (numberOfComponents == 1 && [entities indexOfObject:selectedEntity] != NSNotFound) {
-						// Delete all entities ?
-						if ([RESTManager sharedInstance].allowDeleteOnCollection) {
-							NSString *selectedEntity = [pathComponents objectAtIndex:0];
-							NSArray *entries = [RESTManager managedObjectWithEntityName:selectedEntity];
-							
-							for (NSManagedObject *entry in entries) {
-								[[RESTManager sharedInstance].managedObjectContext deleteObject:entry];
-							}
-							[self httpReturnCode200Success];
-						} else [self httpReturnCode501NotImplemented];
-					} else {						
-						[[RESTManager sharedInstance].managedObjectContext deleteObject:[RESTManager managedObjectWithRelativePath:path]];
-						[self httpReturnCode200Success];
-					}
-				}
-				
-			} else [self handleUnknownMethod:method];
-			
-		}		
-	}
-	@catch (NSException *exception) {
-		[self handleResourceNotFound];
-	} @finally {		
-		[pathComponents release], pathComponents = nil;
-		[ContentType release], ContentType = nil;
-		[entities release], entities = nil;
-		
-	}
+                        }
+                    }
+                    
+                } else [self handleUnknownMethod:method];
+                
+            }		
+        }
+        @catch (NSException *exception) {
+            [self handleResourceNotFound];
+        } @finally {		
+            [pathComponents release], pathComponents = nil;
+            [ContentType release], ContentType = nil;
+            [entities release], entities = nil;
+            
+        }
+        
+    } else {
+        // Not for CoreData
+    }
 	
 	return [super httpResponseForMethod:method URI:path];
 }

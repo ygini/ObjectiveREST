@@ -15,6 +15,7 @@
 #import <RESTClient.h>
 #import <NSString_RESTAddition.h>
 #import <RESTManagedObject.h>
+#import <HTTPMessage.h>
 
 #else
 
@@ -22,6 +23,7 @@
 #import <ObjectiveREST/RESTClient.h>
 #import <ObjectiveREST/NSString_RESTAddition.h>
 #import <ObjectiveREST/RESTManagedObject.h>
+#import <ObjectiveREST/HTTPMessage.h>
 
 #endif
 

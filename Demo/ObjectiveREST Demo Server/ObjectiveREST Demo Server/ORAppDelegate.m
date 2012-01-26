@@ -103,7 +103,7 @@
 		[RESTManager sharedInstance].tcpPort = [self.TCPPortTextField intValue];
         
         [RESTManager sharedInstance].externalCommands = [NSArray arrayWithObject:@"command"];
-        //[RESTManager sharedInstance].coreDataPrefix = @"data";
+        [RESTManager sharedInstance].coreDataPrefix = @"data";
 		
 		[[RESTManager sharedInstance] startServer];
 	}

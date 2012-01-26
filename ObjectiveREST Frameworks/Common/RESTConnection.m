@@ -251,18 +251,7 @@
 		}
 	}
 	
-	__block NSInteger numberOfComponents = [pathComponents count];
-    
-    if (numberOfComponents > 0) {
-        if ([[RESTManager sharedInstance].externalCommands indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound) {            
-            return [[[HTTPDataResponse alloc] initWithData:[[RESTManager sharedInstance].delegate manager:[RESTManager sharedInstance]
-                                                                                              withRequest:request
-                                                                                 externalCommandForMethod:method
-                                                                                                  withURI:path]] 
-                    autorelease];
-        }
-    }
-    
+    NSInteger numberOfComponents = [pathComponents count];
     
     BOOL requestIsForCoreData = NO;
     if ([[RESTManager sharedInstance].coreDataPrefix length] > 0) {
@@ -438,6 +427,16 @@
         
     } else {
         // Not for CoreData
+        
+        if (numberOfComponents > 0) {
+            if ([[RESTManager sharedInstance].externalCommands indexOfObject:[pathComponents objectAtIndex:0]] != NSNotFound) {            
+                return [[[HTTPDataResponse alloc] initWithData:[[RESTManager sharedInstance].delegate manager:[RESTManager sharedInstance]
+                                                                                                  withRequest:request
+                                                                                     externalCommandForMethod:method
+                                                                                                      withURI:path]] 
+                        autorelease];
+            }
+        }
     }
 	
 	return [super httpResponseForMethod:method URI:path];

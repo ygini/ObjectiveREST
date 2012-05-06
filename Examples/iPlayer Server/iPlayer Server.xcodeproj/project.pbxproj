@@ -1,0 +1,435 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
+		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
+		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		8F08B1061115E2F9003EDDD9 /* IPDataProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 8F08B1051115E2F9003EDDD9 /* IPDataProvider.m */; };
+		8F08B1081115E306003EDDD9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F08B1071115E306003EDDD9 /* CoreData.framework */; };
+		8F08B12E1115E9BB003EDDD9 /* MusicModel.xcdatamodel in Sources */ = {isa = PBXBuildFile; fileRef = 8F08B12D1115E9BB003EDDD9 /* MusicModel.xcdatamodel */; };
+		8F16BC5D111508E9008D6D20 /* ID3.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8F16BC5C111508E9008D6D20 /* ID3.framework */; };
+		8F16BC6C11150904008D6D20 /* ID3.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 8F16BC5C111508E9008D6D20 /* ID3.framework */; };
+		8FA0188F1114DE9000859563 /* IPController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8FA0188E1114DE9000859563 /* IPController.m */; };
+		8FA018951114E47F00859563 /* ModelViewController.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 8FA018941114E47F00859563 /* ModelViewController.mp3 */; };
+		E10F3E0E1555B47600A0E0DD /* IPArtist.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E0D1555B47600A0E0DD /* IPArtist.m */; };
+		E10F3E121555B47800A0E0DD /* IPAlbum.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E111555B47800A0E0DD /* IPAlbum.m */; };
+		E10F3E151555B47800A0E0DD /* IPMusicData.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E141555B47800A0E0DD /* IPMusicData.m */; };
+		E10F3E181555B4D700A0E0DD /* IPMusic.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E171555B4D700A0E0DD /* IPMusic.m */; };
+		E1182E5015568EAE0001870A /* ObjectiveREST.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E1182E4A15568E6E0001870A /* ObjectiveREST.framework */; };
+		E1182E5115568EBE0001870A /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E1182E4A15568E6E0001870A /* ObjectiveREST.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E1182E4915568E6E0001870A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1182DA115568CD90001870A;
+			remoteInfo = ObjectiveREST;
+		};
+		E1182E4E15568EA80001870A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E1182DA015568CD90001870A;
+			remoteInfo = ObjectiveREST;
+		};
+		E1182F4B1556921C0001870A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1182E5F155690D60001870A;
+			remoteInfo = CocoaHTTPServer;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8F16BC6D11150922008D6D20 /* Copy Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E1182E5015568EAE0001870A /* ObjectiveREST.framework in Copy Frameworks */,
+				8F16BC6C11150904008D6D20 /* ID3.framework in Copy Frameworks */,
+			);
+			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		256AC3F00F4B6AF500CF3369 /* iPlayer Server_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "iPlayer Server_Prefix.pch"; sourceTree = "<group>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		8D1107310486CEB800E47090 /* iPlayer Server-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iPlayer Server-Info.plist"; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* iPlayer Server.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "iPlayer Server.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F08B1041115E2F9003EDDD9 /* IPDataProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPDataProvider.h; sourceTree = "<group>"; };
+		8F08B1051115E2F9003EDDD9 /* IPDataProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPDataProvider.m; sourceTree = "<group>"; };
+		8F08B1071115E306003EDDD9 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		8F08B12D1115E9BB003EDDD9 /* MusicModel.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = MusicModel.xcdatamodel; sourceTree = "<group>"; };
+		8F16BC5C111508E9008D6D20 /* ID3.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ID3.framework; sourceTree = "<group>"; };
+		8FA0188D1114DE9000859563 /* IPController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPController.h; sourceTree = "<group>"; };
+		8FA0188E1114DE9000859563 /* IPController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPController.m; sourceTree = "<group>"; };
+		8FA018941114E47F00859563 /* ModelViewController.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ModelViewController.mp3; sourceTree = "<group>"; };
+		E10F3E0C1555B47600A0E0DD /* IPArtist.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPArtist.h; sourceTree = "<group>"; };
+		E10F3E0D1555B47600A0E0DD /* IPArtist.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPArtist.m; sourceTree = "<group>"; };
+		E10F3E101555B47800A0E0DD /* IPAlbum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPAlbum.h; sourceTree = "<group>"; };
+		E10F3E111555B47800A0E0DD /* IPAlbum.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPAlbum.m; sourceTree = "<group>"; };
+		E10F3E131555B47800A0E0DD /* IPMusicData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPMusicData.h; sourceTree = "<group>"; };
+		E10F3E141555B47800A0E0DD /* IPMusicData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPMusicData.m; sourceTree = "<group>"; };
+		E10F3E161555B4D700A0E0DD /* IPMusic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPMusic.h; sourceTree = "<group>"; };
+		E10F3E171555B4D700A0E0DD /* IPMusic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPMusic.m; sourceTree = "<group>"; };
+		E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "OSX-ObjectiveREST.xcodeproj"; path = "../../Core/OSX/OSX-ObjectiveREST.xcodeproj"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E1182E5115568EBE0001870A /* ObjectiveREST.framework in Frameworks */,
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+				8F16BC5D111508E9008D6D20 /* ID3.framework in Frameworks */,
+				8F08B1081115E306003EDDD9 /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				8FA0188D1114DE9000859563 /* IPController.h */,
+				8FA0188E1114DE9000859563 /* IPController.m */,
+				8F08B1041115E2F9003EDDD9 /* IPDataProvider.h */,
+				8F08B1051115E2F9003EDDD9 /* IPDataProvider.m */,
+			);
+			name = Classes;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				8F08B1071115E306003EDDD9 /* CoreData.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* iPlayer Server.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* iPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */,
+				8F08B1031115E2D2003EDDD9 /* Model */,
+				080E96DDFE201D6D7F000001 /* Classes */,
+				29B97315FDCFA39411CA2CEA /* Other Sources */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = iPlayer;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
+			isa = PBXGroup;
+			children = (
+				256AC3F00F4B6AF500CF3369 /* iPlayer Server_Prefix.pch */,
+				29B97316FDCFA39411CA2CEA /* main.m */,
+			);
+			name = "Other Sources";
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8FA018941114E47F00859563 /* ModelViewController.mp3 */,
+				8D1107310486CEB800E47090 /* iPlayer Server-Info.plist */,
+				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				8F16BC5C111508E9008D6D20 /* ID3.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8F08B1031115E2D2003EDDD9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8F08B12D1115E9BB003EDDD9 /* MusicModel.xcdatamodel */,
+				E10F3E131555B47800A0E0DD /* IPMusicData.h */,
+				E10F3E141555B47800A0E0DD /* IPMusicData.m */,
+				E10F3E101555B47800A0E0DD /* IPAlbum.h */,
+				E10F3E111555B47800A0E0DD /* IPAlbum.m */,
+				E10F3E0C1555B47600A0E0DD /* IPArtist.h */,
+				E10F3E0D1555B47600A0E0DD /* IPArtist.m */,
+				E10F3E161555B4D700A0E0DD /* IPMusic.h */,
+				E10F3E171555B4D700A0E0DD /* IPMusic.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		E1182E4315568E6E0001870A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E1182E4A15568E6E0001870A /* ObjectiveREST.framework */,
+				E1182F4C1556921C0001870A /* CocoaHTTPServer.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* iPlayer Server */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "iPlayer Server" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+				8F16BC6D11150922008D6D20 /* Copy Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E1182E4F15568EA80001870A /* PBXTargetDependency */,
+			);
+			name = "iPlayer Server";
+			productInstallPath = "$(HOME)/Applications";
+			productName = iPlayer;
+			productReference = 8D1107320486CEB800E47090 /* iPlayer Server.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPlayer Server" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* iPlayer */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E1182E4315568E6E0001870A /* Products */;
+					ProjectRef = E1182E4215568E6E0001870A /* OSX-ObjectiveREST.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* iPlayer Server */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E1182E4A15568E6E0001870A /* ObjectiveREST.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ObjectiveREST.framework;
+			remoteRef = E1182E4915568E6E0001870A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E1182F4C1556921C0001870A /* CocoaHTTPServer.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CocoaHTTPServer.framework;
+			remoteRef = E1182F4B1556921C0001870A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+				8FA018951114E47F00859563 /* ModelViewController.mp3 in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				8FA0188F1114DE9000859563 /* IPController.m in Sources */,
+				8F08B1061115E2F9003EDDD9 /* IPDataProvider.m in Sources */,
+				8F08B12E1115E9BB003EDDD9 /* MusicModel.xcdatamodel in Sources */,
+				E10F3E0E1555B47600A0E0DD /* IPArtist.m in Sources */,
+				E10F3E121555B47800A0E0DD /* IPAlbum.m in Sources */,
+				E10F3E151555B47800A0E0DD /* IPMusicData.m in Sources */,
+				E10F3E181555B4D700A0E0DD /* IPMusic.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E1182E4F15568EA80001870A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ObjectiveREST;
+			targetProxy = E1182E4E15568EA80001870A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				089C165DFE840E0CC02AAC07 /* English */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1DDD58140DA1D0A300B32029 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1DDD58150DA1D0A300B32029 /* English */,
+			);
+			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4B08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "iPlayer Server_Prefix.pch";
+				INFOPLIST_FILE = "iPlayer Server-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = "iPlayer Server";
+			};
+			name = Debug;
+		};
+		C01FCF4C08A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "iPlayer Server_Prefix.pch";
+				INFOPLIST_FILE = "iPlayer Server-Info.plist";
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = "iPlayer Server";
+			};
+			name = Release;
+		};
+		C01FCF4F08A954540054247B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = "";
+			};
+			name = Debug;
+		};
+		C01FCF5008A954540054247B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "iPlayer Server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4B08A954540054247B /* Debug */,
+				C01FCF4C08A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPlayer Server" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4F08A954540054247B /* Debug */,
+				C01FCF5008A954540054247B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

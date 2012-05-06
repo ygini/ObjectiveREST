@@ -228,7 +228,7 @@
 
 #pragma mark - NSAtomicStore
 
-- (NSMutableDictionary*)saveOperationForNode:(ORNoCacheStoreNode*)node needBashMode:(BOOL*)bash{
+- (NSMutableDictionary*)saveOperationForNode:(ORNoCacheStoreNode*)node needBashMode:(BOOL*)bash sharedNewNodeList:(NSMutableDictionary**)sharedNewNodeList{
     if (!node.ORNodeIsDirty) {
         return nil;
     }
@@ -258,10 +258,12 @@
             relations = [node valueForKey:relationName];
             relationsLink = [NSMutableArray arrayWithCapacity:[relations count]];
             for (relationNode in relations) {
-                relationNode = [node valueForKey:relationName];
                 referenceID = [persistentStore referenceObjectForObjectID:relationNode.objectID];
                 if ([referenceID rangeOfString:@"tmp://"].location == 0) {
-                    [newNodeList setValue:relationNode forKey:referenceID];
+                    if (![*sharedNewNodeList valueForKey:referenceID]) {
+                        [*sharedNewNodeList setValue:relationNode forKey:referenceID];
+                        [newNodeList setValue:relationNode forKey:referenceID];
+                    }
                 }
                 [relationsLink addObject:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD]];
             }
@@ -269,7 +271,10 @@
             relationNode = [node valueForKey:relationName];
             referenceID = [persistentStore referenceObjectForObjectID:relationNode.objectID];
             if ([referenceID rangeOfString:@"tmp://"].location == 0) {
-                [newNodeList setValue:relationNode forKey:referenceID];
+                if (![*sharedNewNodeList valueForKey:referenceID]) {
+                    [*sharedNewNodeList setValue:relationNode forKey:referenceID];
+                    [newNodeList setValue:relationNode forKey:referenceID];
+                }
             }
             [returnDict setValue:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD] forKey:relationName];
         }
@@ -301,7 +306,7 @@
         for (NSString *objectURLString in [newNodeList allKeys]) {
             bashAgain = NO;
             relationNode = [newNodeList valueForKey:objectURLString];
-            nestedSaveInfo = [self saveOperationForNode:relationNode needBashMode:&bashAgain];
+            nestedSaveInfo = [self saveOperationForNode:relationNode needBashMode:&bashAgain sharedNewNodeList:sharedNewNodeList];
             if (bashAgain) {
                 
                 for (NSString *nestedEntityString in [nestedSaveInfo allKeys]) {
@@ -343,7 +348,8 @@
 
 - (void)saveNode:(ORNoCacheStoreNode*)node {
     BOOL bash = NO;
-    NSDictionary *dict = [self saveOperationForNode:node needBashMode:&bash];
+    NSMutableDictionary *sharedNewNodeList = [NSMutableDictionary new];
+    NSDictionary *dict = [self saveOperationForNode:node needBashMode:&bash sharedNewNodeList:&sharedNewNodeList];
     
     if (bash) {
         [self postInfo:dict toPath:@"/"];
@@ -356,6 +362,8 @@
             [self putInfo:dict toAbsolutePath:referenceID];
         }
     }
+    
+    [sharedNewNodeList release];
 }
 
 @end

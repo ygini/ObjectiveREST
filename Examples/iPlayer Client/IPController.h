@@ -22,6 +22,7 @@
 	
 	IPMusic			*_curentMusic;
 	NSInteger		_currentIndex;
+    NSMenuItem *_saveDataStore;
 }
 
 @property (readonly) IPMusic *curentMusic;
@@ -39,4 +40,5 @@
 -(IBAction)open:(id)sender;
 -(IBAction)togglePlayList:(id)sender;
 
+- (IBAction)saveDataStore:(id)sender;
 @end

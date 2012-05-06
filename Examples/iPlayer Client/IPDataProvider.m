@@ -27,7 +27,7 @@
 {
 	self = [super init];
 	if (self != nil) {
-		ipdb_serverURL = [NSURL URLWithString:@"http://127.0.0.1:1988/OR-API"];
+		ipdb_serverURL = [NSURL URLWithString:@"http://192.168.42.50:1988/OR-API"];
 		
 		ipdp_mom = nil;  
 		ipdp_moc = nil;

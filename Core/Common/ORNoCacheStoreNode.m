@@ -13,6 +13,7 @@
 
 @implementation ORNoCacheStoreNode
 @synthesize remoteURL = _remoteURL;
+@synthesize ORNodeIsDirty = _ORNodeIsDirty;
 
 -(NSMutableDictionary*)loadRemoteInfos {
     NSMutableDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self.objectID.persistentStore] getAbsolutePath:_remoteURL] valueForKey:@"content"];
@@ -69,6 +70,17 @@
         [self setPropertyCache:cache];
     }
     return [cache valueForKey:key];
+}
+
+-(void)setValue:(id)value forKey:(NSString *)key {
+    [super setValue:value forKey:key];
+    
+    if (!_ORNodeIsDirty) {
+        NSPropertyDescription *desc = [[self.objectID.entity propertiesByName] valueForKey:key];
+        if (![desc isTransient]) {
+            _ORNodeIsDirty = YES;
+        }
+    }
 }
 
 @end

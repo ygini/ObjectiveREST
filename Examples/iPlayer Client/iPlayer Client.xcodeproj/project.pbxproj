@@ -23,8 +23,33 @@
 		E10F3E151555B47800A0E0DD /* IPMusicData.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E141555B47800A0E0DD /* IPMusicData.m */; };
 		E10F3E181555B4D700A0E0DD /* IPMusic.m in Sources */ = {isa = PBXBuildFile; fileRef = E10F3E171555B4D700A0E0DD /* IPMusic.m */; };
 		E10F42171555C59500A0E0DD /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E10F42161555C59500A0E0DD /* ObjectiveREST.framework */; };
-		E10F42181555C59C00A0E0DD /* ObjectiveREST.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E10F42161555C59500A0E0DD /* ObjectiveREST.framework */; };
+		E15D0F8615572F230015D965 /* ObjectiveREST.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E15D0F8215572F170015D965 /* ObjectiveREST.framework */; };
+		E15D0F8915572F310015D965 /* CocoaHTTPServer.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = E15D0F8415572F170015D965 /* CocoaHTTPServer.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		E15D0F8115572F170015D965 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1182DA115568CD90001870A;
+			remoteInfo = ObjectiveREST;
+		};
+		E15D0F8315572F170015D965 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = E1182E5F155690D60001870A;
+			remoteInfo = CocoaHTTPServer;
+		};
+		E15D0F8715572F2A0015D965 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = E1182DA015568CD90001870A;
+			remoteInfo = ObjectiveREST;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		8F16BC6D11150922008D6D20 /* Copy Frameworks */ = {
@@ -34,7 +59,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				8F16BC6C11150904008D6D20 /* ID3.framework in Copy Frameworks */,
-				E10F42181555C59C00A0E0DD /* ObjectiveREST.framework in Copy Frameworks */,
+				E15D0F8915572F310015D965 /* CocoaHTTPServer.framework in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,6 +94,7 @@
 		E10F3E161555B4D700A0E0DD /* IPMusic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPMusic.h; sourceTree = "<group>"; };
 		E10F3E171555B4D700A0E0DD /* IPMusic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPMusic.m; sourceTree = "<group>"; };
 		E10F42161555C59500A0E0DD /* ObjectiveREST.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ObjectiveREST.framework; sourceTree = "<group>"; };
+		E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "OSX-ObjectiveREST.xcodeproj"; path = "../../Core/OSX/OSX-ObjectiveREST.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +102,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E15D0F8615572F230015D965 /* ObjectiveREST.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				8F16BC5D111508E9008D6D20 /* ID3.framework in Frameworks */,
 				8F08B1081115E306003EDDD9 /* CoreData.framework in Frameworks */,
@@ -127,6 +154,7 @@
 		29B97314FDCFA39411CA2CEA /* iPlayer */ = {
 			isa = PBXGroup;
 			children = (
+				E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */,
 				8F08B1031115E2D2003EDDD9 /* Model */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -184,6 +212,15 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		E15D0F7A15572F170015D965 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E15D0F8215572F170015D965 /* ObjectiveREST.framework */,
+				E15D0F8415572F170015D965 /* CocoaHTTPServer.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -199,6 +236,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				E15D0F8815572F2A0015D965 /* PBXTargetDependency */,
 			);
 			name = "iPlayer Client";
 			productInstallPath = "$(HOME)/Applications";
@@ -220,12 +258,35 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* iPlayer */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = E15D0F7A15572F170015D965 /* Products */;
+					ProjectRef = E15D0F7915572F170015D965 /* OSX-ObjectiveREST.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* iPlayer Client */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		E15D0F8215572F170015D965 /* ObjectiveREST.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ObjectiveREST.framework;
+			remoteRef = E15D0F8115572F170015D965 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		E15D0F8415572F170015D965 /* CocoaHTTPServer.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = CocoaHTTPServer.framework;
+			remoteRef = E15D0F8315572F170015D965 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
@@ -257,6 +318,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		E15D0F8815572F2A0015D965 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ObjectiveREST;
+			targetProxy = E15D0F8715572F2A0015D965 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {

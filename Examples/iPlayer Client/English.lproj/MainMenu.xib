@@ -768,7 +768,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{449, 220}</string>
 				<object class="NSView" key="NSWindowView" id="406394138">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -787,7 +787,7 @@
 											<int key="NSvFlags">256</int>
 											<string key="NSFrameSize">{448, 202}</string>
 											<reference key="NSSuperview" ref="1032181082"/>
-											<reference key="NSNextKeyView" ref="43029301"/>
+											<reference key="NSNextKeyView" ref="792405239"/>
 											<bool key="NSEnabled">YES</bool>
 											<object class="NSTableHeaderView" key="NSHeaderView" id="931098581">
 												<reference key="NSNextResponder" ref="792405239"/>
@@ -947,7 +947,6 @@
 									<int key="NSvFlags">-2147483392</int>
 									<string key="NSFrame">{{1, 204}, {433, 15}}</string>
 									<reference key="NSSuperview" ref="404792136"/>
-									<reference key="NSNextKeyView"/>
 									<int key="NSsFlags">1</int>
 									<reference key="NSTarget" ref="404792136"/>
 									<string key="NSAction">_doScroller:</string>
@@ -970,7 +969,7 @@
 							</object>
 							<string key="NSFrame">{{0, 1}, {450, 220}}</string>
 							<reference key="NSSuperview" ref="406394138"/>
-							<reference key="NSNextKeyView" ref="792405239"/>
+							<reference key="NSNextKeyView" ref="1032181082"/>
 							<int key="NSsFlags">133682</int>
 							<reference key="NSVScroller" ref="43029301"/>
 							<reference key="NSHScroller" ref="58571809"/>
@@ -980,7 +979,6 @@
 						</object>
 					</object>
 					<string key="NSFrameSize">{449, 220}</string>
-					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="404792136"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
@@ -1202,6 +1200,22 @@
 						</object>
 					</object>
 					<int key="connectionID">701</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">data: selection.cover</string>
+						<reference key="source" ref="902431531"/>
+						<reference key="destination" ref="786667939"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="902431531"/>
+							<reference key="NSDestination" ref="786667939"/>
+							<string key="NSLabel">data: selection.cover</string>
+							<string key="NSBinding">data</string>
+							<string key="NSKeyPath">selection.cover</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">704</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -1758,7 +1772,6 @@
 						<reference key="object" ref="439893737"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="247079808"/>
 							<reference ref="496333127"/>
 							<reference ref="867518162"/>
 							<reference ref="16697062"/>
@@ -1766,6 +1779,7 @@
 							<reference ref="45183096"/>
 							<reference ref="720853855"/>
 							<reference ref="27281700"/>
+							<reference ref="247079808"/>
 						</object>
 						<reference key="parent" ref="972006081"/>
 					</object>
@@ -2325,7 +2339,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">703</int>
+			<int key="maxID">704</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">

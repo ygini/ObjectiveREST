@@ -8,8 +8,6 @@
 
 #import <CoreData/CoreData.h>
 
-extern NSString *OR_NO_CACHE_STORE;
-
 @class ORNoCacheStoreNode;
 
 @interface ORNoCacheStore : NSAtomicStore {

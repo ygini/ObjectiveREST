@@ -13,3 +13,5 @@
 #import <ObjectiveREST/ORToolbox.h>
 #import <ObjectiveREST/ORNoCacheStore.h>
 #import <ObjectiveREST/ORNoCacheStoreNode.h>
+
+extern NSString *OR_NO_CACHE_STORE;

@@ -229,6 +229,10 @@
 #pragma mark - NSAtomicStore
 
 - (NSMutableDictionary*)saveOperationForNode:(ORNoCacheStoreNode*)node needBashMode:(BOOL*)bash{
+    if (!node.ORNodeIsDirty) {
+        return nil;
+    }
+    
     NSMutableDictionary *newNodeList = [NSMutableDictionary new];
     NSManagedObjectID *objectID = node.objectID;
     ORNoCacheStore *persistentStore = (ORNoCacheStore *)objectID.persistentStore;

@@ -11,7 +11,7 @@
 #import <CoreData/CoreData.h>
 #import <ID3/TagAPI.h>
 
-#import "ORNoCacheStore.h"
+#import <ObjectiveREST/ObjectiveREST.h>
 
 @implementation IPDataProvider
 

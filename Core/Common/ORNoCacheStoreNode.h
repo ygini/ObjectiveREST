@@ -10,5 +10,5 @@
 
 @interface ORNoCacheStoreNode : NSAtomicStoreCacheNode
 @property (retain) NSString *remoteURL;
-
+@property (assign) BOOL ORNodeIsDirty;
 @end

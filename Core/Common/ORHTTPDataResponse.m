@@ -10,11 +10,13 @@
 
 @implementation ORHTTPDataResponse
 @synthesize httpHeaders = _httpHeaders;
+@synthesize contentLength = _contentLength;
 
 -(id)initWithData:(NSData *)aData {
     self = [super initWithData:aData];
     if (self) {
         _httpHeaders = [NSMutableDictionary new];
+		_contentLength = [aData length];
     }
     return self;
 }

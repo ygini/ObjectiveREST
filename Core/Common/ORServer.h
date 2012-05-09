@@ -11,6 +11,8 @@
 #import <CocoaHTTPServer/HTTPServer.h>
 #import "ORProtocols.h"
 
+void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void));
+
 @interface ORServer : HTTPServer
 @property (assign, nonatomic) id<ORServerDataProvider> dataProvider;
 @property (assign, nonatomic) id<ORServerExternalAPI> externalAPIDelegate;

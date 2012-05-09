@@ -171,15 +171,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 }
 
 -(BOOL)save:(NSError **)error {
-    NSSet *nodes = [self cacheNodes];
-    ORNoCacheStoreNode *node;
-    
-    ORToolbox *toolbox = [ORToolbox sharedInstanceForPersistentStore:self];
-    for (node in nodes) {
-        [toolbox saveNode:node];
-    }
-    
-    return YES;
+    return [[ORToolbox sharedInstanceForPersistentStore:self] saveNodes:[self cacheNodes]];
 }
 
 #pragma mark - Routines

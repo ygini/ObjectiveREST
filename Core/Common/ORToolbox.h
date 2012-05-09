@@ -44,5 +44,6 @@
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict;
 - (NSDictionary*)dictionaryFromResponse:(NSData*)response;
 
-- (void)saveNode:(ORNoCacheStoreNode*)node;
+- (BOOL)saveNode:(ORNoCacheStoreNode*)node;
+- (BOOL)saveNodes:(NSSet*)nodes;
 @end

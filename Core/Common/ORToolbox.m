@@ -105,9 +105,12 @@
     
 	[req setHTTPMethod:@"POST"];
 	
-	[req setHTTPBody:[self preparedResponseFromDictionary:info]];
+    NSData *body = [self preparedResponseFromDictionary:info];
+    
+	[req setHTTPBody:body];
     
     [req setValue:[self negociatedContentType] forHTTPHeaderField:@"Content-Type"];
+    [req setValue:[[NSNumber numberWithUnsignedInteger:[body length]] stringValue] forHTTPHeaderField:@"Content-Length"];
 	
 	NSURLResponse *rep = nil;
 	NSError *err = nil;
@@ -128,9 +131,12 @@
 	
 	[req setHTTPMethod:@"PUT"];
 	
-	[req setHTTPBody:[self preparedResponseFromDictionary:info]];
+    NSData *body = [self preparedResponseFromDictionary:info];
+    
+	[req setHTTPBody:body];
     
     [req setValue:[self negociatedContentType] forHTTPHeaderField:@"Content-Type"];
+    [req setValue:[[NSNumber numberWithUnsignedInteger:[body length]] stringValue] forHTTPHeaderField:@"Content-Length"];
 	
 	NSURLResponse *rep = nil;
 	NSError *err = nil;
@@ -286,6 +292,8 @@
 			[returnDict setObject:value forKey:attribute];
 	}
     
+    relationNode.ORNodeIsDirty = NO;
+    
     if ([newNodeList count] > 0) {
         *bash = YES;
         // Special kind of POST method for bunch creation of new object.
@@ -307,28 +315,29 @@
             bashAgain = NO;
             relationNode = [newNodeList valueForKey:objectURLString];
             nestedSaveInfo = [self saveOperationForNode:relationNode needBashMode:&bashAgain sharedNewNodeList:sharedNewNodeList];
-            if (bashAgain) {
-                
-                for (NSString *nestedEntityString in [nestedSaveInfo allKeys]) {
-                    dictForSelectedEntity = [returnDict valueForKey:nestedEntityString];
+            if (nestedSaveInfo) {
+                if (bashAgain) {
+                    
+                    for (NSString *nestedEntityString in [nestedSaveInfo allKeys]) {
+                        dictForSelectedEntity = [returnDict valueForKey:nestedEntityString];
+                        if (!dictForSelectedEntity) {
+                            dictForSelectedEntity = [NSMutableDictionary dictionary];
+                            [returnDict setValue:dictForSelectedEntity forKey:nestedEntityString];
+                        }
+                        [dictForSelectedEntity addEntriesFromDictionary:[nestedSaveInfo valueForKey:nestedEntityString]];
+                    }
+                    
+                    
+                } else {
+                    dictForSelectedEntity = [returnDict valueForKey:relationNode.objectID.entity.name];
                     if (!dictForSelectedEntity) {
                         dictForSelectedEntity = [NSMutableDictionary dictionary];
-                        [returnDict setValue:dictForSelectedEntity forKey:nestedEntityString];
+                        [returnDict setValue:dictForSelectedEntity forKey:relationNode.objectID.entity.name];
                     }
-                    [dictForSelectedEntity addEntriesFromDictionary:[nestedSaveInfo valueForKey:nestedEntityString]];
+                    [dictForSelectedEntity setValue:nestedSaveInfo forKey:[persistentStore referenceObjectForObjectID:objectID]];
                 }
-                
-                
-            } else {
-                dictForSelectedEntity = [returnDict valueForKey:relationNode.objectID.entity.name];
-                if (!dictForSelectedEntity) {
-                    dictForSelectedEntity = [NSMutableDictionary dictionary];
-                    [returnDict setValue:dictForSelectedEntity forKey:relationNode.objectID.entity.name];
-                }
-                [dictForSelectedEntity setValue:nestedSaveInfo forKey:[persistentStore referenceObjectForObjectID:objectID]];
             }
         }
-        
         
         
         dictForSelectedEntity = [returnDict valueForKey:objectID.entity.name];
@@ -346,24 +355,106 @@
     return returnDict;
 }
 
-- (void)saveNode:(ORNoCacheStoreNode*)node {
+
+- (NSMutableDictionary*)saveOperationForNode:(ORNoCacheStoreNode*)node {
+    if (!node.ORNodeIsDirty) {
+        return nil;
+    }
+    
+    NSManagedObjectID *objectID = node.objectID;
+    ORNoCacheStore *persistentStore = (ORNoCacheStore *)objectID.persistentStore;
+    NSEntityDescription *entityDescription = objectID.entity;
+    
+    NSDictionary *relationList = [entityDescription relationshipsByName];
+    NSDictionary *attributeList = [entityDescription attributesByName];
+    
+    NSRelationshipDescription *relation = nil;
+    NSSet *relations;
+    NSMutableArray *relationsLink;
+    ORNoCacheStoreNode *relationNode = nil;
+    NSString *referenceID;
+    
+    id value;
+    
+    NSMutableDictionary *returnDict = [NSMutableDictionary dictionaryWithCapacity:[attributeList count]  + [relationList count]];
+    
+    for (NSString *relationName in [relationList allKeys]) {
+        relation = [relationList valueForKey:relationName];
+        
+        if ([relation isToMany]) {
+            relations = [node valueForKey:relationName];
+            relationsLink = [NSMutableArray arrayWithCapacity:[relations count]];
+            for (relationNode in relations) {
+                referenceID = [persistentStore referenceObjectForObjectID:relationNode.objectID];
+                [relationsLink addObject:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD]];
+            }
+            [returnDict setValue:relationsLink forKey:relationName];
+        } else {
+            relationNode = [node valueForKey:relationName];
+            referenceID = [persistentStore referenceObjectForObjectID:relationNode.objectID];
+            [returnDict setValue:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD] forKey:relationName];
+        }
+    }
+    
+    for (NSString *attribute in [attributeList allKeys]) {
+		value = [node valueForKey:attribute];
+		if (value)
+			[returnDict setObject:value forKey:attribute];
+	}
+    
+    return returnDict;
+}
+
+
+- (BOOL)saveNode:(ORNoCacheStoreNode*)node {
     BOOL bash = NO;
     NSMutableDictionary *sharedNewNodeList = [NSMutableDictionary new];
     NSDictionary *dict = [self saveOperationForNode:node needBashMode:&bash sharedNewNodeList:&sharedNewNodeList];
-    
-    if (bash) {
-        [self postInfo:dict toPath:@"/"];
-    } else {
-        ORNoCacheStore *persistentStore = (ORNoCacheStore *)node.objectID.persistentStore;
-        NSString *referenceID = [persistentStore referenceObjectForObjectID:node.objectID];
-        if ([referenceID rangeOfString:@"tmp://"].location == 0) {
-            [self postInfo:dict toPath:node.objectID.entity.name];
+    if (dict) {
+        if (bash) {
+            [self postInfo:dict toPath:@""];
         } else {
-            [self putInfo:dict toAbsolutePath:referenceID];
+            ORNoCacheStore *persistentStore = (ORNoCacheStore *)node.objectID.persistentStore;
+            NSString *referenceID = [persistentStore referenceObjectForObjectID:node.objectID];
+            if ([referenceID rangeOfString:@"tmp://"].location == 0) {
+                [self postInfo:dict toPath:node.objectID.entity.name];
+            } else {
+                [self putInfo:dict toAbsolutePath:referenceID];
+            }
         }
     }
     
     [sharedNewNodeList release];
+    return YES;
+}
+
+- (BOOL)saveNodes:(NSSet*)nodes {
+    
+    NSMutableDictionary *postInfo = [NSMutableDictionary new];
+    NSMutableDictionary *nodeList = [NSMutableDictionary new];
+    ORNoCacheStore *persistentStore = nil;
+    NSString *referenceID = nil;
+    
+    NSSet *filteredNodes = [nodes filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF.ORNodeIsDirty == TRUE"]];
+    
+    for (ORNoCacheStoreNode *node in filteredNodes) {
+        persistentStore = (ORNoCacheStore *)node.objectID.persistentStore;
+        referenceID = [persistentStore referenceObjectForObjectID:node.objectID];
+        if (![postInfo valueForKey:referenceID]) {
+            [nodeList setValue:node forKey:referenceID];
+            [postInfo setValue:[self saveOperationForNode:node] forKey:referenceID];
+        }
+    }
+    
+    NSDictionary *answer = [self postInfo:[NSDictionary dictionaryWithObject:postInfo forKey:@"content"] toPath:@""];
+    NSString *objectServerID;
+    for (NSString *objectClientID in [[answer valueForKey:@"content"] allKeys]) {
+        objectServerID = [[answer valueForKey:@"content"] valueForKey:objectClientID];
+        ((ORNoCacheStoreNode*)[nodeList valueForKey:objectClientID]).remoteURL = objectServerID;
+        ((ORNoCacheStoreNode*)[nodeList valueForKey:objectClientID]).ORNodeIsDirty = NO;
+    }
+    
+    return YES;
 }
 
 @end

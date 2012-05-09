@@ -73,7 +73,6 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 -(BOOL)load:(NSError **)error {
     NSArray *localEntities = [self.persistentStoreCoordinator.managedObjectModel entities];
     NSArray * objectList = nil;
-    NSMutableDictionary *object = nil;
     NSManagedObjectID *objectID = nil;
     ORNoCacheStoreNode *objectCacheNode = nil;
     
@@ -82,13 +81,10 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
     for (NSEntityDescription *entity in localEntities) {
         objectList = [[[ORToolbox sharedInstanceForPersistentStore:self] getPath:[entity name]] valueForKey:@"content"];
         for (NSDictionary *objectInfo in objectList) {
-            object = [[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[objectInfo valueForKey:OR_REF_KEYWORD]];
-            
             objectID = [self objectIDForEntity:entity referenceObject:[objectInfo valueForKey:OR_REF_KEYWORD]];
             objectCacheNode = [self nodeForReferenceObject:objectID andObjectID:objectID];
             objectCacheNode.remoteURL = [objectInfo valueForKey:OR_REF_KEYWORD];
             [cacheNodes addObject:objectCacheNode];
-            [objectCacheNode release];
         }
     }
     
@@ -110,13 +106,13 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 }
 
 -(id)newReferenceObjectForManagedObject:(NSManagedObject *)managedObject {
-    return [NSString stringWithFormat:@"tmp://%@/%@", managedObject.entity.name, [NSString UUIDString]];
+    return [[NSString stringWithFormat:@"tmp://%@/%@", managedObject.entity.name, [NSString UUIDString]] retain];
 }
 
 -(NSAtomicStoreCacheNode *)newCacheNodeForManagedObject:(NSManagedObject *)managedObject {
     NSManagedObjectID *objectID = [managedObject objectID];
     id referenceID = [self referenceObjectForObjectID:objectID];
-    ORNoCacheStoreNode *objectCacheNode = [self nodeForReferenceObject:referenceID andObjectID:objectID];
+    ORNoCacheStoreNode *objectCacheNode = [[self nodeForReferenceObject:referenceID andObjectID:objectID] retain];
     [self updateCacheNode:objectCacheNode fromManagedObject:managedObject];
     return objectCacheNode;
 }

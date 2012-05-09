@@ -453,6 +453,9 @@
         ((ORNoCacheStoreNode*)[nodeList valueForKey:objectClientID]).remoteURL = objectServerID;
         ((ORNoCacheStoreNode*)[nodeList valueForKey:objectClientID]).ORNodeIsDirty = NO;
     }
+	
+	[postInfo release];
+	[nodeList release];
     
     return YES;
 }

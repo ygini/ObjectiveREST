@@ -314,7 +314,7 @@
 		for (NSString *clientRefID in [objectList allKeys]) {
 			
 			if (![refIDAssociation valueForKey:clientRefID]) {
-				infos = [refIDAssociation valueForKey:clientRefID];
+				infos = [objectList valueForKey:clientRefID];
 				if ([clientRefID rangeOfString:@"tmp://"].location == 0) {
 					// New object
 					@try {

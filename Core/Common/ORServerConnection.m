@@ -12,6 +12,7 @@
 #import "ORProtocols.h"
 
 #import "ORHTTPDataResponse.h"
+#import "ORHTTPLogSettings.h"
 
 #import <CocoaHTTPServer/HTTPDataResponse.h>
 
@@ -61,7 +62,7 @@
 
 - (NSObject<HTTPResponse> *)httpResponseForMethod:(NSString *)method URI:(NSString *)path
 {
-    NSObject<HTTPResponse> * returnHTTPResponse = nil;
+    __block NSObject<HTTPResponse> * returnHTTPResponse = nil;
     
     // -- Redirect request
 	NSMutableArray *pathComponents = [NSMutableArray new];
@@ -115,11 +116,17 @@
                 if ([method isEqualToString:@"GET"]) {
                     returnHTTPResponse = [self methodGETWithPath:path andPathCompontents:pathComponents];
                 } else if ([method isEqualToString:@"POST"]) {
-                    returnHTTPResponse = [self methodPOSTWithPath:path andPathCompontents:pathComponents];
+					ORrunOnMainQueueWithoutDeadlocking(^{
+						returnHTTPResponse = [self methodPOSTWithPath:path andPathCompontents:pathComponents];
+					});
                 } else if ([method isEqualToString:@"PUT"]) {
-                    returnHTTPResponse = [self methodPUTWithPath:path andPathCompontents:pathComponents];
+					ORrunOnMainQueueWithoutDeadlocking(^{
+						returnHTTPResponse = [self methodPUTWithPath:path andPathCompontents:pathComponents];
+					});
                 } else if ([method isEqualToString:@"DELETE"]) {
-                    returnHTTPResponse = [self methodDELETEWithPath:path andPathCompontents:pathComponents];
+					ORrunOnMainQueueWithoutDeadlocking(^{
+						returnHTTPResponse = [self methodDELETEWithPath:path andPathCompontents:pathComponents];
+					});
                 } else {
                     // Unknow method
                 }
@@ -140,6 +147,52 @@
     }
     
 	return [super httpResponseForMethod:method URI:path];
+}
+
+#pragma mark - HTTP Session
+
+- (BOOL)supportsMethod:(NSString *)method atPath:(NSString *)path
+{
+	HTTPLogTrace();
+	
+	if ([method isEqualToString:@"GET"])
+		return YES;
+	if ([method isEqualToString:@"POST"])
+		return YES;
+	if ([method isEqualToString:@"PUT"])
+		return YES;
+	if ([method isEqualToString:@"DELETE"])
+		return YES;
+	
+	return [super supportsMethod:method atPath:path];
+}
+
+- (BOOL)expectsRequestBodyFromMethod:(NSString *)method atPath:(NSString *)path
+{
+	HTTPLogTrace();
+	
+	if([method isEqualToString:@"POST"])
+		return YES;
+	if ([method isEqualToString:@"PUT"])
+		return YES;
+	
+	return [super expectsRequestBodyFromMethod:method atPath:path];
+}
+
+- (void)prepareForBodyWithSize:(UInt64)contentLength
+{
+	HTTPLogTrace();
+	
+	// If we supported large uploads,
+	// we might use this method to create/open files, allocate memory, etc.
+	
+}
+
+- (void)processBodyData:(NSData *)postDataChunk
+{
+	HTTPLogTrace();
+    
+    [request appendData:postDataChunk];
 }
 
 #pragma mark - Private request handling
@@ -242,76 +295,80 @@
         
         /*
          The content look like:
-         content:entityA:tmpObjectLink:{infos}
+         content:tmpObjectLink:{infos}
          object link for new object are tmp://Entity/UUID
          */
         
-        NSDictionary *bashUpdatesOrCreations = [[self dictionaryFromResponse:[request body]] valueForKey:@"content"];
-        NSDictionary *infos = nil;
-        NSMutableDictionary *cache = [NSMutableDictionary new];
-        NSMutableDictionary *operations = [NSMutableDictionary new];
+		NSDictionary *objectList = [[self dictionaryFromResponse:[request body]] valueForKey:@"content"];
+		NSDictionary *refIDAssociation = [NSMutableDictionary dictionaryWithCapacity:[objectList count]];
+		NSDictionary *refObjectAssociation = [NSMutableDictionary dictionaryWithCapacity:[objectList count]];
+		NSDictionary *relationShip = nil;
+		NSDictionary *infos = nil;
         NSManagedObject <ORManagedObject> *object = nil;
+		NSString *entityString = nil;
+		NSString *key = nil;
+		NSDictionary *ref = nil;
+		NSManagedObject <ORManagedObject> *refObject = nil;
+		NSMutableSet *toManyRef = nil;
+		
+		for (NSString *clientRefID in [objectList allKeys]) {
+			
+			if (![refIDAssociation valueForKey:clientRefID]) {
+				infos = [refIDAssociation valueForKey:clientRefID];
+				if ([clientRefID rangeOfString:@"tmp://"].location == 0) {
+					// New object
+					@try {
+						entityString = [[[clientRefID stringByReplacingCharactersInRange:(NSRange){0, 6}  withString:@""] pathComponents] objectAtIndex:0];
+					}
+					@catch (NSException *exception) {
+						entityString = nil;
+					}
+					
+					object = [self insertNewObjectForEntityForName:entityString];
+				} else {
+					// Existing object
+					object = [self managedObjectWithAbsolutePath:clientRefID];
+				}
+				
+				for (key in object.entity.attributeKeys) {
+					[object setValue:[infos valueForKey:key] forKey:key];
+				}				
+				
+				[refObjectAssociation setValue:object forKey:clientRefID];
+				[refIDAssociation setValue:[self restURIWithServerAddress:[request headerField:@"Host"] forManagedObject:object] forKey:clientRefID];
+			}
+		}
+		
+		for (NSString *clientRefID in [objectList allKeys]) {
+			infos = [objectList valueForKey:clientRefID];
+			object = [refObjectAssociation valueForKey:clientRefID];
+			
+			relationShip = object.entity.relationshipsByName;
+			for (key in [relationShip allKeys]) {
+				if ([((NSRelationshipDescription*)[relationShip valueForKey:key]) isToMany]) {
+					toManyRef = [NSMutableSet setWithCapacity:[[infos valueForKey:key]count]];
+					for (ref in [infos valueForKey:key]) {
+						refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_REF_KEYWORD]];
+						if (!refObject) {
+							refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_REF_KEYWORD]];
+							[refObjectAssociation setValue:refObject forKey:clientRefID];
+						}
+						if (refObject) [toManyRef addObject:refObject];
+					}
+					[object setValue:toManyRef forKey:key];
+				} else {
+					ref = [infos valueForKey:key];
+					refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_REF_KEYWORD]];
+					if (!refObject) {
+						refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_REF_KEYWORD]];
+						[refObjectAssociation setValue:refObject forKey:clientRefID];
+					}
+					[object setValue:refObject forKey:key];
+				}
+			}
+		}
         
-        for (NSString *entityString in [bashUpdatesOrCreations allKeys]) {
-            infos = [bashUpdatesOrCreations valueForKey:entityString];
-            for (NSString *objectURLString in [infos allKeys]) {
-                if ([objectURLString rangeOfString:@"tmp://"].location == 0) {
-                    // New object
-                    object = [self insertNewObjectForEntityForName:entityString];
-                } else {
-                    // Existing object
-                    object = [self managedObjectWithAbsolutePath:objectURLString];
-                }
-                [cache setValue:object forKey:objectURLString];
-                [operations setValue:[infos valueForKey:objectURLString] forKey:objectURLString];
-            }
-        }
-        
-        for (NSString *objectURLString in cache) {
-            object = [cache valueForKey:objectURLString];
-            infos = [operations valueForKey:objectURLString];
-            
-            
-            id value = nil;
-            for (NSString *supportedKey in [[[object entity] attributesByName] allKeys]) {
-                value = [infos valueForKey:supportedKey];
-                if (value) [object setValue:value forKey:supportedKey];
-            }
-            
-            NSRelationshipDescription *relation = nil;
-            for (NSString *supportedKey in [[[object entity] relationshipsByName] allKeys]) {
-                if (value) {
-                    value = [infos valueForKey:supportedKey];
-                    relation = [[[object entity] relationshipsByName] valueForKey:supportedKey];
-                    
-                    if ([relation isToMany]) {
-                        NSSet *representedSet = value;
-                        
-                        NSMutableSet *uptodateSet = [NSMutableSet setWithCapacity:[representedSet count]];
-                        
-                        for (NSDictionary *relationInfo in representedSet) {
-                            [uptodateSet addObject:[cache valueForKey:[relationInfo valueForKey:OR_REF_KEYWORD]]];
-                        }
-                        
-                        [object willChangeValueForKey:supportedKey];
-                        [object setPrimitiveValue:uptodateSet forKey:supportedKey];
-                        [object didChangeValueForKey:supportedKey];
-                        
-                    } else [object setValue:[cache valueForKey:[value valueForKey:OR_REF_KEYWORD]] forKey:supportedKey];
-                }
-            }
-        }
-        
-        NSMutableArray *entriesRESTRefs = [NSMutableArray new];
-        
-        for (NSManagedObject <ORManagedObject> *entry in [cache allValues]) {						
-            [entriesRESTRefs addObject:[self restLinkRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry]];
-        }
-        
-        [cache release];
-        [operations release];
-        
-        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[entriesRESTRefs autorelease], @"content", nil]];
+        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:refIDAssociation, @"content", nil]];
     }
     return nil;
 }

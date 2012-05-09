@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E11266781557AE440066F3D6 /* ORHTTPLogSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = E11266761557AE3D0066F3D6 /* ORHTTPLogSettings.h */; settings = {ATTRIBUTES = (); }; };
 		E1182DA815568CD90001870A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = E1182DA615568CD90001870A /* InfoPlist.strings */; };
 		E1182E3515568D780001870A /* ObjectiveREST.h in Headers */ = {isa = PBXBuildFile; fileRef = E1182E2F15568D780001870A /* ObjectiveREST.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E1182E3615568D780001870A /* ORServer.h in Headers */ = {isa = PBXBuildFile; fileRef = E1182E3015568D780001870A /* ORServer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -112,6 +113,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E11266761557AE3D0066F3D6 /* ORHTTPLogSettings.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ORHTTPLogSettings.h; sourceTree = "<group>"; };
 		E1182D8B15568C800001870A /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		E1182D8C15568C800001870A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		E1182DA115568CD90001870A /* ObjectiveREST.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ObjectiveREST.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -418,6 +420,7 @@
 				E1182E3315568D780001870A /* ORServerConnection.m */,
 				E1182F711556AAFE0001870A /* ORHTTPDataResponse.h */,
 				E1182F721556AAFE0001870A /* ORHTTPDataResponse.m */,
+				E11266761557AE3D0066F3D6 /* ORHTTPLogSettings.h */,
 			);
 			name = Server;
 			sourceTree = "<group>";
@@ -453,6 +456,7 @@
 				E1182F8A155725EB0001870A /* ORNoCacheStore.h in Headers */,
 				E1182F8C155725EB0001870A /* ORNoCacheStoreNode.h in Headers */,
 				E1182F8E155725EB0001870A /* ORToolbox.h in Headers */,
+				E11266781557AE440066F3D6 /* ORHTTPLogSettings.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,4 +10,6 @@
 
 @interface ORHTTPDataResponse : HTTPDataResponse
 @property (retain, nonatomic) NSMutableDictionary *httpHeaders;
+@property (assign, nonatomic) UInt64 contentLength;
+
 @end

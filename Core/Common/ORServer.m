@@ -11,6 +11,18 @@
 #import <CocoaHTTPServer/HTTPServer.h>
 #import "ORServerConnection.h"
 
+void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void))
+{
+    if ([NSThread isMainThread])
+    {
+        block();
+    }
+    else
+    {
+        dispatch_sync(dispatch_get_main_queue(), block);
+    }
+}
+
 @implementation ORServer
 @synthesize dataProvider = _dataProvider;
 @synthesize externalAPIDelegate = _externalAPIDelegate;

@@ -19,7 +19,6 @@
 
 
 @implementation IPController
-
 @synthesize curentMusic = _curentMusic;
 @dynamic dataProvider;
 
@@ -112,6 +111,10 @@
 
 -(IBAction)togglePlayList:(id)sender {    
 	[panel setIsVisible:![panel isVisible]];
+}
+
+- (IBAction)saveDataStore:(id)sender {
+    [[IPDataProvider sharedInstance] saveAction:sender];
 }
 
 // MARK: Initialize

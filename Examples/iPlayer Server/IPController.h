@@ -26,6 +26,7 @@
 
 @property (readonly) IPMusic *curentMusic;
 @property (readonly) IPDataProvider *dataProvider;
+@property (assign) BOOL playlistPanelIsVisible;
 
 -(IBAction)playPause:(id)sender;
 -(IBAction)stop:(id)sender;
@@ -37,6 +38,5 @@
 -(IBAction)rapidReverse:(id)sender;
 
 -(IBAction)open:(id)sender;
--(IBAction)togglePlayList:(id)sender;
 
 @end

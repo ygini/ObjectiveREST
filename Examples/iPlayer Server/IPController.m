@@ -21,6 +21,7 @@
 @implementation IPController
 
 @synthesize curentMusic = _curentMusic;
+@synthesize playlistPanelIsVisible = _playlistPanelIsVisible;
 @dynamic dataProvider;
 
 - (IPDataProvider *) dataProvider {
@@ -108,10 +109,6 @@
             for (NSURL *fileURL in [openPanel URLs]) [[IPDataProvider sharedInstance] createIPMusicWithPath:[fileURL path]];
         }
     }];
-}
-
--(IBAction)togglePlayList:(id)sender {
-	[panel setIsVisible:![panel isVisible]];
 }
 
 // MARK: Initialize

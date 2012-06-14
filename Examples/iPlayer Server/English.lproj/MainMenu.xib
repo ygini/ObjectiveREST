@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1070</int>
-		<string key="IBDocument.SystemVersion">11D50d</string>
-		<string key="IBDocument.InterfaceBuilderVersion">1938</string>
-		<string key="IBDocument.AppKitVersion">1138.32</string>
-		<string key="IBDocument.HIToolboxVersion">568.00</string>
+		<string key="IBDocument.SystemVersion">11E53</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2182</string>
+		<string key="IBDocument.AppKitVersion">1138.47</string>
+		<string key="IBDocument.HIToolboxVersion">569.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">1938</string>
+			<string key="NS.object.0">2182</string>
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -767,7 +767,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{449, 220}</string>
 				<object class="NSView" key="NSWindowView" id="406394138">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
@@ -966,7 +966,7 @@
 									<int key="NScvFlags">4</int>
 								</object>
 							</object>
-							<string key="NSFrame">{{0, 1}, {450, 220}}</string>
+							<string key="NSFrameSize">{450, 220}</string>
 							<reference key="NSSuperview" ref="406394138"/>
 							<reference key="NSNextKeyView" ref="1032181082"/>
 							<int key="NSsFlags">133682</int>
@@ -978,6 +978,7 @@
 						</object>
 					</object>
 					<string key="NSFrameSize">{449, 220}</string>
+					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="404792136"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
@@ -1131,7 +1132,7 @@
 									<string>NSDisplayPattern</string>
 									<string>NSNullPlaceholder</string>
 								</object>
-								<object class="NSMutableArray" key="dict.values">
+								<object class="NSArray" key="dict.values">
 									<bool key="EncodedWithXMLCoder">YES</bool>
 									<string>%{value1}@</string>
 									<string>Unknow</string>
@@ -1160,7 +1161,7 @@
 									<string>NSDisplayPattern</string>
 									<string>NSNullPlaceholder</string>
 								</object>
-								<object class="NSMutableArray" key="dict.values">
+								<object class="NSArray" key="dict.values">
 									<bool key="EncodedWithXMLCoder">YES</bool>
 									<string>%{value1}@</string>
 									<string>Unknow</string>
@@ -1189,7 +1190,7 @@
 									<string>NSDisplayPattern</string>
 									<string>NSNullPlaceholder</string>
 								</object>
-								<object class="NSMutableArray" key="dict.values">
+								<object class="NSArray" key="dict.values">
 									<bool key="EncodedWithXMLCoder">YES</bool>
 									<string>%{value1}@</string>
 									<string>Unknow</string>
@@ -1265,14 +1266,6 @@
 					<int key="connectionID">575</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">togglePlayList:</string>
-						<reference key="source" ref="1057092260"/>
-						<reference key="destination" ref="111538195"/>
-					</object>
-					<int key="connectionID">631</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">panel</string>
 						<reference key="source" ref="1057092260"/>
@@ -1335,6 +1328,38 @@
 						<reference key="destination" ref="1045619035"/>
 					</object>
 					<int key="connectionID">660</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">value: self.playlistPanelIsVisible</string>
+						<reference key="source" ref="27281700"/>
+						<reference key="destination" ref="1057092260"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="27281700"/>
+							<reference key="NSDestination" ref="1057092260"/>
+							<string key="NSLabel">value: self.playlistPanelIsVisible</string>
+							<string key="NSBinding">value</string>
+							<string key="NSKeyPath">self.playlistPanelIsVisible</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">705</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">visible: self.playlistPanelIsVisible</string>
+						<reference key="source" ref="1060090193"/>
+						<reference key="destination" ref="1057092260"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="1060090193"/>
+							<reference key="NSDestination" ref="1057092260"/>
+							<string key="NSLabel">visible: self.playlistPanelIsVisible</string>
+							<string key="NSBinding">visible</string>
+							<string key="NSKeyPath">self.playlistPanelIsVisible</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">704</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
@@ -2235,7 +2260,7 @@
 					<string>83.IBPluginDependency</string>
 					<string>92.IBPluginDependency</string>
 				</object>
-				<object class="NSMutableArray" key="dict.values">
+				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -2338,7 +2363,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">703</int>
+			<int key="maxID">705</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2359,7 +2384,7 @@
 							<string>stop:</string>
 							<string>togglePlayList:</string>
 						</object>
-						<object class="NSMutableArray" key="dict.values">
+						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>id</string>
 							<string>id</string>
@@ -2384,7 +2409,7 @@
 							<string>stop:</string>
 							<string>togglePlayList:</string>
 						</object>
-						<object class="NSMutableArray" key="dict.values">
+						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBActionInfo">
 								<string key="name">fastForward:</string>
@@ -2428,7 +2453,7 @@
 							<string>playList</string>
 							<string>tableView</string>
 						</object>
-						<object class="NSMutableArray" key="dict.values">
+						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSPanel</string>
 							<string>NSArrayController</string>
@@ -2443,7 +2468,7 @@
 							<string>playList</string>
 							<string>tableView</string>
 						</object>
-						<object class="NSMutableArray" key="dict.values">
+						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<object class="IBToOneOutletInfo">
 								<string key="name">panel</string>
@@ -2482,7 +2507,7 @@
 				<string>NSMenuCheckmark</string>
 				<string>NSMenuMixedState</string>
 			</object>
-			<object class="NSMutableArray" key="dict.values">
+			<object class="NSArray" key="dict.values">
 				<bool key="EncodedWithXMLCoder">YES</bool>
 				<string>{11, 10}</string>
 				<string>{11, 11}</string>

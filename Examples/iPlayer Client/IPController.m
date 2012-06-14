@@ -20,6 +20,7 @@
 
 @implementation IPController
 @synthesize curentMusic = _curentMusic;
+@synthesize playlistPanelIsVisible = _playlistPanelIsVisible;
 @dynamic dataProvider;
 
 - (IPDataProvider *) dataProvider {

@@ -114,18 +114,18 @@
             } else {			
                 
                 if ([method isEqualToString:@"GET"]) {
-                    returnHTTPResponse = [self methodGETWithPath:path andPathCompontents:pathComponents];
+                    returnHTTPResponse = [[self methodGETWithPath:path andPathCompontents:pathComponents] retain];
                 } else if ([method isEqualToString:@"POST"]) {
 					ORrunOnMainQueueWithoutDeadlocking(^{
-						returnHTTPResponse = [self methodPOSTWithPath:path andPathCompontents:pathComponents];
+						returnHTTPResponse = [[self methodPOSTWithPath:path andPathCompontents:pathComponents] retain];
 					});
                 } else if ([method isEqualToString:@"PUT"]) {
 					ORrunOnMainQueueWithoutDeadlocking(^{
-						returnHTTPResponse = [self methodPUTWithPath:path andPathCompontents:pathComponents];
+						returnHTTPResponse = [[self methodPUTWithPath:path andPathCompontents:pathComponents] retain];
 					});
                 } else if ([method isEqualToString:@"DELETE"]) {
 					ORrunOnMainQueueWithoutDeadlocking(^{
-						returnHTTPResponse = [self methodDELETEWithPath:path andPathCompontents:pathComponents];
+						returnHTTPResponse = [[self methodDELETEWithPath:path andPathCompontents:pathComponents] retain];
 					});
                 } else {
                     // Unknow method
@@ -138,12 +138,12 @@
         }
 
     } else if ([_httpServer.externalAPIDelegate respondsToSelector:@selector(httpResponseForMethod:URI:andHTTPRequest:)]) {
-        returnHTTPResponse = [_httpServer.externalAPIDelegate httpResponseForMethod:method URI:path andHTTPRequest:request];
+        returnHTTPResponse = [[_httpServer.externalAPIDelegate httpResponseForMethod:method URI:path andHTTPRequest:request] retain];
     }
     
     
     if (returnHTTPResponse) {
-        return returnHTTPResponse;
+        return [returnHTTPResponse autorelease];
     }
     
 	return [super httpResponseForMethod:method URI:path];

@@ -86,6 +86,8 @@
 		E1182F8D155725EB0001870A /* ORNoCacheStoreNode.m in Sources */ = {isa = PBXBuildFile; fileRef = E1182F80155725EB0001870A /* ORNoCacheStoreNode.m */; };
 		E1182F8E155725EB0001870A /* ORToolbox.h in Headers */ = {isa = PBXBuildFile; fileRef = E1182F81155725EB0001870A /* ORToolbox.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E1182F8F155725EB0001870A /* ORToolbox.m in Sources */ = {isa = PBXBuildFile; fileRef = E1182F82155725EB0001870A /* ORToolbox.m */; };
+		E1FC9A98164AC880006A7B50 /* ORNoCacheIncrementalStore.h in Headers */ = {isa = PBXBuildFile; fileRef = E1FC9A96164AC880006A7B50 /* ORNoCacheIncrementalStore.h */; };
+		E1FC9A99164AC880006A7B50 /* ORNoCacheIncrementalStore.m in Sources */ = {isa = PBXBuildFile; fileRef = E1FC9A97164AC880006A7B50 /* ORNoCacheIncrementalStore.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -192,6 +194,8 @@
 		E1182F80155725EB0001870A /* ORNoCacheStoreNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORNoCacheStoreNode.m; sourceTree = "<group>"; };
 		E1182F81155725EB0001870A /* ORToolbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORToolbox.h; sourceTree = "<group>"; };
 		E1182F82155725EB0001870A /* ORToolbox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORToolbox.m; sourceTree = "<group>"; };
+		E1FC9A96164AC880006A7B50 /* ORNoCacheIncrementalStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ORNoCacheIncrementalStore.h; sourceTree = "<group>"; };
+		E1FC9A97164AC880006A7B50 /* ORNoCacheIncrementalStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ORNoCacheIncrementalStore.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -430,12 +434,30 @@
 			children = (
 				E1182F81155725EB0001870A /* ORToolbox.h */,
 				E1182F82155725EB0001870A /* ORToolbox.m */,
+				E1FC9A94164AC82D006A7B50 /* ORNoCacheStore - NSAtomicStore hack */,
+				E1FC9A9A164AC886006A7B50 /* ORNoCacheIncrementalStore */,
+			);
+			name = Client;
+			sourceTree = "<group>";
+		};
+		E1FC9A94164AC82D006A7B50 /* ORNoCacheStore - NSAtomicStore hack */ = {
+			isa = PBXGroup;
+			children = (
 				E1182F7D155725EA0001870A /* ORNoCacheStore.h */,
 				E1182F7E155725EA0001870A /* ORNoCacheStore.m */,
 				E1182F7F155725EB0001870A /* ORNoCacheStoreNode.h */,
 				E1182F80155725EB0001870A /* ORNoCacheStoreNode.m */,
 			);
-			name = Client;
+			name = "ORNoCacheStore - NSAtomicStore hack";
+			sourceTree = "<group>";
+		};
+		E1FC9A9A164AC886006A7B50 /* ORNoCacheIncrementalStore */ = {
+			isa = PBXGroup;
+			children = (
+				E1FC9A96164AC880006A7B50 /* ORNoCacheIncrementalStore.h */,
+				E1FC9A97164AC880006A7B50 /* ORNoCacheIncrementalStore.m */,
+			);
+			name = ORNoCacheIncrementalStore;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -457,6 +479,7 @@
 				E1182F8C155725EB0001870A /* ORNoCacheStoreNode.h in Headers */,
 				E1182F8E155725EB0001870A /* ORToolbox.h in Headers */,
 				E11266781557AE440066F3D6 /* ORHTTPLogSettings.h in Headers */,
+				E1FC9A98164AC880006A7B50 /* ORNoCacheIncrementalStore.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,6 +615,7 @@
 				E1182F8B155725EB0001870A /* ORNoCacheStore.m in Sources */,
 				E1182F8D155725EB0001870A /* ORNoCacheStoreNode.m in Sources */,
 				E1182F8F155725EB0001870A /* ORToolbox.m in Sources */,
+				E1FC9A99164AC880006A7B50 /* ORNoCacheIncrementalStore.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

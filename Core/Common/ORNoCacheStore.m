@@ -12,7 +12,7 @@
 #import "ORToolbox.h"
 #import "ORNoCacheStoreNode.h"
 
-NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
+NSString *OR_NO_CACHE_LEGACY_STORE = @"OR_NO_CACHE_LEGACY_STORE";
 
 #define OR_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
 #define	OR_REF_KEYWORD                          @"rest_ref"
@@ -32,13 +32,13 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 +(void)load {
     NSAutoreleasePool * pool = [NSAutoreleasePool new];
         [NSPersistentStoreCoordinator registerStoreClass:[ORNoCacheStore class]
-                                            forStoreType:OR_NO_CACHE_STORE];
+                                            forStoreType:OR_NO_CACHE_LEGACY_STORE];
     [pool release];
 }
 
 +(NSDictionary *)metadataForPersistentStoreWithURL:(NSURL *)url error:(NSError **)error {
     NSMutableDictionary *metadata = [[[[ORToolbox sharedInstance] getAbsolutePath:[url absoluteString]] valueForKey:@"metadata"] mutableCopy];
-    [metadata setValue:OR_NO_CACHE_STORE forKey:NSStoreTypeKey];
+    [metadata setValue:OR_NO_CACHE_LEGACY_STORE forKey:NSStoreTypeKey];
     return [metadata autorelease];
 }
 
@@ -99,7 +99,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 
 -(void)setMetadata:(NSDictionary *)storeMetadata {
     NSMutableDictionary *metadata = [storeMetadata mutableCopy];
-    [metadata setValue:OR_NO_CACHE_STORE forKey:NSStoreTypeKey];
+    [metadata setValue:OR_NO_CACHE_LEGACY_STORE forKey:NSStoreTypeKey];
     [metadata setValue:self.identifier forKey:NSStoreUUIDKey];
     [super setMetadata:metadata];
     [metadata release];

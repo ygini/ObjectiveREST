@@ -38,12 +38,15 @@
 - (void)deletePath:(NSString*)path;
 
 - (NSMutableDictionary*)getAbsolutePath:(NSString*)path;
+- (NSMutableDictionary*)getAbsolutePath:(NSString*)path withHTTPHeader:(NSDictionary*)headers;
 - (NSMutableDictionary*)getPath:(NSString*)path;
 - (NSArray*)getAllObjectOfThisEntityKind:(NSString*)path;
+- (NSArray*)getObjectsForFetchRequest:(NSFetchRequest*)request;
 
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict;
 - (NSDictionary*)dictionaryFromResponse:(NSData*)response;
 
 - (BOOL)saveNode:(ORNoCacheStoreNode*)node;
 - (BOOL)saveNodes:(NSSet*)nodes;
+
 @end

@@ -168,11 +168,18 @@
 }
 
 - (NSMutableDictionary*)getAbsolutePath:(NSString*)path {
+	return [self getAbsolutePath:path withHTTPHeader:nil];
+}
+
+- (NSMutableDictionary*)getAbsolutePath:(NSString*)path withHTTPHeader:(NSDictionary*)headers {
 	NSMutableDictionary *dict = nil;
 	NSMutableURLRequest *req = [self baseRequestForPath:path];
+	for (NSString *key in headers) {
+		[req setValue:[headers valueForKey:key] forHTTPHeaderField:key];
+	}
     
     [req setHTTPMethod:@"GET"];
-    
+
     NSHTTPURLResponse *rep = nil;
     NSError *err = nil;
     
@@ -199,6 +206,17 @@
 		return [[self getPath:[NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]] valueForKey:@"content"];
 	}
 	return nil;
+}
+
+- (NSArray*)getObjectsForFetchRequest:(NSFetchRequest*)request {
+	NSDictionary *headers = nil;
+	if ([request.predicate predicateFormat]) {
+		headers = [NSDictionary dictionaryWithObject:[request.predicate predicateFormat]
+											  forKey:@"NSPredicate"];
+	}
+	return [[self getAbsolutePath:[self absoluteVersionForPath:request.entityName]
+				   withHTTPHeader:headers]
+			valueForKey:@"content"];
 }
 
 #pragma mark - NSDictionary for REST

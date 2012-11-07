@@ -15,3 +15,4 @@
 #import <ObjectiveREST/ORNoCacheStoreNode.h>
 
 extern NSString *OR_NO_CACHE_STORE;
+extern NSString *OR_NO_CACHE_LEGACY_STORE;

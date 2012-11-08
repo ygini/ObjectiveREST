@@ -77,8 +77,8 @@
 	
     [req setValue:[self acceptedContentType] forHTTPHeaderField:@"Accept"];
     
-	
-	[req setValue:[NSString stringWithFormat:@"%@:%@", [_serverURL host], [_serverURL port]] forHTTPHeaderField:@"Host"];
+	//[req setValue:[NSString stringWithFormat:@"%@:%@", [_serverURL host], [_serverURL port]] forHTTPHeaderField:@"Host"];
+	[req setValue:[NSString stringWithFormat:@"%@:%@", [req.URL host], [req.URL port]] forHTTPHeaderField:@"Host"];
     
 	/*if (self.requestAuthentication) {
      if(self.useDigest) {
@@ -197,12 +197,12 @@
 - (NSArray*)getAllObjectOfThisEntityKind:(NSString*)path {
 	if ([path rangeOfString:@"x-coredata"].location == NSNotFound) {
 		// REST Ready database
-		return [[self getAbsolutePath:[path stringByDeletingLastPathComponent]] valueForKey:@"content"];
+		return [[self getAbsolutePath:[path stringByDeletingLastPathComponent]] valueForKey:OR_KEY_CONTENT];
 	} else {
 		// Standard database
 		NSArray *compo = [path pathComponents];
         
-		return [[self getPath:[NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]] valueForKey:@"content"];
+		return [[self getPath:[NSString stringWithFormat:@"/%@", [compo objectAtIndex:[compo count] -2]]] valueForKey:OR_KEY_CONTENT];
 	}
 	return nil;
 }
@@ -215,7 +215,7 @@
 	}
 	return [[self getAbsolutePath:[self absoluteVersionForPath:request.entityName]
 				   withHTTPHeader:headers]
-			valueForKey:@"content"];
+			valueForKey:OR_KEY_CONTENT];
 }
 
 #pragma mark - NSDictionary for REST
@@ -277,13 +277,13 @@
             relationsLink = [NSMutableArray arrayWithCapacity:[relations count]];
             for (relationObject in relations) {
                 referenceID = [_associatedStore referenceObjectForObjectID:relationObject.objectID];
-                [relationsLink addObject:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD]];
+                [relationsLink addObject:[NSDictionary dictionaryWithObject:referenceID forKey:OR_KEY_REF_REST]];
             }
             [returnDict setValue:relationsLink forKey:relationName];
         } else {
             relationObject = [object valueForKey:relationName];
             referenceID = [_associatedStore referenceObjectForObjectID:relationObject.objectID];
-            [returnDict setValue:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD] forKey:relationName];
+            [returnDict setValue:[NSDictionary dictionaryWithObject:referenceID forKey:OR_KEY_REF_REST] forKey:relationName];
         }
     }
     

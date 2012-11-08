@@ -14,6 +14,12 @@
 #import "ORHTTPDataResponse.h"
 #import "ORHTTPLogSettings.h"
 
+#import "ORServerWebSocket.h"
+
+#import "ORConstants.h"
+
+#import <CocoaHTTPServer/WebSocket.h>
+
 #import <CocoaHTTPServer/HTTPDataResponse.h>
 
 @interface ORServerConnection ()
@@ -35,6 +41,7 @@
 - (NSDictionary*)dictionaryFromResponse:(NSData*)response;
 
 - (NSString*)baseURLForURIWithServerAddress:(NSString*)serverAddress;
+- (NSString*)baseURLForWebSocketWithServerAddress:(NSString*)serverAddress;
 - (NSString*)restURIWithServerAddress:(NSString*)serverAddress forEntityWithName:(NSString*)name;
 - (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<ORManagedObject>*)object;
 - (NSString*)restURIWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<ORManagedObject>*)object onRESTReadyObjectModel:(BOOL)RESTReady;
@@ -196,6 +203,30 @@
     [request appendData:postDataChunk];
 }
 
+-(WebSocket *)webSocketForURI:(NSString *)path {
+	path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
+	
+	NSMutableArray *pathComponents = [NSMutableArray new];
+	
+	for (NSString *pathCompo in [path pathComponents]) {
+		if (![pathCompo isEqualToString:@"/"]) {
+			[pathComponents addObject:pathCompo];
+		}
+	}
+	
+	if ([pathComponents count] > 0) {
+		if ([[pathComponents objectAtIndex:0] isEqualToString:_httpServer.prefixForWebSocket]) {
+			ORServerWebSocket *ws = [[ORServerWebSocket alloc] initWithRequest:request socket:asyncSocket];
+			ws.delegate = _httpServer;
+			return [ws autorelease];
+		}
+	}
+	
+	[pathComponents release];
+	
+	return [super webSocketForURI:path];
+}
+
 #pragma mark - Private request handling
 
 - (NSObject<HTTPResponse> *)methodGETWithPath:(NSString*)path andPathCompontents:(NSArray*)pathComponents {
@@ -206,12 +237,19 @@
         
         NSMutableArray *entitiesRESTRefs = [NSMutableArray new];
         for (NSString *entity in [self entities]) {
-            [entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[self restURIWithServerAddress:[request headerField:@"Host"] forEntityWithName:entity] forKey:OR_REF_KEYWORD]];
+            [entitiesRESTRefs addObject:[NSDictionary dictionaryWithObject:[self restURIWithServerAddress:[request headerField:@"Host"] forEntityWithName:entity] forKey:OR_KEY_REF_REST]];
         }
         
         NSPersistentStore *persistentStore = [[_httpServer.dataProvider persistentStoreCoordinator] persistentStoreForURL:[_httpServer.dataProvider persistentStoreURL]];
         
-        returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entitiesRESTRefs, @"content", [persistentStore metadata], @"metadata", nil]];
+		NSMutableDictionary *metadata = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+										 [self baseURLForWebSocketWithServerAddress:[request headerField:@"Host"]], OR_KEY_WS_URL,
+										 nil];
+		
+		[metadata addEntriesFromDictionary:[persistentStore metadata]];
+		
+        returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entitiesRESTRefs, OR_KEY_CONTENT, metadata, OR_KEY_METADATA, nil]];
+		
         [entitiesRESTRefs release];
     } else {
         NSString *selectedEntity = [pathComponents objectAtIndex:0];
@@ -226,16 +264,16 @@
                 [entriesRESTRefs addObject:[self restLinkRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry]];
             }
             
-            returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entriesRESTRefs, @"content", nil]];
+            returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:entriesRESTRefs, OR_KEY_CONTENT, nil]];
             [entriesRESTRefs release];
         } else {
             // return the selected entity
 			NSManagedObject *object = [self managedObjectWithRelativePath:path];
             returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
                                                              [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
-                                                                                            forManagedObject:object], @"content",
+                                                                                            forManagedObject:object], OR_KEY_CONTENT,
 															 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
-																						  forManagedObject:object], @"metadata", nil]];
+																						  forManagedObject:object], OR_KEY_METADATA, nil]];
         }
     }
     
@@ -263,16 +301,16 @@
             }
             
             if (entry) {
-                NSDictionary *dict = [[self dictionaryFromResponse:[request body]] valueForKey:@"content"];
+                NSDictionary *dict = [[self dictionaryFromResponse:[request body]] valueForKey:OR_KEY_CONTENT];
                 
                 [self updateManagedObject:entry withInfo:dict];
                 
                 // Code 200
                 return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 														 [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
-																						forManagedObject:entry], @"content",
+																						forManagedObject:entry], OR_KEY_CONTENT,
 														 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
-																					  forManagedObject:entry], @"metadata", nil]];
+																					  forManagedObject:entry], OR_KEY_METADATA, nil]];
             } else {
                 // return invalide request code when PUT is used to create a new object with specific ID and standard CoreData model
                 // Code 501?
@@ -292,16 +330,16 @@
         
         NSManagedObject <ORManagedObject> *newObject = [self insertNewObjectForEntityForName:entityString];
         
-        NSDictionary *dict = [[self dictionaryFromResponse:[request body]] valueForKey:@"content"];
+        NSDictionary *dict = [[self dictionaryFromResponse:[request body]] valueForKey:OR_KEY_CONTENT];
         
         [self updateManagedObject:newObject withInfo:dict];
         // 201
         
         return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
 												 [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
-																				forManagedObject:newObject], @"content",
+																				forManagedObject:newObject], OR_KEY_CONTENT,
 												 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
-																			  forManagedObject:newObject], @"metadata", nil]];
+																			  forManagedObject:newObject], OR_KEY_METADATA, nil]];
     } else {
         // Special kind of POST method for bunch creation of new object.
         
@@ -311,7 +349,7 @@
          object link for new object are tmp://Entity/UUID
          */
         
-		NSDictionary *objectList = [[self dictionaryFromResponse:[request body]] valueForKey:@"content"];
+		NSDictionary *objectList = [[self dictionaryFromResponse:[request body]] valueForKey:OR_KEY_CONTENT];
 		NSDictionary *refIDAssociation = [NSMutableDictionary dictionaryWithCapacity:[objectList count]];
 		NSDictionary *refObjectAssociation = [NSMutableDictionary dictionaryWithCapacity:[objectList count]];
 		NSDictionary *relationShip = nil;
@@ -360,9 +398,9 @@
 				if ([((NSRelationshipDescription*)[relationShip valueForKey:key]) isToMany]) {
 					toManyRef = [NSMutableSet setWithCapacity:[[infos valueForKey:key]count]];
 					for (ref in [infos valueForKey:key]) {
-						refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_REF_KEYWORD]];
+						refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_KEY_REF_REST]];
 						if (!refObject) {
-							refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_REF_KEYWORD]];
+							refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_KEY_REF_REST]];
 							[refObjectAssociation setValue:refObject forKey:clientRefID];
 						}
 						if (refObject) [toManyRef addObject:refObject];
@@ -370,9 +408,9 @@
 					[object setValue:toManyRef forKey:key];
 				} else {
 					ref = [infos valueForKey:key];
-					refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_REF_KEYWORD]];
+					refObject = [refObjectAssociation valueForKey:[ref valueForKey:OR_KEY_REF_REST]];
 					if (!refObject) {
-						refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_REF_KEYWORD]];
+						refObject = [self managedObjectWithAbsolutePath:[ref valueForKey:OR_KEY_REF_REST]];
 						[refObjectAssociation setValue:refObject forKey:clientRefID];
 					}
 					[object setValue:refObject forKey:key];
@@ -380,7 +418,7 @@
 			}
 		}
         
-        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:refIDAssociation, @"content", nil]];
+        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:refIDAssociation, OR_KEY_CONTENT, nil]];
     }
     return nil;
 }
@@ -539,14 +577,14 @@
 				NSMutableSet *uptodateSet = [NSMutableSet setWithCapacity:[representedSet count]];
 				
 				for (NSDictionary *relationInfo in representedSet) {
-					[uptodateSet addObject:[self managedObjectWithAbsolutePath:[relationInfo valueForKey:OR_REF_KEYWORD]]];
+					[uptodateSet addObject:[self managedObjectWithAbsolutePath:[relationInfo valueForKey:OR_KEY_REF_REST]]];
 				}
 				
 				[object willChangeValueForKey:supportedKey];
 				[object setPrimitiveValue:uptodateSet forKey:supportedKey];
 				[object didChangeValueForKey:supportedKey];
 				
-			} else [object setValue:[self managedObjectWithAbsolutePath:[value valueForKey:OR_REF_KEYWORD]] forKey:supportedKey];
+			} else [object setValue:[self managedObjectWithAbsolutePath:[value valueForKey:OR_KEY_REF_REST]] forKey:supportedKey];
 		}
 	}
 	
@@ -592,6 +630,13 @@
     return [NSString stringWithFormat:@"%@://%@", _httpServer.useSSL ? @"https" : @"http" , serverAddress];
 }
 
+- (NSString*)baseURLForWebSocketWithServerAddress:(NSString*)serverAddress {
+    if ([_httpServer.prefixForWebSocket length] > 0) {
+        return [NSString stringWithFormat:@"%@://%@/%@", _httpServer.useSSL ? @"https" : @"http" , serverAddress, _httpServer.prefixForWebSocket];
+    }
+    return [NSString stringWithFormat:@"%@://%@", _httpServer.useSSL ? @"https" : @"http" , serverAddress];
+}
+
 - (NSString*)restURIWithServerAddress:(NSString*)serverAddress forEntityWithName:(NSString*)name {
     return [NSString stringWithFormat:@"%@/%@", [self baseURLForURIWithServerAddress:serverAddress], name];
 }
@@ -618,7 +663,7 @@
 - (NSDictionary*)restLinkRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<ORManagedObject>*)object {
 	return [NSDictionary dictionaryWithObject:[self restURIWithServerAddress:serverAddress 
                                                             forManagedObject:object] 
-                                       forKey:OR_REF_KEYWORD];
+                                       forKey:OR_KEY_REF_REST];
 }
 
 - (NSManagedObject<ORManagedObject>*)insertNewObjectForEntityForName:(NSString*)entityString {
@@ -666,8 +711,10 @@
 }
 
 - (NSDictionary *)metadataRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject *)object {
-	return [self restLinkRepresentationWithServerAddress:serverAddress
-										forManagedObject:(NSManagedObject<ORManagedObject>*)object];
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+			[self restURIWithServerAddress:serverAddress
+						  forManagedObject:object], OR_KEY_REF_REST,
+			nil];
 }
 
 @end

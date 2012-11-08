@@ -8,6 +8,8 @@
 
 #import <CoreData/CoreData.h>
 
-@interface ORNoCacheIncrementalStore : NSIncrementalStore
+#import <SocketRocketOSX/SRWebSocket.h>
+
+@interface ORNoCacheIncrementalStore : NSIncrementalStore <SRWebSocketDelegate>
 
 @end

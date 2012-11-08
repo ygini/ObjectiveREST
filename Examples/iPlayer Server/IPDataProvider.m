@@ -33,12 +33,11 @@
 		ipdp_storeCoordinator = nil;
         
         
-        ipdb_server = [ORServer new];
+        ipdb_server = [[ORServer alloc] initWithDataProvider:self];
         [ipdb_server setType:@"_orserver.tcp"];
         [ipdb_server setPort:1988];
         [ipdb_server setName:@""];
         [ipdb_server setDomain:@""];
-        [ipdb_server setDataProvider:self];
         
         [ipdb_server start];
 	}

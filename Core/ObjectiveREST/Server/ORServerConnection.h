@@ -9,7 +9,7 @@
 #import <CocoaHTTPServer/HTTPConnection.h>
 
 #define OR_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
-#define	OR_REF_KEYWORD                          @"rest_ref"
+#define	OR_KEY_REF_REST                          @"rest_ref"
 
 @class ORServer;
 

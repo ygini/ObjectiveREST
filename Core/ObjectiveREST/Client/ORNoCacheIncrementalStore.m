@@ -17,6 +17,8 @@
     NSArray *_contentType;
     
     NSMutableDictionary *_objectIDCache;
+	
+	SRWebSocket *_webSocket;
 }
 - (NSManagedObjectID*)objectIdForObjectOfEntity:(NSEntityDescription*)entityDescription withReferenceObject:(id)ref;
 @end
@@ -33,7 +35,7 @@
 }
 
 +(NSDictionary *)metadataForPersistentStoreWithURL:(NSURL *)url error:(NSError **)error {
-	NSMutableDictionary *metadata = [[[[ORToolbox sharedInstance] getAbsolutePath:[url absoluteString]] valueForKey:@"metadata"] mutableCopy];
+	NSMutableDictionary *metadata = [[[[ORToolbox sharedInstance] getAbsolutePath:[url absoluteString]] valueForKey:OR_KEY_METADATA] mutableCopy];
 	
 	if (metadata) {
 		[metadata setValue:OR_NO_CACHE_STORE forKey:NSStoreTypeKey];
@@ -45,7 +47,7 @@
 }
 
 + (id)identifierForNewStoreAtURL:(NSURL *)storeURL {
-	NSMutableDictionary *metadata = [[[ORToolbox sharedInstance] getAbsolutePath:[storeURL absoluteString]] valueForKey:@"metadata"];
+	NSMutableDictionary *metadata = [[[ORToolbox sharedInstance] getAbsolutePath:[storeURL absoluteString]] valueForKey:OR_KEY_METADATA];
     return [metadata valueForKey:NSStoreUUIDKey];
 }
 
@@ -59,8 +61,26 @@
         [ORToolbox sharedInstanceForPersistentStore:self].serverURL = _serverURL;
         
         [self setMetadata:[ORNoCacheIncrementalStore metadataForPersistentStoreWithURL:_serverURL error:nil]];
+		
+		NSURL *wsURL = [NSURL URLWithString:[self.metadata valueForKey:OR_KEY_WS_URL]];
+		
+		if (wsURL) {
+			_webSocket = [[SRWebSocket alloc] initWithURL:wsURL];
+			_webSocket.delegate = self;
+			[_webSocket open];
+		}
+		
     }
     return self;
+}
+
+- (void)dealloc
+{
+	[_webSocket close];
+    [_webSocket release], _webSocket = nil;
+	[_contentType release], _contentType = nil;
+	[_objectIDCache release], _objectIDCache = nil;
+    [super dealloc];
 }
 
 -(BOOL)loadMetadata:(NSError **)error {
@@ -86,7 +106,7 @@
 			NSMutableArray *objects = [NSMutableArray new];
 			
 			for (NSDictionary *objectRefInfo in objectsRef) {
-				[objects addObject:[self objectIdForObjectOfEntity:request.entity withReferenceObject:[objectRefInfo valueForKey:OR_REF_KEYWORD]]];
+				[objects addObject:[self objectIdForObjectOfEntity:request.entity withReferenceObject:[objectRefInfo valueForKey:OR_KEY_REF_REST]]];
 			}
 			
 			if (request.resultType == NSManagedObjectResultType) {
@@ -105,7 +125,7 @@
 			NSMutableArray *objects = [NSMutableArray new];
 			
 			for (NSDictionary *objectRefInfo in objectsRef) {
-				[objects addObject:[[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[objectRefInfo valueForKey:OR_REF_KEYWORD]] valueForKey:@"content"]];
+				[objects addObject:[[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[objectRefInfo valueForKey:OR_KEY_REF_REST]] valueForKey:OR_KEY_CONTENT]];
 			}
 			
 			return [objects autorelease];
@@ -132,12 +152,12 @@
 	NSManagedObject *object;
 	
 	for (object in [request insertedObjects]) {
-		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], @"content", nil]
+		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], OR_KEY_CONTENT, nil]
 													toAbsolutePath:[self referenceObjectForObjectID:object.objectID]];
 	}
 	
 	for (object in [request updatedObjects]) {
-		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], @"content", nil]
+		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], OR_KEY_CONTENT, nil]
 													toAbsolutePath:[self referenceObjectForObjectID:object.objectID]];
 	}
 	
@@ -173,7 +193,7 @@
 }
 
 -(NSIncrementalStoreNode *)newValuesForObjectWithID:(NSManagedObjectID *)objectID withContext:(NSManagedObjectContext *)context error:(NSError **)error {
-	NSDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[self referenceObjectForObjectID:objectID]] valueForKey:@"content"];
+	NSDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[self referenceObjectForObjectID:objectID]] valueForKey:OR_KEY_CONTENT];
 	
 	
 	NSMutableDictionary *object = [NSMutableDictionary new];
@@ -193,7 +213,7 @@
 		if (![relationship isToMany]) {
 			NSDictionary *relatedLink = [remoteInfos valueForKey:attribute];
 			if (relatedLink) {
-				NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:[relatedLink valueForKey:OR_REF_KEYWORD]];
+				NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:[relatedLink valueForKey:OR_KEY_REF_REST]];
 				[object setValue:objectID forKey:attribute];
 			}
 		}
@@ -205,7 +225,7 @@
 }
 
 -(id)newValueForRelationship:(NSRelationshipDescription *)relationship forObjectWithID:(NSManagedObjectID *)objectID withContext:(NSManagedObjectContext *)context error:(NSError **)error {
-	NSDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[self referenceObjectForObjectID:objectID]] valueForKey:@"content"];
+	NSDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[self referenceObjectForObjectID:objectID]] valueForKey:OR_KEY_CONTENT];
 
 	if ([relationship isToMany]) {
 		NSArray *relations = [remoteInfos valueForKey:relationship.name];
@@ -213,14 +233,14 @@
 		NSMutableSet *data = [NSMutableSet new];
 		
 		for (NSDictionary *relatedLink in relations) {
-			id referenceID = [relatedLink valueForKey:OR_REF_KEYWORD];
+			id referenceID = [relatedLink valueForKey:OR_KEY_REF_REST];
 			NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:referenceID];
 			[data addObject:objectID];
 		}
 		return data;
 	} else {
 		NSDictionary *relatedLink = [remoteInfos valueForKey:relationship.name];
-		id referenceID = [relatedLink valueForKey:OR_REF_KEYWORD];
+		id referenceID = [relatedLink valueForKey:OR_KEY_REF_REST];
 		NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:referenceID];
 		return [objectID retain];
 	}
@@ -231,8 +251,8 @@
 	
 	NSDictionary * answer;
 	for (NSManagedObject *object in array) {
-		answer = [[[ORToolbox sharedInstanceForPersistentStore:self] postInfo:[NSDictionary dictionary] toPath:object.entity.name] valueForKey:@"metadata"];
-		[permanentIDs addObject:[self objectIdForObjectOfEntity:object.entity withReferenceObject:[answer valueForKey:OR_REF_KEYWORD]]];
+		answer = [[[ORToolbox sharedInstanceForPersistentStore:self] postInfo:[NSDictionary dictionary] toPath:object.entity.name] valueForKey:OR_KEY_METADATA];
+		[permanentIDs addObject:[self objectIdForObjectOfEntity:object.entity withReferenceObject:[answer valueForKey:OR_KEY_REF_REST]]];
 	}
 	
 	return [permanentIDs autorelease];
@@ -247,6 +267,32 @@
 	}
     if (objectId) [_objectIDCache setObject:objectId forKey:ref];
     return objectId;
+}
+
+#pragma mark - WebSocket
+
+- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(NSString*)message {
+	BOOL delete = NO;
+	message = [message stringByReplacingOccurrencesOfString:@"x-coredata:/" withString:[NSString stringWithFormat:@"%@/%@", [_serverURL absoluteString], @"x-coredata"]];
+	
+	if ([message rangeOfString:OR_WS_PREFIX_INSERTED].location == 0) {
+		message = [message stringByReplacingCharactersInRange:NSMakeRange(0, [OR_WS_PREFIX_INSERTED length])
+												   withString:@""];
+	} else if ([message rangeOfString:OR_WS_PREFIX_UPDATED].location == 0) {
+		message = [message stringByReplacingCharactersInRange:NSMakeRange(0, [OR_WS_PREFIX_UPDATED length])
+												   withString:@""];
+	} else if ([message rangeOfString:OR_WS_PREFIX_DELETED].location == 0) {
+		message = [message stringByReplacingCharactersInRange:NSMakeRange(0, [OR_WS_PREFIX_DELETED length])
+												   withString:@""];
+		delete = YES;
+	}
+	
+//	NSArray *pathComonents = [message pathComponents];
+//	if ([pathComonents count] > 1) {
+//		NSString *entityName = [pathComonents objectAtIndex:[pathComonents count] - 2];
+//		[self objectIdForObjectOfEntity:[NSEntityDescription entityForName:entityName
+//													inManagedObjectContext:<#(NSManagedObjectContext *)#>] withReferenceObject:<#(id)#>]
+//	}
 }
 
 @end

@@ -1,3 +1,6 @@
 [submodule "Vendors/CocoaHTTPServer"]
 	path = Vendors/CocoaHTTPServer
 	url = https://github.com/robbiehanson/CocoaHTTPServer.git
+[submodule "Vendors/SocketRocket"]
+	path = Vendors/SocketRocket
+	url = https://github.com/square/SocketRocket.git

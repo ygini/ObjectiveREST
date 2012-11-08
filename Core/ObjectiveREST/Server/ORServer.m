@@ -11,6 +11,10 @@
 #import <CocoaHTTPServer/HTTPServer.h>
 #import "ORServerConnection.h"
 
+#import "ORToolbox.h"
+
+#import "ORServerWebSocket.h"
+
 void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void))
 {
     if ([NSThread isMainThread])
@@ -23,11 +27,18 @@ void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void))
     }
 }
 
+@interface ORServer () {
+	NSMutableArray *_webSockets;
+}
+
+@end
+
 @implementation ORServer
 @synthesize dataProvider = _dataProvider;
 @synthesize externalAPIDelegate = _externalAPIDelegate;
 
 @synthesize prefixForREST = _prefixForREST;
+@synthesize prefixForWebSocket = _prefixForWebSocket;
 
 @synthesize useSSL = _useSSL;
 @synthesize useDigest = _useDigest;
@@ -35,12 +46,6 @@ void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void))
 @synthesize allowDeleteOnCollection = _allowDeleteOnCollection;
 
 #pragma mark - Server API
-
-+ (ORServer*)sharedInstance {
-    static ORServer* sharedInstanceORServer = nil;
-	if (!sharedInstanceORServer) sharedInstanceORServer = [ORServer new];
-	return sharedInstanceORServer;
-}
 
 - (BOOL)start {
     NSError *error = nil;
@@ -59,18 +64,59 @@ void ORrunOnMainQueueWithoutDeadlocking(void (^block)(void))
 
 #pragma mark - Configuration
 
-- (id)init {
+- (id)initWithDataProvider:(id<ORServerDataProvider>)provider {
     self = [super init];
     if (self) {
+		_dataProvider = provider;
         _prefixForREST = @"OR-API";
+		_prefixForWebSocket = @"OR-WS";
         connectionClass = [ORServerConnection class];
+		_webSockets = [NSMutableArray new];
+		
+		[[NSNotificationCenter defaultCenter] addObserver:self
+												 selector:@selector(managedObjectContextDidSaveNotification:)
+													 name:NSManagedObjectContextDidSaveNotification
+												   object:[_dataProvider managedObjectContext]];
     }
     return self;
 }
 
 - (void)dealloc {
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
     [_prefixForREST release], _prefixForREST = nil;
+    [_prefixForWebSocket release], _prefixForWebSocket = nil;
+	[_webSockets release];
     [super dealloc];
+}
+
+#pragma mark - Notifications
+
+- (void)managedObjectContextDidSaveNotification:(NSNotification*)notification {
+	for (ORServerWebSocket *ws in _webSockets) {
+		[ws sendUpdateMessageFromNotification:notification];
+	}
+}
+
+#pragma mark - WebSocket Delegate
+
+- (void)webSocketDidOpen:(WebSocket *)ws {
+	[_webSockets addObject:ws];
+}
+
+- (void)webSocket:(WebSocket *)ws didReceiveMessage:(NSString *)msg {
+	
+}
+
+- (void)webSocketDidClose:(WebSocket *)ws {
+	[_webSockets removeObject:ws];
+}
+
+#pragma mark - WebSocket API
+
+- (void)sendMessageToAllWebSockets:(NSString*)message {
+	for (ORServerWebSocket *ws in _webSockets) {
+		[ws sendMessage:message];
+	}
 }
 
 @end

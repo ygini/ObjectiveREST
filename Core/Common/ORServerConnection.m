@@ -41,6 +41,7 @@
 - (NSDictionary*)restLinkRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject<ORManagedObject>*)object;
 - (NSManagedObject<ORManagedObject>*)insertNewObjectForEntityForName:(NSString*)entityString;
 - (NSDictionary *)dictionaryRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject *)object;
+- (NSDictionary *)metadataRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject *)object;
 @end
 
 @implementation ORServerConnection
@@ -229,9 +230,12 @@
             [entriesRESTRefs release];
         } else {
             // return the selected entity
+			NSManagedObject *object = [self managedObjectWithRelativePath:path];
             returnObject = [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] 
-                                                                                            forManagedObject:[self managedObjectWithRelativePath:path]], @"content", nil]];
+                                                             [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
+                                                                                            forManagedObject:object], @"content",
+															 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
+																						  forManagedObject:object], @"metadata", nil]];
         }
     }
     
@@ -264,9 +268,13 @@
                 [self updateManagedObject:entry withInfo:dict];
                 
                 // Code 200
-                return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:entry], @"content", nil]];
+                return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+														 [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
+																						forManagedObject:entry], @"content",
+														 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
+																					  forManagedObject:entry], @"metadata", nil]];
             } else {
-                // return invalide reequest code when PUT is used to create a new object with specific ID and standard CoreData model
+                // return invalide request code when PUT is used to create a new object with specific ID and standard CoreData model
                 // Code 501?
                 return nil;
             }
@@ -289,7 +297,11 @@
         [self updateManagedObject:newObject withInfo:dict];
         // 201
         
-        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:[self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"] forManagedObject:newObject], @"content", nil]];
+        return [self httpResponseWithDictionary:[NSDictionary dictionaryWithObjectsAndKeys:
+												 [self dictionaryRepresentationWithServerAddress:[request headerField:@"Host"]
+																				forManagedObject:newObject], @"content",
+												 [self metadataRepresentationWithServerAddress:[request headerField:@"Host"]
+																			  forManagedObject:newObject], @"metadata", nil]];
     } else {
         // Special kind of POST method for bunch creation of new object.
         
@@ -457,22 +469,23 @@
 	// Cleaning path for double /
 	path = [path stringByReplacingOccurrencesOfString:@"//" withString:@"/"];
 	
+	NSMutableString *cleanPath = [NSMutableString new];
 	
 	for (NSString *pathCompo in [path pathComponents]) {
-		if (![pathCompo isEqualToString:@"/"]) {
+		if (![pathCompo isEqualToString:@"/"] && ![pathCompo isEqualToString:_httpServer.prefixForREST]) {
 			[pathComponents addObject:pathCompo];
+			[cleanPath appendFormat:@"/%@", pathCompo];
 		}
 	}
 	
 	NSString *selectedEntity = [pathComponents objectAtIndex:0];
 	
-	//if ([path rangeOfString:@"x-coredata"].location != NSNotFound) {
     if ([selectedEntity isEqualToString:@"x-coredata"]) {
 		// Update entity from CoreData URI
-		NSString *coreDataUniqueID = [path stringByReplacingOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/"];
+		[cleanPath replaceOccurrencesOfString:@"/x-coredata" withString:@"x-coredata:/" options:0 range:NSMakeRange(0, [cleanPath length])];
 		
 		entry =  (NSManagedObject <ORManagedObject> *)[_httpServer.dataProvider.managedObjectContext objectWithID:
-                  [_httpServer.dataProvider.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:coreDataUniqueID]]];
+                  [_httpServer.dataProvider.persistentStoreCoordinator managedObjectIDForURIRepresentation:[NSURL URLWithString:cleanPath]]];
 		
 		if ([entry isFault]) {
 			
@@ -515,8 +528,8 @@
 	
 	NSRelationshipDescription *relation = nil;
 	for (NSString *supportedKey in [[[object entity] relationshipsByName] allKeys]) {
+		value = [infos valueForKey:supportedKey];
 		if (value) {
-			value = [infos valueForKey:supportedKey];
 			relation = [[[object entity] relationshipsByName] valueForKey:supportedKey];
 			
 			if ([relation isToMany]) {
@@ -649,6 +662,11 @@
 	}
 	
 	return d;
+}
+
+- (NSDictionary *)metadataRepresentationWithServerAddress:(NSString*)serverAddress forManagedObject:(NSManagedObject *)object {
+	return [self restLinkRepresentationWithServerAddress:serverAddress
+										forManagedObject:(NSManagedObject<ORManagedObject>*)object];
 }
 
 @end

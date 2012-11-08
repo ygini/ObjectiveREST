@@ -15,7 +15,7 @@
 
 @interface ORToolbox : NSObject {
     NSArray *_acceptedContentType;
-    NSPersistentStore *_associatedStore;
+    NSIncrementalStore *_associatedStore;
 }
 
 @property (retain, nonatomic) NSURL *serverURL;
@@ -45,6 +45,8 @@
 
 - (NSData*)preparedResponseFromDictionary:(NSDictionary*)dict;
 - (NSDictionary*)dictionaryFromResponse:(NSData*)response;
+
+- (NSMutableDictionary*)dictionaryFromManagedObject:(NSManagedObject*)object;
 
 - (BOOL)saveNode:(ORNoCacheStoreNode*)node;
 - (BOOL)saveNodes:(NSSet*)nodes;

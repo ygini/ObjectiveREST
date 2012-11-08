@@ -250,6 +250,53 @@
 	return dict;
 }
 
+#pragma mark - NSManagedObject / NSDictionary
+
+- (NSMutableDictionary*)dictionaryFromManagedObject:(NSManagedObject*)object {
+    
+    NSManagedObjectID *objectID = object.objectID;
+    NSEntityDescription *entityDescription = objectID.entity;
+    
+    NSDictionary *relationList = [entityDescription relationshipsByName];
+    NSDictionary *attributeList = [entityDescription attributesByName];
+    
+    NSRelationshipDescription *relation = nil;
+    NSSet *relations;
+    NSMutableArray *relationsLink;
+    NSManagedObject *relationObject = nil;
+    NSString *referenceID;
+    
+    id value;
+    
+    NSMutableDictionary *returnDict = [NSMutableDictionary dictionaryWithCapacity:[attributeList count]  + [relationList count]];
+    
+    for (NSString *relationName in [relationList allKeys]) {
+        relation = [relationList valueForKey:relationName];
+        
+        if ([relation isToMany]) {
+            relations = [object valueForKey:relationName];
+            relationsLink = [NSMutableArray arrayWithCapacity:[relations count]];
+            for (relationObject in relations) {
+                referenceID = [_associatedStore referenceObjectForObjectID:relationObject.objectID];
+                [relationsLink addObject:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD]];
+            }
+            [returnDict setValue:relationsLink forKey:relationName];
+        } else {
+            relationObject = [object valueForKey:relationName];
+            referenceID = [_associatedStore referenceObjectForObjectID:relationObject.objectID];
+            [returnDict setValue:[NSDictionary dictionaryWithObject:referenceID forKey:OR_REF_KEYWORD] forKey:relationName];
+        }
+    }
+    
+    for (NSString *attribute in [attributeList allKeys]) {
+		value = [object valueForKey:attribute];
+		if (value)
+			[returnDict setObject:value forKey:attribute];
+	}
+    
+    return returnDict;
+}
+
 #pragma mark - NSAtomicStore
 
 - (NSMutableDictionary*)saveOperationForNode:(ORNoCacheStoreNode*)node needBashMode:(BOOL*)bash sharedNewNodeList:(NSMutableDictionary**)sharedNewNodeList{

@@ -132,6 +132,23 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 }
 
 -(id)executeSaveRequest:(NSSaveChangesRequest *)request withContext:(NSManagedObjectContext *)context error:(NSError **)error {
+	
+	NSManagedObject *object;
+	
+	for (object in [request insertedObjects]) {
+		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], @"content", nil]
+													toAbsolutePath:[self referenceObjectForObjectID:object.objectID]];
+	}
+	
+	for (object in [request updatedObjects]) {
+		[[ORToolbox sharedInstanceForPersistentStore:self] putInfo:[NSDictionary dictionaryWithObjectsAndKeys:[[ORToolbox sharedInstanceForPersistentStore:self] dictionaryFromManagedObject:object], @"content", nil]
+													toAbsolutePath:[self referenceObjectForObjectID:object.objectID]];
+	}
+	
+	for (object in [request deletedObjects]) {
+		[[ORToolbox sharedInstanceForPersistentStore:self] deleteAbsolutePath:[self referenceObjectForObjectID:object.objectID]];
+	}
+	
 	return [NSArray array];
 }
 
@@ -181,8 +198,10 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 		relationship = [relationlist valueForKey:attribute];
 		if (![relationship isToMany]) {
 			NSDictionary *relatedLink = [remoteInfos valueForKey:attribute];
-			NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:[relatedLink valueForKey:OR_REF_KEYWORD]];
-			[object setValue:objectID forKey:attribute];
+			if (relatedLink) {
+				NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:[relatedLink valueForKey:OR_REF_KEYWORD]];
+				[object setValue:objectID forKey:attribute];
+			}
 		}
 	}
 	
@@ -216,8 +235,10 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 -(NSArray *)obtainPermanentIDsForObjects:(NSArray *)array error:(NSError **)error {
 	NSMutableArray *permanentIDs = [NSMutableArray new];
 	
+	NSDictionary * answer;
 	for (NSManagedObject *object in array) {
-		[permanentIDs addObject:object.objectID];
+		answer = [[[ORToolbox sharedInstanceForPersistentStore:self] postInfo:[NSDictionary dictionary] toPath:object.entity.name] valueForKey:@"metadata"];
+		[permanentIDs addObject:[[self objectIdForObjectOfEntity:object.entity withReferenceObject:[answer valueForKey:OR_REF_KEYWORD]] autorelease]];
 	}
 	
 	return [permanentIDs autorelease];
@@ -230,7 +251,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 	if (!objectId) {
 		objectId = [[self newObjectIDForEntity:entityDescription referenceObject:ref] autorelease];
 	}
-    [_objectIDCache setObject:objectId forKey:ref];
+    if (objectId) [_objectIDCache setObject:objectId forKey:ref];
     return objectId;
 }
 

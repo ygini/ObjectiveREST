@@ -11,7 +11,7 @@
 #import <CoreData/CoreData.h>
 #import <ID3/TagAPI.h>
 
-#import <ObjectiveREST/ObjectiveREST.h>
+#import <ObjectiveREST-client/ObjectiveREST-client.h>
 
 @implementation IPDataProvider
 

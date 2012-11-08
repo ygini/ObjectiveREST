@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'ObjectiveREST-client' target in the 'ObjectiveREST-client' project
+//
+
+#ifdef __OBJC__
+	#import <Cocoa/Cocoa.h>
+#endif

@@ -9,10 +9,7 @@
 #import "ORNoCacheIncrementalStore.h"
 
 #import "ORToolbox.h"
-
-NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
-#define OR_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
-#define	OR_REF_KEYWORD                          @"rest_ref"
+#import "ORConstants.h"
 
 @interface ORNoCacheIncrementalStore () {
 @private
@@ -42,7 +39,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 		[metadata setValue:OR_NO_CACHE_STORE forKey:NSStoreTypeKey];
 	} else {
 		if (error)
-			*error = [NSError errorWithDomain:@"ORNoCacheIncrementalStore" code:0 userInfo:nil];
+			*error = [NSError errorWithDomain:ORErrorDomain code:ORErrorDomainCode_SERVER_UNAVIABLE userInfo:nil];
 	}
     return [metadata autorelease];
 }
@@ -119,12 +116,11 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 		} break;
 			
 		default: {
-			NSLog(@"Unsupported NSFetchRequestResultType: %ld", request.resultType);
 			if (error)
-				*error = [NSError errorWithDomain:@"ORNoCacheIncrementalStore"
-											 code:1
-										 userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unsupported NSFetchRequestResultType, %ld", request.requestType]
-																			  forKey:NSLocalizedDescriptionKey]];			return nil;
+				*error = [NSError errorWithDomain:ORErrorDomain
+											 code:ORErrorDomainCode_Unsupported_NSFetchRequestResultType
+										 userInfo:nil];
+			return nil;
 		}
 	}
 	
@@ -164,13 +160,11 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 		} break;
 				
 		default: {
-			NSLog(@"Unsupported NSFetchRequestType: %ld", request.requestType);
 			
 			if (error)
-				*error = [NSError errorWithDomain:@"ORNoCacheIncrementalStore"
-											 code:1
-										 userInfo:[NSDictionary dictionaryWithObject:[NSString stringWithFormat:@"Unsupported NSFetchRequestType, %ld", request.requestType]
-																			  forKey:NSLocalizedDescriptionKey]];
+				*error = [NSError errorWithDomain:ORErrorDomain
+											 code:ORErrorDomainCode_Unsupported_NSFetchRequestType
+										 userInfo:nil];
 			return nil;
 		}
 	}
@@ -238,7 +232,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 	NSDictionary * answer;
 	for (NSManagedObject *object in array) {
 		answer = [[[ORToolbox sharedInstanceForPersistentStore:self] postInfo:[NSDictionary dictionary] toPath:object.entity.name] valueForKey:@"metadata"];
-		[permanentIDs addObject:[[self objectIdForObjectOfEntity:object.entity withReferenceObject:[answer valueForKey:OR_REF_KEYWORD]] autorelease]];
+		[permanentIDs addObject:[self objectIdForObjectOfEntity:object.entity withReferenceObject:[answer valueForKey:OR_REF_KEYWORD]]];
 	}
 	
 	return [permanentIDs autorelease];

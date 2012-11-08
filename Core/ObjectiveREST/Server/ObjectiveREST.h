@@ -11,8 +11,6 @@
 #import <ObjectiveREST/ORServer.h>
 #import <ObjectiveREST/ORProtocols.h>
 #import <ObjectiveREST/ORToolbox.h>
-#import <ObjectiveREST/ORNoCacheStore.h>
-#import <ObjectiveREST/ORNoCacheStoreNode.h>
+#import <ObjectiveREST/ORNoCacheIncrementalStore.h>
 
-extern NSString *OR_NO_CACHE_STORE;
-extern NSString *OR_NO_CACHE_LEGACY_STORE;
+#import <ObjectiveREST/ORConstants.h>

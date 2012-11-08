@@ -510,6 +510,7 @@
 		// Update entity from REST UUID
 		entry = [self managedObjectWithEntityName:[pathComponents objectAtIndex:0] andRESTUUID:[pathComponents objectAtIndex:1]];
 	}
+	[cleanPath release];
     [pathComponents release];
 	return entry;
 }

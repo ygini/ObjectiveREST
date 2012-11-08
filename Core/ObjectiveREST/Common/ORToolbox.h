@@ -8,11 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#define OR_SUPPORTED_CONTENT_TYPE				[NSArray arrayWithObjects:@"application/x-bplist", @"application/x-plist", @"application/json", nil]
-#define	OR_REF_KEYWORD                          @"rest_ref"
-
-@class ORNoCacheStoreNode;
-
 @interface ORToolbox : NSObject {
     NSArray *_acceptedContentType;
     NSIncrementalStore *_associatedStore;
@@ -22,7 +17,7 @@
 @property (retain, nonatomic) NSString *negociatedContentType;
 
 + (ORToolbox*)sharedInstance;
-+ (ORToolbox*)sharedInstanceForPersistentStore:(NSPersistentStore*)store;
++ (ORToolbox*)sharedInstanceForPersistentStore:(NSIncrementalStore*)store;
 
 - (NSString*)acceptedContentType;
 
@@ -47,8 +42,5 @@
 - (NSDictionary*)dictionaryFromResponse:(NSData*)response;
 
 - (NSMutableDictionary*)dictionaryFromManagedObject:(NSManagedObject*)object;
-
-- (BOOL)saveNode:(ORNoCacheStoreNode*)node;
-- (BOOL)saveNodes:(NSSet*)nodes;
 
 @end

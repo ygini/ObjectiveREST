@@ -423,6 +423,13 @@
 	NSError *err = nil;
 	
 	NSFetchRequest * fetchRequest = [NSFetchRequest fetchRequestWithEntityName:name];
+	
+	NSString *predicateFormat = [[request allHeaderFields] valueForKey:@"NSPredicate"];
+	
+	if ([predicateFormat length] > 0) {
+		[fetchRequest setPredicate:[NSPredicate predicateWithFormat:predicateFormat]];
+	}
+	
 	return [[_httpServer.dataProvider.managedObjectContext executeFetchRequest:fetchRequest error:&err] sortedArrayUsingComparator:^NSComparisonResult(NSManagedObject<ORManagedObject>* obj1, NSManagedObject<ORManagedObject>* obj2) {
 		if ([obj1 respondsToSelector:@selector(compare:)])
 			return [obj1 compare:obj2];

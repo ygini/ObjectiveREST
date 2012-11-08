@@ -38,5 +38,10 @@
 -(IBAction)rapidReverse:(id)sender;
 
 -(IBAction)open:(id)sender;
+-(IBAction)togglePlayList:(id)sender;
+
+- (IBAction)searchDidChange:(id)sender;
+
+- (IBAction)saveDataStore:(id)sender;
 
 @end

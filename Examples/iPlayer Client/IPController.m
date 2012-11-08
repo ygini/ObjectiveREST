@@ -114,6 +114,16 @@
 	[panel setIsVisible:![panel isVisible]];
 }
 
+- (IBAction)searchDidChange:(NSTextField*)sender {
+	NSString *searchString = [sender stringValue];
+	
+	if ([searchString length] > 0) {
+		[playList setFilterPredicate:[NSPredicate predicateWithFormat:@"(title contains[cd] %@) OR (album.title contains[cd] %@) OR (album.artist.name contains[cd] %@)", searchString, searchString, searchString]];
+	} else {
+		[playList setFilterPredicate:nil];
+	}
+}
+
 - (IBAction)saveDataStore:(id)sender {
     [[IPDataProvider sharedInstance] saveAction:sender];
 }

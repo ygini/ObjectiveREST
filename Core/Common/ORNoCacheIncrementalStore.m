@@ -195,7 +195,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 	NSDictionary *remoteInfos = [[[ORToolbox sharedInstanceForPersistentStore:self] getAbsolutePath:[self referenceObjectForObjectID:objectID]] valueForKey:@"content"];
 
 	if ([relationship isToMany]) {
-		NSArray *relations = [remoteInfos valueForKey:relationship.key];
+		NSArray *relations = [remoteInfos valueForKey:relationship.name];
 		
 		NSMutableSet *data = [NSMutableSet new];
 		
@@ -206,7 +206,7 @@ NSString *OR_NO_CACHE_STORE = @"OR_NO_CACHE_STORE";
 		}
 		return data;
 	} else {
-		NSDictionary *relatedLink = [remoteInfos valueForKey:relationship.key];
+		NSDictionary *relatedLink = [remoteInfos valueForKey:relationship.name];
 		id referenceID = [relatedLink valueForKey:OR_REF_KEYWORD];
 		NSManagedObjectID *objectID = [self objectIdForObjectOfEntity:relationship.destinationEntity withReferenceObject:referenceID];
 		return [objectID retain];

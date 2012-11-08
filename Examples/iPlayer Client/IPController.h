@@ -41,5 +41,7 @@
 -(IBAction)open:(id)sender;
 -(IBAction)togglePlayList:(id)sender;
 
+- (IBAction)searchDidChange:(NSTextField*)sender;
+
 - (IBAction)saveDataStore:(id)sender;
 @end

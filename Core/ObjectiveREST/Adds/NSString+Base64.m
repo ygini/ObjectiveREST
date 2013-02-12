@@ -1,6 +1,6 @@
 //
 //  NSString+Base64.m
-//  iPlayer Client
+//  StarDAV
 //
 //  Created by Yoann Gini on 06/05/12.
 //  Copyright (c) 2012 iNig-Services. All rights reserved.
